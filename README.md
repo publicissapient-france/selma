@@ -14,10 +14,9 @@
 <!--  limitations under the License.                                           -->
 <!--                                                                           -->
 
-[![Build Status](https://buildhive.cloudbees.com/job/slemesle/job/selma/badge/icon)](https://buildhive.cloudbees.com/job/slemesle/job/selma/)
-[![Build Status](https://travis-ci.org/slemesle/selma.png?branch=master)](https://travis-ci.org/slemesle/selma)
+[![Build Status](https://travis-ci.org/xebia-france/selma.png?branch=master)](https://travis-ci.org/xebia-france/selma)
 
-![S3lm4 logo](https://raw.github.com/slemesle/selma/master/resources/logo-v6.png)
+[![S3lm4 logo](https://raw.github.com/slemesle/selma/master/resources/logo-v6.png)](http://xebia-france.github.io/selma/)
 
 # What is S3lm4 ?
 
@@ -51,6 +50,8 @@ Then ? Well just use the generated Mapper:
 
 And voilà !
 
+Visit our site: (http://xebia-france.github.io/selma/)
+
 ## Features
 
 * Generate code for mapping bean to bean matching fields to fields
@@ -60,8 +61,8 @@ And voilà !
 * Maps Collection any to any
 * Maps Map any to any
 * Use strict memory duplication for all fields
-* Support for Factory to instantiate beans is out of the box
-* Support Type to Type custom mapping using custom mapping static methods
+* Support for SourcedBeans to instantiate beans is out of the box
+* Support Type to Type custom mapping using custom mapping methods
 * Gives full feedback at compilation time
 * Break build when mapping does not work Say good bye to mapping errors in production
 
@@ -73,7 +74,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -81,7 +82,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
 ```
 
