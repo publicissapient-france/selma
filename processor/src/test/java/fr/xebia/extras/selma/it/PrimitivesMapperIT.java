@@ -390,17 +390,31 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    @Ignore
-    public void mapper_should_convert_three_dim_array_to_three_dim_array() throws Exception{
+    public void mapper_should_convert_2_dim_array_to_2_dim_array() throws Exception{
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
-        String[][][] in = new String[][][]{{{"coucou", null, "coucou"}, {"tutu", "bad","tata"}}, {{"coucou", null, "coucou"}, {"coucou", null, "coucou"}}, {{"BUbu", null, "BUbu"}, {"POUPOU", null, "POUPOU"}}};
-        String[][][] res = mapper.convert(in);
+        String[][] in = new String [][] {null, {null}, {"un", "deux", "trois"}};
+        String[][] res = mapper.convert(in);
 
         assertArrayEquals(in, res);
     }
 
+    @Test
+    public void mapper_should_convert_three_dim_array_to_three_dim_array() throws Exception{
 
+        SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
+
+        String[][][] in = new String[][][]{ null, {null},
+                {{ null}},
+                {{"un", "deux"} },
+                {{"un"}, {"un", "deux"}, {"un", "deux", "trois"}},
+                {{"coucou", null, "coucou"}, {"tutu", "bad","tata"}},
+                {{"coucou", null, "coucou"}, {"coucou", null, "coucou"}},
+                {{"BUbu", null, "BUbu"}, {"POUPOU", null, "POUPOU"}}};
+        String[][][] res = mapper.convert(in);
+
+        assertArrayEquals(in, res);
+    }
 
 }

@@ -35,6 +35,15 @@ public abstract class MappingBuilder {
 
     private static final List<MappingSpecification> mappingSpecificationList = new LinkedList<MappingSpecification>();
 
+    private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
+        boolean res = false;
+        if (inOutType.isDeclaredToPrimitive()){
+            PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
+            res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
+        }
+        return res;
+    }
+
     static {  // init specs here
 
         /**
@@ -297,8 +306,7 @@ public abstract class MappingBuilder {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                         MappingSourceNode node;
-                        char ptrChar = 'a';
-                        final String indexVar = vars.indexVar(ptrChar);
+                        final String indexVar = vars.indexVar();
                         final String tmpVar = vars.tmpVar("Array");
 
                         Map.Entry<TypeMirror, Integer> dims = getArrayDimensionsAndType(inOutType.inAsArrayType());
@@ -306,27 +314,20 @@ public abstract class MappingBuilder {
                         String totalCountVar = vars.totalCountVar();
                         String totalCountVal = String.format("%s.length", vars.inGetter());
                         String newArray = String.format("new %s[%s.length]", dims.getKey(), vars.inGetter());
-                        String dimPattern = "[0]";
-                        String dim = "";
-                        String accessString = String.format("[%s%%%s.length]", indexVar, vars.inGetter());
                         int i = 1;
                         while (i < dims.getValue()) {
-                            dim += dimPattern;
-                            newArray += String.format("[%s%s.length]", vars.inGetter(), dim);
-                            totalCountVal += " * " + String.format("%s%s.length", vars.inGetter(), dim);
-                            accessString += String.format("[%s%%%s%s.length]", indexVar, vars.inGetter(), dim);
+                            newArray += "[]";
                             i++;
                         }
-
                         node = root.body(assign(String.format("%s %s", inOutType.out().toString(), tmpVar), newArray))
                                 .child(assign("int " + totalCountVar, totalCountVal))
                                 .child(vars.setOrAssign(tmpVar))
                                 .child(mapArrayBis(indexVar, totalCountVar));
 
                         context.pushStackForBody(node,
-                                new SourceNodeVars().withInOutType(new InOutType(dims.getKey(), dims.getKey()))
-                                        .withInField(String.format("%s%s", vars.inGetter(), accessString))
-                                        .withOutField(String.format("%s%s", tmpVar, accessString)).withAssign(true));
+                                new SourceNodeVars().withInOutType(new InOutType(inOutType.inArrayComponentType(), inOutType.outArrayComponentType()))
+                                        .withInField(String.format("%s[%s]", vars.inGetter(), indexVar))
+                                        .withOutField(String.format("%s[%s]", tmpVar, indexVar)).withAssign(true).withIndexPtr(vars.nextPtr()));
 
                         return root.body;
                     }
@@ -339,15 +340,6 @@ public abstract class MappingBuilder {
             }
         });
 
-    }
-
-    private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
-        boolean res = false;
-        if (inOutType.isDeclaredToPrimitive()){
-            PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
-            res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
-        }
-        return res;
     }
 
     private static boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {

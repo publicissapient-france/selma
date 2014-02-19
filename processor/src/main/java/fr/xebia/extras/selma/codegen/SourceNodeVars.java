@@ -40,6 +40,7 @@ public class SourceNodeVars {
 
     boolean assign = false;
     private String inFieldPrefix;
+    private byte ptr = 'a';
 
     public SourceNodeVars(String field, BeanWrapper inBean, BeanWrapper outBean) {
         this.field = field;
@@ -116,7 +117,7 @@ public class SourceNodeVars {
     }
 
     public String indexVar() {
-        return String.format("_%sIndex", (field == null ? "out" : field));
+        return indexVar((char)ptr);
     }
 
     public String indexVar(char indexChar) {
@@ -129,11 +130,11 @@ public class SourceNodeVars {
 
 
     public String tmpVar(String suffix) {
-        return String.format("_%sTmp%s", (field == null ? "out" : field), suffix);
+        return String.format("%s%sTmp%s", (char) ptr, (field == null ? "out" : field), suffix);
     }
 
     public String totalCountVar() {
-        return String.format("_%sTotalCount", (field == null ? "out" : field));
+        return String.format("%s%sTotalCount", (char) ptr, (field == null ? "out" : field));
     }
 
     public SourceNodeVars withInFieldPrefix(String inFieldPrefix) {
@@ -143,5 +144,14 @@ public class SourceNodeVars {
 
     public boolean isOutPrimitive() {
         return inOutType.outIsPrimitive();
+    }
+
+    public char nextPtr() {
+        return (char)(ptr+1);
+    }
+
+    public SourceNodeVars withIndexPtr(char _ptr) {
+        this.ptr = (byte) _ptr;
+        return this;
     }
 }
