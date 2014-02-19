@@ -16,7 +16,7 @@
 
 [![Build Status](https://travis-ci.org/xebia-france/selma.png?branch=master)](https://travis-ci.org/xebia-france/selma)
 
-[![S3lm4 logo](https://raw.github.com/slemesle/selma/master/resources/logo-v6.png)](http://xebia-france.github.io/selma/)
+[![S3lm4 logo](https://raw.github.com/xebia-france/selma/master/resources/logo-v6.png)](http://xebia-france.github.io/selma/)
 
 # What is S3lm4 ?
 
