@@ -108,12 +108,12 @@ public class SourceNodeVars {
     }
 
     public String itemVar() {
-        return String.format("_%sItem", (field == null ? "out" : field));
+        return String.format("%s%sItem", (char)ptr, (field == null ? "out" : field));
     }
 
 
     public String itemEntry() {
-        return String.format("_%sEntry", (field == null ? "out" : field));
+        return String.format("%s%sEntry", (char)ptr, (field == null ? "out" : field));
     }
 
     public String indexVar() {

@@ -17,11 +17,7 @@
 package fr.xebia.extras.selma.beans;
 
 /**
- * Created with IntelliJ IDEA.
- * User: slemesle
- * Date: 29/11/2013
- * Time: 11:14
- * To change this template use File | Settings | File Templates.
+ * Bean used to demonstrate all kind of boolean properties setter and getter
  */
 public class BooleanBean {
 

@@ -217,7 +217,7 @@ public abstract class MappingBuilder {
                         context.pushStackForBody(node,
                                 new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut))
                                         .withInField(itemVar)
-                                        .withOutField(String.format("%s.add", tmpVar)).withAssign(false));
+                                        .withOutField(String.format("%s.add", tmpVar)).withAssign(false).withIndexPtr(vars.nextPtr()));
 
                         return root.body;
                     }
@@ -260,11 +260,11 @@ public abstract class MappingBuilder {
                         context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInValue, genericOutValue))
                                 .withInField(String.format("%s.getValue()", itemVar)).withInFieldPrefix(String.format("%s,", keyVar))
                                 .withOutField(String.format("%s.put", tmpVar))
-                                .withAssign(false));
+                                .withAssign(false).withIndexPtr(vars.nextPtr()));
                         context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInKey, genericOutKey))
                                 .withInField(String.format("%s.getKey()", itemVar))
                                 .withOutField(keyVar)
-                                .withAssign(true));
+                                .withAssign(true).withIndexPtr(vars.nextPtr()));
                         return root.body;
                     }
                 };
