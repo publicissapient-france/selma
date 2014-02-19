@@ -26,7 +26,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
 /**
  *
  */
-@Mapper
+@Mapper()
 @IgnoreFields("name")
 public interface IgnoreFieldMapper {
 

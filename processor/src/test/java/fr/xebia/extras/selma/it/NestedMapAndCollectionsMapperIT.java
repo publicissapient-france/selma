@@ -17,9 +17,6 @@
 package fr.xebia.extras.selma.it;
 
 import fr.xebia.extras.selma.Selma;
-import fr.xebia.extras.selma.beans.ExtendedCityIn;
-import fr.xebia.extras.selma.beans.ExtendedCityOut;
-import fr.xebia.extras.selma.it.mappers.InheritedMapper;
 import fr.xebia.extras.selma.it.mappers.NestedMapAndCollectionMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
@@ -29,7 +26,7 @@ import org.junit.Test;
 import java.util.*;
 
 /**
- *
+ * Integration test to verify mapping support for Nested collections and / or maps
  */
 @Compile(withClasses = NestedMapAndCollectionMapper.class)
 public class NestedMapAndCollectionsMapperIT extends IntegrationTestBase {
