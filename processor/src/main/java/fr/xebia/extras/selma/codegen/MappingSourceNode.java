@@ -270,6 +270,26 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode mapDefaultCase() {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                   /*
+                         default : {
+                                ....
+                                break;
+                         }
+                   */
+                writer.beginControlFlow(" default : ");
+                writeBody(writer);
+                writer.emitStatement("break");
+                writer.endControlFlow();
+            }
+        };
+    }
+
+
+
 
     public static MappingSourceNode instantiateOut(final String outType, final String params) {
         return new MappingSourceNode() {

@@ -17,10 +17,9 @@
 package fr.xebia.extras.selma.codegen;
 
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,8 +100,35 @@ public class AnnotationWrapper {
         return res;
     }
 
+    public List<AnnotationWrapper> getAsAnnotationWrapper(String parameterName) {
+
+        List<AnnotationWrapper> res = new ArrayList<AnnotationWrapper>();
+        AnnotationValue myValue = map.get(parameterName);
+        if (myValue.getValue() instanceof List) {
+            List<? extends AnnotationValue> values = (List<? extends AnnotationValue>) myValue.getValue();
+            for (AnnotationValue value : values) {
+                if (value.getValue() instanceof AnnotationMirror){
+                    res.add(new AnnotationWrapper(context, (AnnotationMirror)value));
+                }
+            }
+        }
+
+        return res;
+    }
+
     public boolean getAsBoolean(String ignoreMissingProperties) {
         return (Boolean) map.get(ignoreMissingProperties).getValue();
 
+    }
+
+    public TypeMirror getAsTypeMirror(String parameter) {
+        String classe =  map.get(parameter).getValue().toString();
+        final TypeElement element = context.elements.getTypeElement(classe.replace(".class", ""));
+
+        return element.asType();
+    }
+
+    public String getAsString(String parameter) {
+        return (String) map.get(parameter).getValue();
     }
 }

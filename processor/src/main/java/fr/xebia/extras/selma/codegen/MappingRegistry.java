@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,5 +65,27 @@ public class MappingRegistry {
         MappingBuilder res = MappingBuilder.newCustomMapper(inOutType, String.format("%s.%s", customMapper, method.getSimpleName()));
 
         registryMap.put(inOutType, res);
+    }
+
+    public void pushCustomEnumMapper(AnnotationWrapper enumMapper) {
+
+        InOutType inOutType = new InOutType(enumMapper.getAsTypeMirror("from"), enumMapper.getAsTypeMirror("to"));
+
+        String defaultValue = enumMapper.getAsString("defaultValue");
+
+        MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
+
+        registryMap.put(inOutType, res);
+    }
+
+    public void pushCustomEnumMapper(TypeMirror enumIn, TypeMirror enumOut, AnnotationWrapper enumMapper) {
+        InOutType inOutType = new InOutType(enumIn, enumOut);
+
+        String defaultValue = enumMapper.getAsString("defaultValue");
+
+        MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
+
+        registryMap.put(inOutType, res);
+
     }
 }

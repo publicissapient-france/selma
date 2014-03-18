@@ -69,5 +69,10 @@ public @interface Mapper {
      */
     boolean finalMappers() default true;
 
+    /**
+     *
+     * @return
+     */
+    EnumMapper[] enums() default {};
 
 }

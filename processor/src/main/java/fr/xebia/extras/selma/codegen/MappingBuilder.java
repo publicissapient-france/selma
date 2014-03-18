@@ -477,6 +477,62 @@ public abstract class MappingBuilder {
         }
     }
 
+
+    /**
+     * Builds a method that match identical items  and use default value otherwise
+     * @param inOutType
+     * @param defaultValue
+     * @return
+     */
+    public static MappingBuilder newCustomEnumMapper(final InOutType inOutType, final String defaultValue) {
+        TypeElement typeElement = inOutType.inAsTypeElement();
+        final List<String> enumInValues = collectEnumValues(typeElement);
+        final List<String> enumOutValues = collectEnumValues(inOutType.outAsTypeElement());
+
+        final List<String> valuesIntersection = intersection(enumInValues, enumOutValues);
+
+        return new MappingBuilder() {
+            @Override
+            MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                // If we are in a nested context we should call an enum mapping method
+                if (context.depth > 0) {
+                    String mappingMethod = context.mappingMethod(inOutType);
+                    root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+                } else { // Otherwise we should build the real enum selma code
+                    MappingSourceNode node = blank();
+                    MappingSourceNode valuesBlock = node;
+                    for (String value : valuesIntersection) {
+                        node = node.child(mapEnumCase(value));
+                        node.body(vars.setOrAssign(String.format("%s.%s", inOutType.out(), value)));
+                    }
+                    node = node.child(mapDefaultCase());
+                    if ("".equals(defaultValue)){
+                        node.body(vars.setOrAssign("null"));
+                    } else {
+                        node.body(vars.setOrAssign(String.format("%s.%s", inOutType.out(), defaultValue)));
+                    }
+                    root.body(mapEnumBlock(vars.inGetter())).body(valuesBlock.child);
+                }
+                return root.body;
+            }
+        };
+    }
+
+
+
+
+    static public <T> List<T> intersection(List<T> list1, List<T> list2) {
+        List<T> list = new ArrayList<T>();
+
+        for (T t : list1) {
+            if(list2.contains(t)) {
+                list.add(t);
+            }
+        }
+
+        return list;
+    }
+
     static abstract class MappingSpecification {
 
         abstract MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType);
