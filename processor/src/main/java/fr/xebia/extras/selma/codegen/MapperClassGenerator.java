@@ -184,10 +184,10 @@ public class MapperClassGenerator {
             // when mapping is used on a method mapping one enum to another we can use these values
             if (!inOutType.areEnums()){
 
-                mappingRegistry.pushCustomEnumMapper(inOutType, enumMapper);
+                mappingRegistry.pushCustomEnumMapper(enumMapper);
             } else {
                 // Use from and to in annotation
-                mappingRegistry.pushCustomEnumMapper(enumMapper);
+                mappingRegistry.pushCustomEnumMapper(inOutType, enumMapper);
             }
 
         }
