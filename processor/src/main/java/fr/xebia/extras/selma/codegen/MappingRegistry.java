@@ -70,22 +70,20 @@ public class MappingRegistry {
     public void pushCustomEnumMapper(AnnotationWrapper enumMapper) {
 
         InOutType inOutType = new InOutType(enumMapper.getAsTypeMirror("from"), enumMapper.getAsTypeMirror("to"));
-
-        String defaultValue = enumMapper.getAsString("defaultValue");
-
-        MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
-
-        registryMap.put(inOutType, res);
+        pushCustomEnumMapper(inOutType, enumMapper);
     }
 
-    public void pushCustomEnumMapper(TypeMirror enumIn, TypeMirror enumOut, AnnotationWrapper enumMapper) {
-        InOutType inOutType = new InOutType(enumIn, enumOut);
+    public void pushCustomEnumMapper(InOutType inOutType, AnnotationWrapper enumMapper) {
 
         String defaultValue = enumMapper.getAsString("defaultValue");
 
-        MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
+        if (!inOutType.areEnums()){
+            context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\n You should only use enum types here", inOutType.in(), inOutType.out());
+        } else {
 
-        registryMap.put(inOutType, res);
+            MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
+            registryMap.put(inOutType, res);
+        }
 
     }
 }

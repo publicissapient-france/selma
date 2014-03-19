@@ -1,0 +1,7 @@
+0.2 - 2/18/2014:
+* Full support n-dimensions array
+* Full support for mapping of nested collection values and map key or value
+* Custom enumeration mapper
+
+
+0.1 - First maven release

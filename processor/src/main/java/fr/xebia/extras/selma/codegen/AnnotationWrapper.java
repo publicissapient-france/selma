@@ -131,4 +131,8 @@ public class AnnotationWrapper {
     public String getAsString(String parameter) {
         return (String) map.get(parameter).getValue();
     }
+
+    public Element asElement() {
+        return this.annotationMirror.getAnnotationType().asElement();
+    }
 }

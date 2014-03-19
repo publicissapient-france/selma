@@ -177,8 +177,18 @@ public class MapperClassGenerator {
 
             TypeMirror enumOut = methodWrapper.returnType();
             TypeMirror enumIn = methodWrapper.firstParameterType();
+            InOutType inOutType = new InOutType(enumIn, enumOut);
+
             AnnotationWrapper enumMapper = AnnotationWrapper.buildFor(context, methodWrapper.element(), EnumMapper.class);
-            mappingRegistry.pushCustomEnumMapper(enumIn, enumOut, enumMapper);
+
+            // when mapping is used on a method mapping one enum to another we can use these values
+            if (!inOutType.areEnums()){
+
+                mappingRegistry.pushCustomEnumMapper(inOutType, enumMapper);
+            } else {
+                // Use from and to in annotation
+                mappingRegistry.pushCustomEnumMapper(enumMapper);
+            }
 
         }
 
