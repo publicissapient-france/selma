@@ -57,7 +57,7 @@ Visit our site: (http://xebia-france.github.io/selma/)
 * Generate code for mapping bean to bean matching fields to fields
 ** Support for nested bean
 ** Bean should respect Java property convention
-* Maps Enum using identical values
+* Maps Enum using identical values with default value
 * Maps Collection any to any
 * Maps Map any to any
 * Use strict memory duplication for all fields
@@ -74,7 +74,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -82,7 +82,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
         </dependency>
 ```
 

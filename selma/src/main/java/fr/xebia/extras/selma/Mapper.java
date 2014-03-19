@@ -70,8 +70,7 @@ public @interface Mapper {
     boolean finalMappers() default true;
 
     /**
-     *
-     * @return
+     * Add one or more custom configuration for enum to enum mapping with default values.
      */
     EnumMapper[] enums() default {};
 
