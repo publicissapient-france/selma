@@ -16,6 +16,8 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import fr.xebia.extras.selma.EnumMapper;
+
 import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.Map;
  */
 public class MappingRegistry {
 
+    public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
     final Map<InOutType, MappingBuilder> registryMap;
     final MapperGeneratorContext context;
 
@@ -78,7 +81,10 @@ public class MappingRegistry {
         String defaultValue = enumMapper.getAsString("defaultValue");
 
         if (!inOutType.areEnums()){
-            context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\n You should only use enum types here", inOutType.in(), inOutType.out());
+            context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
+        } else if (inOutType.in().toString().contains(DEFAULT_ENUM) || inOutType.out().toString().contains(DEFAULT_ENUM)){
+
+            context.error(enumMapper.asElement(), "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
         } else {
 
             MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
