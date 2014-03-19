@@ -16,9 +16,6 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import fr.xebia.extras.selma.EnumMapper;
-
-import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.Map;
 
