@@ -291,6 +291,19 @@ public abstract class MappingSourceNode {
 
 
 
+    public static MappingSourceNode statement(final String statement) {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                   /*
+                        statement;
+                   */
+                writer.emitStatement(statement);
+            }
+        };
+    }
+
+
     public static MappingSourceNode instantiateOut(final String outType, final String params) {
         return new MappingSourceNode() {
             @Override

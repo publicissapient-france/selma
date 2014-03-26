@@ -98,8 +98,8 @@ public class MapperMethodGenerator {
         MappingBuilder mappingBuilder = findBuilderFor(inOutType);
 
         if (mappingBuilder != null) {
-            ptrBis = ptrBis.body(mappingBuilder.build(context, new SourceNodeVars().withInOutType(inOutType).withAssign(true)));
 
+            ptrBis = ptrBis.body(mappingBuilder.build(context, new SourceNodeVars().withInOutType(inOutType).withAssign(true)));
             generateStack(context);
 
         } else if (inOutType.areDeclared()) {
@@ -116,6 +116,12 @@ public class MapperMethodGenerator {
             ptr.body(ptrBisRoot.body);
         } else {
             ptr.child(ptrBisRoot.body);
+        }
+
+        // Call the interceptor if it exist
+        MappingBuilder interceptor = mappingRegistry.mappingInterceptor(inOutType);
+        if (interceptor != null){
+           ptr.child(interceptor.build(context, new SourceNodeVars()));
         }
 
         // Give it a try

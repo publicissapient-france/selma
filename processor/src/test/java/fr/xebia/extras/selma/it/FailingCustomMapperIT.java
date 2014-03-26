@@ -47,16 +47,16 @@ public class FailingCustomMapperIT extends IntegrationTestBase {
     public void should_raise_warning_for_void_method() throws Exception {
 
         assertCompilationError(BadCustomMapper.class, "public abstract class BadCustomMapper {", "No valid mapping method found in custom selma class ");
-        assertCompilationWarning(BadCustomMapper.class, "public void voidMethod(CityIn in) {", "Custom mapping method can not be void (Add the targeted return type) on voidMethod");
+        assertCompilationWarning(BadCustomMapper.class, "public void voidMethod(CityIn in) {", "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on voidMethod");
     }
 
     @Test
     public void should_raise_warning_for_method_not_having_1_parameter() throws Exception {
 
         assertCompilationError(BadCustomMapper.class, "public abstract class BadCustomMapper {", "No valid mapping method found in custom selma class ");
-        assertCompilationWarning(BadCustomMapper.class, "public CityOut noParameterMethod() {", "Custom mapping method should take one parameter but there is 0 on noParameterMethod");
-        assertCompilationWarning(BadCustomMapper.class, "public CityOut twoParameterMethod(CityIn in, DataSource dataSource) {", "Custom mapping method should take one parameter but there is 2 on twoParameterMethod");
-        assertCompilationWarning(BadCustomMapper.class, "public CityOut threeParameterMethod(CityIn in, CityIn in2, CityIn in3) {", "Custom mapping method should take one parameter but there is 3 on threeParameterMethod");
+        assertCompilationWarning(BadCustomMapper.class, "public CityOut noParameterMethod() {", "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on noParameterMethod");
+        assertCompilationWarning(BadCustomMapper.class, "public CityOut twoParameterMethod(CityIn in, DataSource dataSource) {", "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on twoParameterMethod");
+        assertCompilationWarning(BadCustomMapper.class, "public CityOut threeParameterMethod(CityIn in, CityIn in2, CityIn in3) {", "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on threeParameterMethod");
     }
 
     @Test

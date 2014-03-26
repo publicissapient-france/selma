@@ -70,7 +70,19 @@ public class MethodWrapper {
 
     public InOutType inOutType() {
         return new InOutType(firstParameterType(), returnType());
+    }
 
+
+    public InOutType inOutArgs() {
+        return new InOutType(firstParameterType(), secondParameterType());
+    }
+
+    private TypeMirror secondParameterType() {
+        if (method.getParameters().size() > 1) {
+            return method.getParameters().get(1).asType();
+        } else {
+            return null;
+        }
     }
 
     public ExecutableElement element() {
@@ -148,5 +160,29 @@ public class MethodWrapper {
 
     public boolean hasEnumMapper() {
         return hasAnnotation(EnumMapper.class.getCanonicalName());
+    }
+
+    /**
+     * A custom mapper have one parameter and return a type.
+     * public Out customMapper(In in)
+     *
+     * @return
+     */
+    public boolean isCustomMapper() {
+        return hasReturnType() && hasOneParameter();
+    }
+
+    /**
+     * A mapping interceptor returns void and have two parameters
+     * public void interceptMapping(In in, Out out)
+     *
+     * @return
+     */
+    public boolean isMappingInterceptor() {
+        return !hasReturnType() && hasTwoParameter();
+    }
+
+    private boolean hasTwoParameter() {
+        return method.getParameters().size() == 2;
     }
 }

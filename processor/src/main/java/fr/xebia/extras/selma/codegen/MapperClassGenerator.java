@@ -68,7 +68,7 @@ public class MapperClassGenerator {
             return;
 
         // Here we collect custom mappers
-        collectCustom(mapper, customMaperFields);
+        collectCustom(mapper);
         collectEnums(mapper);
         validateTypes();
     }
@@ -80,7 +80,7 @@ public class MapperClassGenerator {
         }
     }
 
-    private void collectCustom(AnnotationWrapper annotationWrapper, List<TypeElement> customMapperFields) {
+    private void collectCustom(AnnotationWrapper annotationWrapper) {
 
 
         if (annotationWrapper.getAsStrings("withMapper").size() > 0) {
@@ -98,7 +98,13 @@ public class MapperClassGenerator {
                     MethodWrapper methodWrapper = new MethodWrapper(method, context);
                     if (isValidCustomMapping(methodWrapper)) {
                         context.info(method, "Found an elligible custom mapping method ...");
-                        mappingRegistry.pushCustomMapper(potentialMapper, methodWrapper);
+
+
+                        if (methodWrapper.isCustomMapper()){
+                            mappingRegistry.pushCustomMapper(potentialMapper, methodWrapper);
+                        } else {
+                            mappingRegistry.pushMappingInterceptor(potentialMapper, methodWrapper);
+                        }
                         mappingMethodCount++;
                     }
                 }
@@ -137,6 +143,12 @@ public class MapperClassGenerator {
             res = false;
         }
 
+        if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor() ){
+            context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());
+            res = false;
+        }
+
+/*
         if (!methodWrapper.hasReturnType()) {
             context.warn(methodWrapper.element(), "Custom mapping method can not be void (Add the targeted return type) on %s", methodWrapper.getSimpleName());
             res = false;
@@ -146,6 +158,7 @@ public class MapperClassGenerator {
             context.warn(methodWrapper.element(), "Custom mapping method should take one parameter but there is %s on %s", methodWrapper.parameterCount(), methodWrapper.getSimpleName());
             res = false;
         }
+*/
 
         return res;
     }

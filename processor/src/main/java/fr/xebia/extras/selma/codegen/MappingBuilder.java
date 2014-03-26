@@ -457,6 +457,18 @@ public abstract class MappingBuilder {
         return res;
     }
 
+    public static MappingBuilder newMappingInterceptor(final InOutType inOutType, final String name) {
+        MappingBuilder res = new MappingBuilder() {
+            @Override
+            MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                context.mappingMethod(inOutType, name);
+                root.body( statement(String.format("%s(in,out)", name)) );
+                return root.body;
+            }
+        };
+        return res;
+    }
+
     abstract MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException;
 
     public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {

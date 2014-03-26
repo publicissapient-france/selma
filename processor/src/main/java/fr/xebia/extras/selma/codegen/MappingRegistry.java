@@ -26,11 +26,13 @@ public class MappingRegistry {
 
     public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
     final Map<InOutType, MappingBuilder> registryMap;
+    final Map<InOutType, MappingBuilder> interceptorMap;
     final MapperGeneratorContext context;
 
 
     public MappingRegistry(MapperGeneratorContext context) {
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
+        this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
         this.context = context;
     }
 
@@ -88,5 +90,15 @@ public class MappingRegistry {
             registryMap.put(inOutType, res);
         }
 
+    }
+
+    public void pushMappingInterceptor(String customMapper, MethodWrapper method) {
+        InOutType inOutType = method.inOutArgs();
+        MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType, String.format("%s.%s", customMapper, method.getSimpleName()));
+        interceptorMap.put(inOutType, res);
+    }
+
+    public MappingBuilder mappingInterceptor(InOutType inOutType) {
+        return interceptorMap.get(inOutType);
     }
 }
