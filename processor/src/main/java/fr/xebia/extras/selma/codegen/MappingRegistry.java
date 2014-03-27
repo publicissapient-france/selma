@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,12 +28,14 @@ public class MappingRegistry {
     public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
     final Map<InOutType, MappingBuilder> registryMap;
     final Map<InOutType, MappingBuilder> interceptorMap;
+    final BidiMap<String> fieldsRegistry;
     final MapperGeneratorContext context;
 
 
     public MappingRegistry(MapperGeneratorContext context) {
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
+        this.fieldsRegistry = new BidiMap<String>();
         this.context = context;
     }
 
@@ -100,5 +103,18 @@ public class MappingRegistry {
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {
         return interceptorMap.get(inOutType);
+    }
+
+    public void pushFieldMap(AnnotationWrapper field) {
+        List<String> fields = field.getAsStrings("value");
+        if(fields.size() != 2){
+            context.error(field.asElement(), "Invalid @Field use, @Field should have 2 strings which link one field to another");
+        } else {
+            fieldsRegistry.push(fields.get(0).toLowerCase(), fields.get(1).toLowerCase());
+        }
+    }
+
+    public String getFieldFor(String field) {
+        return fieldsRegistry.get(field.toLowerCase());
     }
 }

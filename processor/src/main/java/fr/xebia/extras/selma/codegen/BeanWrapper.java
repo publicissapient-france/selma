@@ -70,7 +70,7 @@ public class BeanWrapper {
 
     private void putSetterField(MethodWrapper methodWrapper, HashMap<String, FieldItem> result) {
 
-        String field = methodWrapper.getFieldName();
+        String field = methodWrapper.getFieldName().toLowerCase();
         FieldItem item = result.get(field);
         if (item != null) {
             item = new FieldItem(field, methodWrapper, item.getter);
@@ -82,7 +82,7 @@ public class BeanWrapper {
 
     private void putGetterField(MethodWrapper methodWrapper, HashMap<String, FieldItem> result) {
 
-        String field = methodWrapper.getFieldName();
+        String field = methodWrapper.getFieldName().toLowerCase();
         FieldItem item = result.get(field);
         if (item != null) {
             item = new FieldItem(item.field, item.setter, methodWrapper);

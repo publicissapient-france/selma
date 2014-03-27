@@ -74,4 +74,10 @@ public @interface Mapper {
      */
     EnumMapper[] enums() default {};
 
+
+    /**
+     *
+     */
+    Field[] fields() default {};
+
 }

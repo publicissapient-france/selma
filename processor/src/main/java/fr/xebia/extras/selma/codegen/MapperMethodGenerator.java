@@ -179,7 +179,13 @@ public class MapperMethodGenerator {
         Set<String> outFields = outBean.getSetterFields();
         for (String field : inBean.getFields()) {
 
-            boolean isMissingInDestination = !outBean.hasFieldAndSetter(field);
+            String outField = mappingRegistry.getFieldFor(field);
+            if (outField == null){
+                outField = field;
+            }
+
+            boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
+
             if (isIgnoredField(field)){
 //                context.warn(inBean.getFieldElement(field), "Field %s from in bean will be ignored as @IgnoredFields require", field);
                 continue;
@@ -188,17 +194,19 @@ public class MapperMethodGenerator {
             if (isMissingInDestination && canBeIgnored(field)) {
                 continue;
             } else {
-                if (isMissingInDestination) {
-                    context.error(inBean.getFieldElement(field), String.format("getter for field %s from in bean %s is missing in destination bean %s !\n" +
-                            " --> Add @IgnoreField to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out()));
+
+
+                if (isMissingInDestination ) {
+                    context.error(inBean.getFieldElement(field), String.format("getter for field %s from in bean %s is missing in destination bean %s using field %s !\n" +
+                            " --> Add @IgnoreField to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), outField));
                     continue;
                 }
 
                 try {
-                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(field)));
+                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField)));
                     if (mappingBuilder != null) {
-                        ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, inBean, outBean)
-                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(field))).withAssign(false)));
+                        ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outField , inBean, outBean)
+                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField))).withAssign(false)));
 
                         generateStack(context);
                     } else {
@@ -212,7 +220,7 @@ public class MapperMethodGenerator {
 
                 ptr = lastChild(ptr);
             }
-            outFields.remove(field);
+            outFields.remove(outField);
         }
 
         if (!configuration.isIgnoreMissingProperties()){

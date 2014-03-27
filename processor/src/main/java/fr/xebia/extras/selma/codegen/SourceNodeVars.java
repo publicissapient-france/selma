@@ -42,6 +42,15 @@ public class SourceNodeVars {
     private String inFieldPrefix;
     private byte ptr = 'a';
 
+    public SourceNodeVars(String inF, String outF, BeanWrapper inBean, BeanWrapper outBean) {
+        this.field = inF;
+        this.inBean = inBean;
+        this.outBean = outBean;
+        inField = (inBean == null ? "in" : inBean.getInGetterFor(inF));
+        outField = (outBean == null ? "out" : outBean.getOutSetterPathFor(outF));
+        inFieldPrefix = "";
+    }
+
     public SourceNodeVars(String field, BeanWrapper inBean, BeanWrapper outBean) {
         this.field = field;
         this.inBean = inBean;

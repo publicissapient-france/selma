@@ -34,14 +34,14 @@ public class FailingMappersIT extends IntegrationTestBase {
     @Test
     public void compilation_should_fail_on_missing_out_property_without_ignore() throws Exception {
 
-        assertCompilationError(PersonIn.class, "public boolean isMale() {", String.format("getter for field Male from in bean %s is missing in destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
+        assertCompilationError(PersonIn.class, "public boolean isMale() {", String.format("getter for field male from in bean %s is missing in destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
 
     }
 
     @Test
     public void compilation_should_fail_on_missing_in_property_without_ignore() throws Exception {
 
-        assertCompilationError(PersonOut.class, "public void setBiography(String biography) {", String.format("setter for field Biography from out bean %s has no getter in in bean %s", PersonOut.class.getName(), PersonIn.class.getName()));
+        assertCompilationError(PersonOut.class, "public void setBiography(String biography) {", String.format("setter for field biography from out bean %s has no getter in in bean %s", PersonOut.class.getName(), PersonIn.class.getName()));
 
     }
 

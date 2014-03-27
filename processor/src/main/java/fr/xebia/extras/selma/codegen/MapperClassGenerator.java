@@ -64,13 +64,27 @@ public class MapperClassGenerator {
         AnnotationWrapper mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
         AnnotationWrapper ignoreFields = AnnotationWrapper.buildFor(context, element, IgnoreFields.class);
         configuration = SourceConfiguration.buildFrom(mapper, ignoreFields);
-        if (registry.contains(origClasse))
+        if (registry.contains(origClasse)){
             return;
+        }
 
         // Here we collect custom mappers
         collectCustom(mapper);
         collectEnums(mapper);
+        collectFields(mapper);
+
         validateTypes();
+    }
+
+    /**
+     * Here we collects custom field name mapping
+     * @param mapper
+     */
+    private void collectFields(AnnotationWrapper mapper) {
+        for (AnnotationWrapper field : mapper.getAsAnnotationWrapper("fields")) {
+            mappingRegistry.pushFieldMap(field);
+        }
+
     }
 
     private void collectEnums(AnnotationWrapper mapper) {
@@ -147,18 +161,6 @@ public class MapperClassGenerator {
             context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());
             res = false;
         }
-
-/*
-        if (!methodWrapper.hasReturnType()) {
-            context.warn(methodWrapper.element(), "Custom mapping method can not be void (Add the targeted return type) on %s", methodWrapper.getSimpleName());
-            res = false;
-        }
-
-        if (!methodWrapper.hasOneParameter()) {
-            context.warn(methodWrapper.element(), "Custom mapping method should take one parameter but there is %s on %s", methodWrapper.parameterCount(), methodWrapper.getSimpleName());
-            res = false;
-        }
-*/
 
         return res;
     }

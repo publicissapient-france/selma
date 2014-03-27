@@ -1,3 +1,8 @@
+0.3 -
+* Mapping interceptor support in custom mapper
+*
+
+
 0.2 - 2/18/2014:
 * Full support n-dimensions array
 * Full support for mapping of nested collection values and map key or value
