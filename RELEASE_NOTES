@@ -1,6 +1,6 @@
-0.3 -
-* Mapping interceptor support in custom mapper
-*
+0.3 - 3/28/2014
+* Mapping interceptor support in custom mapper for post-processing #8
+* Customize mapping using field name with @Field #7
 
 
 0.2 - 2/18/2014:
