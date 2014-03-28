@@ -50,4 +50,16 @@ public class CustomFieldMapperIT extends IntegrationTestBase {
         Assert.assertEquals(person.getNom(), personDto.getLastName());
     }
 
+    @Test
+    public void given_a_mapper_with_custom_field_mapping_should_use_default_same_field_name_for_mapping(){
+        CustomFieldMapper mapper = Selma.mapper(CustomFieldMapper.class);
+
+        SimplePerson person = new SimplePerson();
+        person.setAge(12);
+
+        SimplePersonDto personDto = mapper.convertFrom(person);
+
+        Assert.assertEquals(person.getAge(), personDto.getAge());
+    }
+
 }

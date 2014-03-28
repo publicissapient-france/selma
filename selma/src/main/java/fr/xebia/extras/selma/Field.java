@@ -21,16 +21,18 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Define a fieldname based mapping, @Field can only contain 2 string as values that will map names.
+ * @Field({"name", "firstname"}) will map the name field to firstname and reverse.
  */
 @Target({ElementType.ANNOTATION_TYPE})
 @Inherited
 public @interface Field {
 
     /**
-     *
+     * Value Should contain 2 values and its definition is mandatory.
+     * Compilation will fail on mis-configuration.
      */
-    String[] value() default {};
+    String[] value();
 
 }
 

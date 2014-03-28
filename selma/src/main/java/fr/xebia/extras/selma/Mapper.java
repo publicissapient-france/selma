@@ -76,7 +76,7 @@ public @interface Mapper {
 
 
     /**
-     *
+     * Add one or more custom fieldname based mapping. By default Selma will map fields with same name.
      */
     Field[] fields() default {};
 
