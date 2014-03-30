@@ -63,7 +63,7 @@ public class BeanMapperIT extends IntegrationTestBase {
 
 
 
-        PersonOut res = mapper.convertFrom(personIn);
+        PersonOut res = mapper.asPersonOut(personIn);
 
         Assert.assertNotNull(res);
         Assert.assertEquals(personIn.getAge(), res.getAge());
@@ -93,7 +93,7 @@ public class BeanMapperIT extends IntegrationTestBase {
         personIn.setEnumIn(null);
 
 
-        PersonOut res = mapper.convertFrom(personIn);
+        PersonOut res = mapper.asPersonOut(personIn);
 
         Assert.assertNotNull(res);
         Assert.assertEquals(personIn.getAge(), res.getAge());
@@ -125,7 +125,7 @@ public class BeanMapperIT extends IntegrationTestBase {
         personIn.getAddress().setStreet("rue de la truanderie");
         personIn.setAddressBis(new AddressIn());
 
-        PersonOut res = mapper.convertFrom(personIn);
+        PersonOut res = mapper.asPersonOut(personIn);
 
         Assert.assertNotNull(res);
         Assert.assertEquals(personIn.getAge(), res.getAge());
@@ -156,7 +156,7 @@ public class BeanMapperIT extends IntegrationTestBase {
         personIn.getAddress().setNumber(55);
         personIn.getAddress().setStreet("rue de la truanderie");
 
-        PersonOut res = mapper.convertFrom(personIn);
+        PersonOut res = mapper.asPersonOut(personIn);
 
         Assert.assertNotNull(res);
         verifyAddress(personIn.getAddress(), res.getAddress());

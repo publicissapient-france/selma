@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.IgnoreFields;
 
 import javax.lang.model.element.ExecutableElement;
@@ -45,12 +46,19 @@ public class MapperMethodGenerator {
         this.mapperMethod = new MethodWrapper(mapperMethod, context);
         this.context = context;
         this.configuration = configuration;
-        this.mappingRegistry = mappingRegistry;
+
+        this.mappingRegistry = new MappingRegistry(mappingRegistry);
         this.ignoredFields = new TreeSet<String>();
-        if (this.mapperMethod.hasIgnoreFields()) {
+        if (this.mapperMethod.hasIgnoreFields()) { // Add Specific method Ignore Fields
             this.ignoredFields.addAll( AnnotationWrapper.buildFor(context, mapperMethod, IgnoreFields.class).getAsStrings("value"));
         }
         this.ignoredFields.addAll(configuration.getIgnoredFields());
+
+        if (this.mapperMethod.hasFields()){ // Add Specific method Field mapping
+            for (AnnotationWrapper field : AnnotationWrapper.buildFor(context, mapperMethod, Fields.class).getAsAnnotationWrapper("value")) {
+                this.mappingRegistry.pushFieldMap(field);
+            }
+        }
     }
 
     public static MapperMethodGenerator create(JavaWriter writer, ExecutableElement mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {

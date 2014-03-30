@@ -32,6 +32,11 @@ public class BidiMap<K> {
         to = new HashMap<K, K>();
     }
 
+    public BidiMap(BidiMap<K> clone) {
+        from = new HashMap<K, K>(clone.from);
+        to = new HashMap<K, K>(clone.to);
+    }
+
     public BidiMap(Map<K, K> from, Map<K, K> to) {
         this.from = from;
         this.to = to;

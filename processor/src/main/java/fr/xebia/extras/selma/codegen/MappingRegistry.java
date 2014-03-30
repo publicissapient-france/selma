@@ -39,6 +39,14 @@ public class MappingRegistry {
         this.context = context;
     }
 
+
+    public MappingRegistry(MappingRegistry registry) {
+        this.registryMap = new HashMap<InOutType, MappingBuilder>(registry.registryMap);
+        this.interceptorMap = new HashMap<InOutType, MappingBuilder>(registry.interceptorMap);
+        this.fieldsRegistry = new BidiMap<String>(registry.fieldsRegistry);
+        this.context = registry.context;
+    }
+
     public MappingBuilder findMappingFor(InOutType inOutType) {
 
         MappingBuilder res;

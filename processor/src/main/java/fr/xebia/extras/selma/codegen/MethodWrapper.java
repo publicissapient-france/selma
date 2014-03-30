@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.EnumMapper;
+import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
 
@@ -184,5 +185,9 @@ public class MethodWrapper {
 
     private boolean hasTwoParameter() {
         return method.getParameters().size() == 2;
+    }
+
+    public boolean hasFields() {
+        return hasAnnotation(Fields.class.getCanonicalName());
     }
 }

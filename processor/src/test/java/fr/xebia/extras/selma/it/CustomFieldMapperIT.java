@@ -44,7 +44,7 @@ public class CustomFieldMapperIT extends IntegrationTestBase {
         person.setNom("toto");
         person.setPrenom("tutu");
 
-        SimplePersonDto personDto = mapper.convertFrom(person);
+        SimplePersonDto personDto = mapper.asPersonDto(person);
 
         Assert.assertEquals(person.getPrenom(), personDto.getFirstName());
         Assert.assertEquals(person.getNom(), personDto.getLastName());
@@ -57,9 +57,27 @@ public class CustomFieldMapperIT extends IntegrationTestBase {
         SimplePerson person = new SimplePerson();
         person.setAge(12);
 
-        SimplePersonDto personDto = mapper.convertFrom(person);
+        SimplePersonDto personDto = mapper.asPersonDto(person);
 
         Assert.assertEquals(person.getAge(), personDto.getAge());
+    }
+
+
+    @Test
+    public void given_a_mapper_with_custom_field_mapping_method_should_use_default_same_field_name_for_mapping(){
+        CustomFieldMapper mapper = Selma.mapper(CustomFieldMapper.class);
+
+        SimplePerson person = new SimplePerson();
+        person.setNom("toto");
+        person.setPrenom("tutu");
+        person.setAge(12);
+
+        SimplePersonDto personDto = mapper.asPersonDtoReverseName(person);
+
+        Assert.assertEquals(person.getAge(), personDto.getAge());
+
+        Assert.assertEquals(person.getPrenom(), personDto.getLastName());
+        Assert.assertEquals(person.getNom(), personDto.getFirstName());
     }
 
 }

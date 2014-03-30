@@ -18,9 +18,11 @@
 
 [![S3lm4 logo](https://raw.github.com/xebia-france/selma/master/resources/logo-v6.png)](http://xebia-france.github.io/selma/)
 
+## Selma Java bean mapping at compile time !
+
 # What is S3lm4 ?
 
-S3lm4 stands for ***Stupid Simple Staticaly Linked Mapper***.
+S3lm4 say Selma, stands for ***Stupid Simple Staticaly Linked Mapper***.
 In fact it is on one side an Annotation Processor that generate Java code to handle the mapping from field to field at compile time. On the other side, it is a Runtime library to instantiate and invoke the generated Mapper.
 
 
@@ -42,7 +44,7 @@ Then ? Well just use the generated Mapper:
 
 ```java
 
-    SelmaMapper mapper = Selma.mapper(SelmaMapper.class).build();
+    SelmaMapper mapper = Selma.mapper(SelmaMapper.class);
 
     OutBean res = mapper.asOutBean(in);
 
@@ -57,6 +59,7 @@ Visit our site: (http://xebia-france.github.io/selma/)
 * Generate code for mapping bean to bean matching fields to fields
 ** Support for nested bean
 ** Bean should respect Java property convention
+* Custom fieldname to fieldname mapping
 * Maps Enum using identical values with default value
 * Maps Collection any to any
 * Maps Map any to any
@@ -74,7 +77,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.2</version>
+            <version>0.3</version>
             <scope>provided</scope>
         </dependency>
 
@@ -82,7 +85,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.2</version>
+            <version>0.3</version>
         </dependency>
 ```
 
