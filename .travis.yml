@@ -1,5 +1,5 @@
 language: java
 script: mvn clean install
 jdk:
-#- openjdk6
+- openjdk6
 - openjdk7

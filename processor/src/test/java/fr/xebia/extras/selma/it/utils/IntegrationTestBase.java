@@ -84,7 +84,7 @@ public class IntegrationTestBase {
                     String srcLine = diagnostic.toString();
 
 
-                    if (srcLine.contains(signature)){
+                    if (srcLine.contains(signature) || srcLine.contains(message)){
                         if (res == null){
                             res = diagnostic;
                         }  else {

@@ -21,23 +21,18 @@ import org.junit.Assert;
 
 import javax.tools.*;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created with IntelliJ IDEA.
+ *
  * User: slemesle
  * Date: 22/11/2013
- * Time: 12:59
- * To change this template use File | Settings | File Templates.
  */
 public class TestCompiler {
 
@@ -90,24 +85,18 @@ public class TestCompiler {
 
     private final Collection<? extends File> findJars() {
         List<File> res = new ArrayList<File>();
-        Path p = Paths.get(TARGET_DIR);
-        DirectoryStream<Path> stream = null;
-        try {
-            stream = Files.newDirectoryStream(p, "*.jar");
-            for (Path path : stream) {
-                res.add(path.toFile());
-            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        File file = new File(TARGET_DIR);
+
+        File[] files = file.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String name) {
+                return name.contains(".jar");
             }
+        });
+
+        for (File jarFile : files) {
+            res.add(jarFile);
         }
         return res;
     }
@@ -175,7 +164,7 @@ public class TestCompiler {
                 null,
                 fileManager,
                 diagnostics,
-                /*processorOptions*/Arrays.asList("-source", "6"),
+                /*processorOptions*/Arrays.asList("-source", "6", "-g"),
                 null,
                 compilationUnits
         );
