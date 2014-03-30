@@ -36,7 +36,6 @@ import java.util.*;
  *  Process the @Mapper and generate the corresponding implementations
  */
 @SupportedAnnotationTypes({"fr.xebia.extras.selma.Mapper"})
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public final class MapperProcessor extends AbstractProcessor {
 
 
@@ -44,6 +43,11 @@ public final class MapperProcessor extends AbstractProcessor {
 
 
     protected static final Set<String> exclusions = new HashSet<String>(Arrays.asList("equals", "getClass", "hashCode", "toString", "notify", "notifyAll", "wait", "clone", "finalize"));
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
