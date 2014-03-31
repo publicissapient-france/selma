@@ -62,22 +62,20 @@ public @interface Mapper {
      */
     Class<?>[] withSource() default {};
 
+    /**
+     * Add one or more custom configuration for enum to enum mapping with default values.
+     */
+    EnumMapper[] enums() default {};
+
+    /**
+     * Add one or more custom fieldname based mapping. By default Selma will map fields with same name.
+     */
+    Field[] fields() default {};
 
     /**
      * For test purpose, this allow to disable use of *final* modifier for generated mappers classes
      * @return
      */
     boolean finalMappers() default true;
-
-    /**
-     * Add one or more custom configuration for enum to enum mapping with default values.
-     */
-    EnumMapper[] enums() default {};
-
-
-    /**
-     * Add one or more custom fieldname based mapping. By default Selma will map fields with same name.
-     */
-    Field[] fields() default {};
 
 }

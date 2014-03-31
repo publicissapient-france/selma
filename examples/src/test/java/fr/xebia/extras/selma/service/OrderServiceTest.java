@@ -27,11 +27,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * Created with IntelliJ IDEA.
+ *
  * User: slemesle
  * Date: 27/11/2013
- * Time: 00:17
- * To change this template use File | Settings | File Templates.
  */
 public class OrderServiceTest {
 
