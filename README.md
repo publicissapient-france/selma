@@ -59,7 +59,7 @@ Visit our site: (http://xebia-france.github.io/selma/)
 * Generate code for mapping bean to bean matching fields to fields
 ** Support for nested bean
 ** Bean should respect Java property convention
-* Custom fieldname to fieldname mapping
+* Custom field name to field name mapping
 * Maps Enum using identical values with default value
 * Maps Collection any to any
 * Maps Map any to any
@@ -77,19 +77,19 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- This is the only real dependency you will have in youre binaries -->
+        <!-- This is the only real dependency you will have in your binaries -->
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
         </dependency>
 ```
 
-Then, as I said earlier, build youre interface with @Mapper annotation and enjoy.
+Then, as I said earlier, build your interface with @Mapper annotation and enjoy.
 
 Checkout the example module to have a deeper look.
 
