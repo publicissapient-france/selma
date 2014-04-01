@@ -84,12 +84,10 @@ public class IntegrationTestBase {
                     String srcLine = diagnostic.toString();
 
 
-                    if (srcLine.contains(signature) || srcLine.contains(message)){
-                        if (res == null){
+                    if (srcLine.contains(signature) && srcLine.contains(message)){
                             res = diagnostic;
-                        }  else {
-                            org.junit.Assert.fail("Only one error for method is expected");
-                        }
+                    } else if (srcLine.contains(message)){
+                            res = diagnostic;
                     }
 
 

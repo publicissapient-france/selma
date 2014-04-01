@@ -56,7 +56,7 @@ public class MapperMethodGenerator {
 
         if (this.mapperMethod.hasFields()){ // Add Specific method Field mapping
             for (AnnotationWrapper field : AnnotationWrapper.buildFor(context, mapperMethod, Fields.class).getAsAnnotationWrapper("value")) {
-                this.mappingRegistry.pushFieldMap(field);
+                this.mappingRegistry.pushFieldMap(mapperMethod, field);
             }
         }
     }

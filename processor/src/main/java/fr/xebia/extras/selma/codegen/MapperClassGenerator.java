@@ -82,7 +82,7 @@ public class MapperClassGenerator {
      */
     private void collectFields(AnnotationWrapper mapper) {
         for (AnnotationWrapper field : mapper.getAsAnnotationWrapper("fields")) {
-            mappingRegistry.pushFieldMap(field);
+            mappingRegistry.pushFieldMap(element, field);
         }
 
     }

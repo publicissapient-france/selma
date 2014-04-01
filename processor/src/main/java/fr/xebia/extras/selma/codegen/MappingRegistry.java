@@ -16,6 +16,8 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,10 +115,10 @@ public class MappingRegistry {
         return interceptorMap.get(inOutType);
     }
 
-    public void pushFieldMap(AnnotationWrapper field) {
+    public void pushFieldMap(Element element, AnnotationWrapper field) {
         List<String> fields = field.getAsStrings("value");
         if(fields.size() != 2){
-            context.error(field.asElement(), "Invalid @Field use, @Field should have 2 strings which link one field to another");
+            context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
         } else {
             fieldsRegistry.push(fields.get(0).toLowerCase(), fields.get(1).toLowerCase());
         }

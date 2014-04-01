@@ -1,3 +1,7 @@
+0.4 - 4/1/2014
+* @Field now supported on a per method basis
+* Improve per method configuration segregation
+
 0.3 - 3/28/2014
 * Mapping interceptor support in custom mapper for post-processing #8
 * Customize mapping using field name with @Field #7

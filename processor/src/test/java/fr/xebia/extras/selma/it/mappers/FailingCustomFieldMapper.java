@@ -19,8 +19,6 @@ package fr.xebia.extras.selma.it.mappers;
 import fr.xebia.extras.selma.Field;
 import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
 import fr.xebia.extras.selma.beans.SimplePerson;
 import fr.xebia.extras.selma.beans.SimplePersonDto;
 
@@ -28,15 +26,15 @@ import fr.xebia.extras.selma.beans.SimplePersonDto;
  *
  */
 @Mapper(fields={
-        @Field({"nom", "lastname"}), @Field({"prenom", "firstname"})
+        @Field({"nom", "lastname"}), @Field({"prenom", "firstname", "ddd"})
 })
-public interface CustomFieldMapper {
+public interface FailingCustomFieldMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in);
 
 
     @Fields({
-      @Field({"nom", "firstname"}), @Field({"prenom", "lastname"})
+      @Field({"nom"}), @Field({"prenom", "lastname"})
     })
     SimplePersonDto asPersonDtoReverseName(SimplePerson in);
 
