@@ -48,7 +48,7 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
         in.getCity().setPopulation(13371337);
         DataSource dataSource = new DataSource();
 
-        SourcedBeanMapper mapper = Selma.getMapper(SourcedBeanMapper.class, dataSource);
+        SourcedBeanMapper mapper = Selma.mapper(SourcedBeanMapper.class, dataSource);
 
         AddressOutWithDataSource res = mapper.asAddressOut(in);
 
@@ -74,7 +74,7 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
         in.getCity().setPopulation(13371337);
         DataSource dataSource = new DataSource();
 
-        CustomSourcedBeanMapper mapper = Selma.getMapper(CustomSourcedBeanMapper.class, dataSource);
+        CustomSourcedBeanMapper mapper = Selma.mapper(CustomSourcedBeanMapper.class, dataSource);
 
         AddressOutWithDataSource res = mapper.asAddressOut(in);
 

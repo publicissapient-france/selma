@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Selma {
 
+
     private static final Map<String, Object> mappers = new ConcurrentHashMap<String, Object>();
 
     /**
@@ -51,7 +53,7 @@ public class Selma {
      * @throws IllegalArgumentException If for some reason the Mapper class can not be loaded or instantiated
      */
     public static <T> T mapper(Class<T> mapperClass) throws IllegalArgumentException {
-         return getMapper(mapperClass, null);
+         return getMapper(mapperClass, null, null);
     }
 
     /**
@@ -62,7 +64,7 @@ public class Selma {
      */
     public static <T,V> T mapper(Class<T> mapperClass, V source) {
 
-        return getMapper(mapperClass,source);
+        return getMapper(mapperClass,source, null);
     }
 
     /**
@@ -73,7 +75,19 @@ public class Selma {
      */
     public static <T> T getMapper(Class<T> mapperClass) {
 
-        return getMapper(mapperClass,null);
+        return getMapper(mapperClass,null, null);
+    }
+
+    /**
+     * Retrieve or build the mapper generated for the given interface
+     * @param mapperClass   The Mapper interface class
+     * @param <T>           The Mapper interface itself
+     * @param <V>           The custom mapper instance to be used by this mapper
+     * @return              Builder for Mapper
+     */
+    public static <T,V> T getMapperWithCustom(Class<T> mapperClass, V custom) {
+
+        return getMapper(mapperClass,null, custom);
     }
 
     /**
@@ -86,28 +100,58 @@ public class Selma {
      *
      * @throws IllegalArgumentException If for some reason the Mapper class can not be loaded or instantiated
      */
-    public synchronized static <T,V> T getMapper(Class<T> mapperClass, V source) throws IllegalArgumentException {
+    public synchronized static <T,V,U> T getMapper(Class<T> mapperClass, V source, U customMapper ) throws IllegalArgumentException {
 
-        final String mapperKey = String.format("%s-%s", mapperClass.getCanonicalName(), source);
+        final String mapperKey = String.format("%s-%s-%s", mapperClass.getCanonicalName(), source, customMapper);
 
-        if (!mappers.containsKey(mapperKey)) {
-            // First look for the context class loader
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+                    if (!mappers.containsKey(mapperKey)) {
+                        // First look for the context class loader
+                        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-            if ( classLoader == null ) {
-                classLoader = Selma.class.getClassLoader();
-            }
+                        if ( classLoader == null ) {
+                            classLoader = Selma.class.getClassLoader();
+                        }
 
-            @SuppressWarnings("unchecked")
-            T mapperInstance = null;
-            try {
+                        @SuppressWarnings("unchecked")
+                        T mapperInstance = null;
+                        try {
 
-                Class<T> mapperImpl  = (Class<T>) classLoader.loadClass(mapperClass.getCanonicalName() + SelmaConstants.MAPPER_CLASS_SUFFIX);
-                if(source != null){
-                     mapperInstance =  mapperImpl.getDeclaredConstructor(source.getClass()).newInstance(source);
-                } else {
-                    mapperInstance = mapperImpl.newInstance();
-                }
+                            Class<T> mapperImpl  = (Class<T>) classLoader.loadClass(mapperClass.getCanonicalName() + SelmaConstants.MAPPER_CLASS_SUFFIX);
+                            if(source != null){
+                                mapperInstance =  mapperImpl.getDeclaredConstructor(source.getClass()).newInstance(source);
+                            } else {
+                                mapperInstance = mapperImpl.newInstance();
+                             }
+
+                            if (customMapper != null) {
+                                Class<?> customMapperClass = customMapper.getClass();
+                                Method method = null;
+                                try {
+                                    method = mapperImpl.getMethod("setCustomMapper" + customMapperClass.getSimpleName(), customMapperClass);
+                                } catch (NoSuchMethodException e) {
+                                    e.printStackTrace();
+                                } catch (SecurityException e) {
+                                    e.printStackTrace();
+                                }
+                                Class<?> classe = customMapperClass;
+
+                                while (method == null && !Object.class.equals(classe)){ // Iterate over super classes to find the matching custom mapper in case it is a subclass
+                                    classe = classe.getSuperclass();
+
+                                    try {
+                                        method = mapperImpl.getMethod("setCustomMapper" + classe.getSimpleName(), classe);
+                                    } catch (NoSuchMethodException e) {
+                                        e.printStackTrace();
+                                    } catch (SecurityException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                if (method != null){
+                                    method.invoke(mapperInstance, customMapper);
+                                } else {
+                                    throw new IllegalArgumentException("given a CustomMapper of type " + customMapperClass.getSimpleName()+ " while setter does not exist please fix it");
+                                }
+                            }
             } catch (InstantiationException e) {
                 throw new IllegalArgumentException(String.format("Instantiation of Mapper class %s failed : %s", mapperClass.getName(), e.getMessage()), e);
             } catch (IllegalAccessException e) {

@@ -309,7 +309,14 @@ public class MapperClassGenerator {
             } else {
                 writer.emitEmptyLine();
                 writer.emitJavadoc("This field is used for custom Mapping");
-                writer.emitField(customMaperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMaperField.getSimpleName().toString()), EnumSet.of(PRIVATE, FINAL));
+                writer.emitField(customMaperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMaperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
+
+                writer.emitEmptyLine();
+                writer.emitJavadoc("Custom Mapper setter for " + field);
+                writer.beginMethod("void", "setCustomMapper" + customMaperField.getSimpleName(), EnumSet.of(PUBLIC, FINAL), customMaperField.asType().toString(), "mapper");
+                writer.emitStatement("this.%s = mapper", field);
+                writer.endMethod();
+                writer.emitEmptyLine();
             }
         }
     }

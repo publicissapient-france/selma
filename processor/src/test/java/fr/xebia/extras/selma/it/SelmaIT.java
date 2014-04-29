@@ -57,8 +57,8 @@ public class SelmaIT extends IntegrationTestBase {
 
 
         DataSource dataSource = new DataSource();
-        SelmaSourcedTestMapper mapper = Selma.getMapper(SelmaSourcedTestMapper.class, dataSource);
-        Assert.assertTrue(mapper == Selma.getMapper(SelmaSourcedTestMapper.class, dataSource));
+        SelmaSourcedTestMapper mapper = Selma.mapper(SelmaSourcedTestMapper.class, dataSource);
+        Assert.assertTrue(mapper == Selma.mapper(SelmaSourcedTestMapper.class, dataSource));
 
     }
 
@@ -67,8 +67,8 @@ public class SelmaIT extends IntegrationTestBase {
     public void xmapper_should_raise_illegal_given_not_fitting_source(){
 
         CityOut dataSource = new CityOut();
-        SelmaSourcedTestMapper mapper = Selma.getMapper(SelmaSourcedTestMapper.class, dataSource);
-        Assert.assertTrue(mapper == Selma.getMapper(SelmaSourcedTestMapper.class, dataSource));
+        SelmaSourcedTestMapper mapper = Selma.mapper(SelmaSourcedTestMapper.class, dataSource);
+        Assert.assertTrue(mapper == Selma.mapper(SelmaSourcedTestMapper.class, dataSource));
     }
 
 

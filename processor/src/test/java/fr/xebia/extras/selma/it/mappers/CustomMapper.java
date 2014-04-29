@@ -28,6 +28,7 @@ import fr.xebia.extras.selma.beans.DataSource;
 public class CustomMapper {
 
     private final DataSource dataSource;
+    private String message = " Mapped by CustomMapper";
 
     public CustomMapper(DataSource dataSource){
         this.dataSource = dataSource;
@@ -37,9 +38,14 @@ public class CustomMapper {
         dataSource = null;
     }
 
+    public CustomMapper(String message){
+        this.message = message;
+        dataSource = null;
+    }
+
     public CityOut mapCity(CityIn cityIn){
         CityOut cityOut = new CityOut();
-        cityOut.setName(cityIn.getName() + " Mapped by CustomMapper");
+        cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
         cityOut.setPopulation(cityIn.getPopulation() + 10000);
         return cityOut;
@@ -47,7 +53,7 @@ public class CustomMapper {
 
     public CityOutWithDataSource asCityOut(CityIn cityIn){
         CityOutWithDataSource cityOut = new CityOutWithDataSource(dataSource);
-        cityOut.setName(cityIn.getName() + " Mapped by CustomMapper");
+        cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
         cityOut.setPopulation(cityIn.getPopulation() + 10000);
         return cityOut;
