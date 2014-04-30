@@ -16,19 +16,30 @@
  */
 package fr.xebia.extras.selma.it;
 
+import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.EnumIn;
 import fr.xebia.extras.selma.beans.EnumOut;
 import fr.xebia.extras.selma.it.mappers.SimpleMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import fr.xebia.extras.selma.Selma;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -39,28 +50,28 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     public static final String COUCOU = "coucou";
 
     @Test
-    public void mapper_should_convert_string_to_new_string() throws Exception{
+    public void mapper_should_copy_string_reference() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
         String res = mapper.convert(COUCOU);
 
         assertEquals(COUCOU, res);
-        assertFalse(COUCOU == res);
+        assertTrue(COUCOU == res);
     }
 
     @Test
-    public void mapper_should_convert_null_string_to_null() throws Exception{
+    public void mapper_should_convert_null_string_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
-        String res = mapper.convert((String)null);
+        String res = mapper.convert((String) null);
 
         assertNull(res);
     }
 
     @Test
-    public void mapper_should_convert_int_to_int() throws Exception{
+    public void mapper_should_convert_int_to_int() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -71,7 +82,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_boolean_to_boolean() throws Exception{
+    public void mapper_should_convert_boolean_to_boolean() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -81,17 +92,17 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_byte_to_byte() throws Exception{
+    public void mapper_should_convert_byte_to_byte() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
-        byte res = mapper.convert(((byte)'c'));
+        byte res = mapper.convert(((byte) 'c'));
 
-        assertEquals(((byte)'c'), res);
+        assertEquals(((byte) 'c'), res);
     }
 
     @Test
-    public void mapper_should_convert_char_to_char() throws Exception{
+    public void mapper_should_convert_char_to_char() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -101,7 +112,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_char_array_to_new_char_array() throws Exception{
+    public void mapper_should_convert_char_array_to_new_char_array() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -113,7 +124,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_null_char_array_to_null() throws Exception{
+    public void mapper_should_convert_null_char_array_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -124,19 +135,19 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_boxed_array_to_new_boxed_array() throws Exception{
+    public void mapper_should_convert_boxed_array_to_new_boxed_array() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
         Character[] in = {'c', null, 'b'};
         Character[] res = mapper.convert(in);
 
-        assertArrayEquals(in,res);
+        assertArrayEquals(in, res);
     }
 
 
     @Test
-    public void mapper_should_convert_null_boxed_array_to_null() throws Exception{
+    public void mapper_should_convert_null_boxed_array_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -148,19 +159,19 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_string_array_to_new_string_array() throws Exception{
+    public void mapper_should_convert_string_array_to_new_string_array() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
         String[] in = {"coucou", null, "cocu"};
         String[] res = mapper.convert(in);
 
-        assertArrayEquals(in,res);
+        assertArrayEquals(in, res);
     }
 
 
     @Test
-    public void mapper_should_convert_null_string_array_to_null() throws Exception{
+    public void mapper_should_convert_null_string_array_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -172,7 +183,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_boxed_type_to_boxed_type() throws Exception{
+    public void mapper_should_copy_boxed_type_reference() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -180,11 +191,11 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
         Integer res = mapper.convert(in);
 
         assertEquals(in, res);
-        assertTrue(in != res);
+        assertTrue(in == res);
     }
 
     @Test
-    public void mapper_should_convert_BigInt_to_new_BigInt() throws Exception{
+    public void mapper_should_copy_BigInt_reference() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -192,11 +203,11 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
         BigInteger res = mapper.convertBigInt(in);
 
         assertEquals(in, res);
-        assertTrue(in != res);
+        assertTrue(in == res);
     }
 
     @Test
-    public void mapper_should_convert_Date_to_new_Date() throws Exception{
+    public void mapper_should_convert_Date_to_new_Date() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -208,7 +219,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_boxed_type_null_to_null() throws Exception{
+    public void mapper_should_convert_boxed_type_null_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -219,7 +230,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_List_String_to_list_String() throws Exception{
+    public void mapper_should_convert_List_String_to_list_String() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -234,7 +245,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_HashSet_String_to_HashSet_String() throws Exception{
+    public void mapper_should_convert_HashSet_String_to_HashSet_String() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -249,7 +260,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_Set_String_to_HashSet_String() throws Exception{
+    public void mapper_should_convert_Set_String_to_HashSet_String() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -263,7 +274,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_TreeSet_String_to_Set_String() throws Exception{
+    public void mapper_should_convert_TreeSet_String_to_Set_String() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -277,7 +288,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_HashSet_null_to_null() throws Exception{
+    public void mapper_should_convert_HashSet_null_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -288,7 +299,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_map_String_to_map_String() throws Exception{
+    public void mapper_should_convert_map_String_to_map_String() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -303,13 +314,13 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_map_Date_to_map_Date() throws Exception{
+    public void mapper_should_convert_map_Date_to_map_Date() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
         TreeMap<String, Date> in = new TreeMap<String, Date>();
         in.put("coucou", new Date());
-        in.put("NoNull", new Date (0));
+        in.put("NoNull", new Date(0));
         in.put("coco", null);
         in.put("ddd", new Date(61223555));
         Map<String, Date> res = mapper.convertStringToDateMap(in);
@@ -318,13 +329,13 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_map_BigInt_to_map_BigInt() throws Exception{
+    public void mapper_should_convert_map_BigInt_to_map_BigInt() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
         Map<BigInteger, Date> in = new LinkedHashMap<BigInteger, Date>();
         in.put(new BigInteger("1234567890987654321"), new Date());
-        in.put(new BigInteger("54321234567890"), new Date (0));
+        in.put(new BigInteger("54321234567890"), new Date(0));
         in.put(new BigInteger("98765432345678987654"), null);
         in.put(new BigInteger("767876567898765434890"), new Date(61223555));
         Map<BigInteger, Date> res = mapper.convertBigIntToDateMap(in);
@@ -333,7 +344,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_map_null_to_null() throws Exception{
+    public void mapper_should_convert_map_null_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -345,7 +356,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_enum_to_enum() throws Exception{
+    public void mapper_should_convert_enum_to_enum() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -356,7 +367,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_enum_null_to_null() throws Exception{
+    public void mapper_should_convert_enum_null_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -368,7 +379,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void mapper_should_convert_twodim_array_to_multidim_array() throws Exception{
+    public void mapper_should_convert_twodim_array_to_multidim_array() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -379,7 +390,7 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_twodim_array_null_to_null() throws Exception{
+    public void mapper_should_convert_twodim_array_null_to_null() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
@@ -390,26 +401,26 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void mapper_should_convert_2_dim_array_to_2_dim_array() throws Exception{
+    public void mapper_should_convert_2_dim_array_to_2_dim_array() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
-        String[][] in = new String [][] {null, {null}, {"un", "deux", "trois"}};
+        String[][] in = new String[][]{null, {null}, {"un", "deux", "trois"}};
         String[][] res = mapper.convert(in);
 
         assertArrayEquals(in, res);
     }
 
     @Test
-    public void mapper_should_convert_three_dim_array_to_three_dim_array() throws Exception{
+    public void mapper_should_convert_three_dim_array_to_three_dim_array() throws Exception {
 
         SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
 
-        String[][][] in = new String[][][]{ null, {null},
-                {{ null}},
-                {{"un", "deux"} },
+        String[][][] in = new String[][][]{null, {null},
+                {{null}},
+                {{"un", "deux"}},
                 {{"un"}, {"un", "deux"}, {"un", "deux", "trois"}},
-                {{"coucou", null, "coucou"}, {"tutu", "bad","tata"}},
+                {{"coucou", null, "coucou"}, {"tutu", "bad", "tata"}},
                 {{"coucou", null, "coucou"}, {"coucou", null, "coucou"}},
                 {{"BUbu", null, "BUbu"}, {"POUPOU", null, "POUPOU"}}};
         String[][][] res = mapper.convert(in);
