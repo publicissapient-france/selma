@@ -118,7 +118,7 @@ public abstract class MappingBuilder {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
-                        root.body(vars.setOrAssign(String.format("new %s(%%s)", inOutType.out())));
+                        root.body(vars.setOrAssign("%s"));
                         return root.body;
                     }
                 };
@@ -166,7 +166,7 @@ public abstract class MappingBuilder {
                 return new MappingBuilder() {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
-                        root.body(vars.setOrAssign("new java.math.BigInteger(%s.toByteArray())"));
+                        root.body(vars.setOrAssign("%s"));
                         return root.body;
                     }
                 };
