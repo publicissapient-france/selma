@@ -1,3 +1,8 @@
+0.5 -
+* Custom Mapper can now be constructed by user
+* Do not clone immutable objects
+
+
 0.4 - 4/1/2014
 * @Field now supported on a per method basis
 * Improve per method configuration segregation
