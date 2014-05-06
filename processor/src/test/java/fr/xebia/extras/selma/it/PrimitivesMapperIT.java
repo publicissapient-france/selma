@@ -25,21 +25,9 @@ import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -201,6 +189,18 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
         BigInteger in = new BigInteger("145654326543676");
         BigInteger res = mapper.convertBigInt(in);
+
+        assertEquals(in, res);
+        assertTrue(in == res);
+    }
+
+    @Test
+    public void mapper_should_copy_UUID_reference() throws Exception {
+
+        SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
+
+        UUID in = UUID.randomUUID();
+        UUID res = mapper.convertUUID(in);
 
         assertEquals(in, res);
         assertTrue(in == res);

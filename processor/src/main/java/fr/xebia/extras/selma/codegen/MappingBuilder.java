@@ -181,6 +181,28 @@ public abstract class MappingBuilder {
             }
         });
 
+        // Map UUID
+        mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
+            @Override
+            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder() {
+                    @Override
+                    MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                        root.body(vars.setOrAssign("%s"));
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override
+            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                if (super.match(context, inOutType)) {
+                    return UUID.class.getName().equals(inOutType.in().toString());
+                }
+                return false;
+            }
+        });
+
         // Map collections
         mappingSpecificationList.add(new MappingSpecification() {
             @Override

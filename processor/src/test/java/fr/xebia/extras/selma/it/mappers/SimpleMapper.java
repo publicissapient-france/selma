@@ -16,9 +16,9 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
+import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.EnumIn;
 import fr.xebia.extras.selma.beans.EnumOut;
-import fr.xebia.extras.selma.Mapper;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -70,4 +70,6 @@ public interface SimpleMapper {
     BigInteger convertBigInt(BigInteger in);
 
     Date convertDate(Date in);
+
+    UUID convertUUID(UUID in);
 }
