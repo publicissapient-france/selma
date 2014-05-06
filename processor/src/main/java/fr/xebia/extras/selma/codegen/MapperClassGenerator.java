@@ -64,7 +64,7 @@ public class MapperClassGenerator {
         AnnotationWrapper mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
         AnnotationWrapper ignoreFields = AnnotationWrapper.buildFor(context, element, IgnoreFields.class);
         configuration = SourceConfiguration.buildFrom(mapper, ignoreFields);
-        if (registry.contains(origClasse)){
+        if (registry.contains(origClasse)) {
             return;
         }
 
@@ -78,6 +78,7 @@ public class MapperClassGenerator {
 
     /**
      * Here we collects custom field name mapping
+     *
      * @param mapper
      */
     private void collectFields(AnnotationWrapper mapper) {
@@ -114,7 +115,7 @@ public class MapperClassGenerator {
                         context.info(method, "Found an elligible custom mapping method ...");
 
 
-                        if (methodWrapper.isCustomMapper()){
+                        if (methodWrapper.isCustomMapper()) {
                             mappingRegistry.pushCustomMapper(potentialMapper, methodWrapper);
                         } else {
                             mappingRegistry.pushMappingInterceptor(potentialMapper, methodWrapper);
@@ -126,6 +127,18 @@ public class MapperClassGenerator {
                 if (mappingMethodCount == 0) {
                     context.error(element, "No valid mapping method found in custom selma class %s\\n A custom mapping method is public static returns a type not void and takes two parameter (bean to convert and factory for instantiation).", customMapper);
                 } else {
+
+                    List<ExecutableElement> constructors = ElementFilter.constructorsIn(element.getEnclosedElements());
+                    int defaultConstructorCount = 0;
+                    for (ExecutableElement constructor : constructors) {
+                        if (constructor.getParameters().size() == 0 && constructor.getModifiers().contains(PUBLIC)) {
+                            defaultConstructorCount++;
+                        }
+                    }
+                    if (defaultConstructorCount <= 0) {
+                        context.error(element, "No default public constructor found in custom mapping class %s\\n Please add one", customMapper);
+                    }
+
                     // Here we collect the name of the field to create in the Mapper generated class
                     customMaperFields.add(element);
                 }
@@ -157,7 +170,7 @@ public class MapperClassGenerator {
             res = false;
         }
 
-        if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor() ){
+        if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor()) {
             context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());
             res = false;
         }
@@ -197,7 +210,7 @@ public class MapperClassGenerator {
             AnnotationWrapper enumMapper = AnnotationWrapper.buildFor(context, methodWrapper.element(), EnumMapper.class);
 
             // when mapping is used on a method mapping one enum to another we can use these values
-            if (!inOutType.areEnums()){
+            if (!inOutType.areEnums()) {
 
                 mappingRegistry.pushCustomEnumMapper(enumMapper);
             } else {

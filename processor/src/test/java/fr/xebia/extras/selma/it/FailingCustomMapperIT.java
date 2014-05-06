@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.it;
 import fr.xebia.extras.selma.it.mappers.BadCustomMapper;
 import fr.xebia.extras.selma.it.mappers.EmptyCustomMapper;
 import fr.xebia.extras.selma.it.mappers.FailingCustomMapper;
+import fr.xebia.extras.selma.it.mappers.NoDefaultConstructorCustomMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
@@ -26,7 +27,7 @@ import org.junit.Test;
 /**
  * Verifies compilation time validation for CustomMapping
  */
-@Compile(withClasses = {FailingCustomMapper.class, BadCustomMapper.class, EmptyCustomMapper.class}, shouldFail = true)
+@Compile(withClasses = {FailingCustomMapper.class, BadCustomMapper.class, EmptyCustomMapper.class, NoDefaultConstructorCustomMapper.class}, shouldFail = true)
 public class FailingCustomMapperIT extends IntegrationTestBase {
 
     @Test
@@ -71,6 +72,12 @@ public class FailingCustomMapperIT extends IntegrationTestBase {
 
         assertCompilationError(BadCustomMapper.class, "public abstract class BadCustomMapper {", "No valid mapping method found in custom selma class ");
         assertCompilationWarning(BadCustomMapper.class, "public abstract CityOut abstractMethod(CityIn in);", "Custom mapping method can not be *abstract* (Fix modifiers of the method) on abstractMethod");
+    }
+
+    @Test
+    public void should_raise_compilation_error_when_no_default_constructor_is_present() throws Exception {
+
+        assertCompilationError(NoDefaultConstructorCustomMapper.class, "public class NoDefaultConstructorCustomMapper {", "No default public constructor found in custom mapping class");
     }
 
 
