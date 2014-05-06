@@ -42,16 +42,16 @@ public class InOutType {
 
         InOutType inOutType = (InOutType) o;
 
-        if (!in.equals(inOutType.in)) return false;
-        if (!out.equals(inOutType.out)) return false;
+        if (!MapperProcessor.types.isSameType(in, inOutType.in)) return false;
+        if (!MapperProcessor.types.isSameType(out, inOutType.out)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = in.hashCode();
-        result = 31 * result + out.hashCode();
+        int result = in.toString().hashCode();
+        result = 31 * result + out.toString().hashCode();
         return result;
     }
 

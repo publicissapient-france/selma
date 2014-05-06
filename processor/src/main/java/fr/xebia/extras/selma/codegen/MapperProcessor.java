@@ -21,11 +21,11 @@ import fr.xebia.extras.selma.Mapper;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,6 +41,8 @@ public final class MapperProcessor extends AbstractProcessor {
 
     private final HashMap<String, List<ExecutableElement>> remainingMapperTypes = new HashMap<String, List<ExecutableElement>>();
 
+    static Types types;
+
 
     protected static final Set<String> exclusions = new HashSet<String>(Arrays.asList("equals", "getClass", "hashCode", "toString", "notify", "notifyAll", "wait", "clone", "finalize"));
 
@@ -51,6 +53,7 @@ public final class MapperProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        types = processingEnv.getTypeUtils();
         populateAllMappers(roundEnv);
 
         try {
