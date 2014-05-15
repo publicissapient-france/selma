@@ -16,7 +16,10 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -38,12 +41,12 @@ public class SourceConfiguration {
 
         res.ignoreMissingProperties(mapper.getAsBoolean("ignoreMissingProperties"));
         res.ignoreNotSupported(mapper.getAsBoolean("ignoreNotSupported"));
-        res.finalMappers(mapper.getAsBoolean("finalMappers"));
-        res.sourceClass(mapper.getAsStrings("withSource"));
+        res.finalMappers(mapper.getAsBoolean("withFinalMappers"));
+        res.sourceClass(mapper.getAsStrings("withSources"));
         if(ignoreFields != null){
             res.ignoredFields(ignoreFields.getAsStrings("value"));
         } else {
-            res.ignoredFields(Collections.EMPTY_LIST);
+            res.ignoredFields(Collections.<String>emptyList());
         }
 
         return res;
@@ -88,6 +91,6 @@ public class SourceConfiguration {
     }
 
     public List<String> getSourceClass() {
-        return sourceClass != null ? sourceClass : Collections.EMPTY_LIST;
+        return sourceClass != null ? sourceClass : Collections.<String>emptyList();
     }
 }

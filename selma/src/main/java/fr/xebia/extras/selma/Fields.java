@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
 /**
  * Define the list of custom field to field mapping at method level
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
 public @interface Fields {
 
     /**
-     * Value Should contain the list of field
+     * Value Should contain the list of @field
      */
     Field[] value();
 

@@ -16,15 +16,15 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
+import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
-import fr.xebia.extras.selma.Mapper;
 
 /**
  *
  *
  */
-@Mapper(withMapper = CustomMapper.class, ignoreMissingProperties = true)
+@Mapper(withCustom = CustomMapper.class, ignoreMissingProperties = true)
 public interface CustomMapperSupport {
 
     PersonOut mapWithCustom(PersonIn in);

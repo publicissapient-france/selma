@@ -51,7 +51,7 @@ public @interface Mapper {
      *
      * These methods will be called to handle custom mapping of in bean to the OutType
      */
-    Class<?>[] withMapper() default {};
+    Class<?>[] withCustom() default {};
 
     /**
      * Add one or more class for which instance should be passed to the out bean constructor.
@@ -60,22 +60,19 @@ public @interface Mapper {
      *
      * @return
      */
-    Class<?>[] withSource() default {};
+    Class<?>[] withSources() default {};
 
     /**
      * Add one or more custom configuration for enum to enum mapping with default values.
      */
-    EnumMapper[] enums() default {};
+    EnumMapper[] withEnums() default {};
 
-    /**
-     * Add one or more custom fieldname based mapping. By default Selma will map fields with same name.
-     */
-    Field[] fields() default {};
 
     /**
      * For test purpose, this allow to disable use of *final* modifier for generated mappers classes
+     * TODO prefix using 'with
      * @return
      */
-    boolean finalMappers() default true;
+    boolean withFinalMappers() default true;
 
 }

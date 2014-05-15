@@ -19,17 +19,14 @@ package fr.xebia.extras.selma.it.mappers;
 import fr.xebia.extras.selma.Field;
 import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
 import fr.xebia.extras.selma.beans.SimplePerson;
 import fr.xebia.extras.selma.beans.SimplePersonDto;
 
 /**
  *
  */
-@Mapper(fields={
-        @Field({"nom", "lastname"}), @Field({"prenom", "firstname"})
-})
+@Mapper
+@Fields({@Field({"nom", "lastname"}), @Field({"prenom", "firstname"})})
 public interface CustomFieldMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in);

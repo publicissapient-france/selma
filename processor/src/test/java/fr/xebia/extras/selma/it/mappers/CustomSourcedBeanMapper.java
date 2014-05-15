@@ -24,7 +24,7 @@ import fr.xebia.extras.selma.beans.DataSource;
 /**
  *
  */
-@Mapper(withMapper = CustomMapper.class, withSource = DataSource.class)
+@Mapper(withCustom = CustomMapper.class, withSources = DataSource.class)
 public interface CustomSourcedBeanMapper {
 
     AddressOutWithDataSource asAddressOut(AddressIn in);

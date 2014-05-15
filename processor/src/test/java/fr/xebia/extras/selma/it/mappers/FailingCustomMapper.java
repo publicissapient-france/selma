@@ -23,7 +23,7 @@ import fr.xebia.extras.selma.beans.AddressOut;
 /**
  *
  */
-@Mapper(withMapper = {BadCustomMapper.class, EmptyCustomMapper.class, NoDefaultConstructorCustomMapper.class})
+@Mapper(withCustom = {BadCustomMapper.class, EmptyCustomMapper.class, NoDefaultConstructorCustomMapper.class})
 public interface FailingCustomMapper {
 
     AddressOut asAddressOut(AddressIn in);

@@ -21,13 +21,11 @@ import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.EnumA;
 import fr.xebia.extras.selma.beans.EnumB;
 
-import static fr.xebia.extras.selma.beans.EnumB.*;
-
 /**
  * Created by slemesle on 12/03/2014.
  */
 
-@Mapper(enums = @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"))
+@Mapper(withEnums = @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"))
 public interface CustomClassEnumMapper {
 
     EnumB asEnumB(EnumA in);

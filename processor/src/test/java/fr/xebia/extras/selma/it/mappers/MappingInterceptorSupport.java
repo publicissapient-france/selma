@@ -24,7 +24,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
  *
  *
  */
-@Mapper(withMapper = MappingInterceptor.class, ignoreMissingProperties = true)
+@Mapper(withCustom = MappingInterceptor.class, ignoreMissingProperties = true)
 public interface MappingInterceptorSupport {
 
     PersonOut mapWithInterceptor(PersonIn in);

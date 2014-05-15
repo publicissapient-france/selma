@@ -21,7 +21,7 @@ import fr.xebia.extras.selma.Mapper;
 /**
  *
  */
-@Mapper(ignoreMissingProperties = true, withMapper = CustomMappings.class)
+@Mapper(ignoreMissingProperties = true, withCustom = CustomMappings.class)
 public interface Order2OrderDto {
 
     OrderDto to(Order in);

@@ -37,6 +37,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Please notice that Selma holds a cache of the instantiated Mappers, and will maintain them as Singleton.
  *
+ * TODO Provide a nicer way of building maooer
+ *
  */
 public class Selma {
 

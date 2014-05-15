@@ -17,10 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.EnumMapper;
-import fr.xebia.extras.selma.IgnoreFields;
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.SelmaConstants;
+import fr.xebia.extras.selma.*;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
@@ -62,6 +59,7 @@ public class MapperClassGenerator {
         element = context.elements.getTypeElement(classe);
 
         AnnotationWrapper mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
+        AnnotationWrapper fields = AnnotationWrapper.buildFor(context, element, Fields.class);
         AnnotationWrapper ignoreFields = AnnotationWrapper.buildFor(context, element, IgnoreFields.class);
         configuration = SourceConfiguration.buildFrom(mapper, ignoreFields);
         if (registry.contains(origClasse)) {
@@ -71,7 +69,9 @@ public class MapperClassGenerator {
         // Here we collect custom mappers
         collectCustom(mapper);
         collectEnums(mapper);
-        collectFields(mapper);
+        if (fields != null) {
+            collectFields(fields);
+        }
 
         validateTypes();
     }
@@ -79,10 +79,11 @@ public class MapperClassGenerator {
     /**
      * Here we collects custom field name mapping
      *
-     * @param mapper
+     * @param fields
      */
-    private void collectFields(AnnotationWrapper mapper) {
-        for (AnnotationWrapper field : mapper.getAsAnnotationWrapper("fields")) {
+    private void collectFields(AnnotationWrapper fields) {
+
+        for (AnnotationWrapper field : fields.getAsAnnotationWrapper("value")) {
             mappingRegistry.pushFieldMap(element, field);
         }
 
@@ -90,7 +91,7 @@ public class MapperClassGenerator {
 
     private void collectEnums(AnnotationWrapper mapper) {
 
-        for (AnnotationWrapper enumMapper : mapper.getAsAnnotationWrapper("enums")) {
+        for (AnnotationWrapper enumMapper : mapper.getAsAnnotationWrapper("withEnums")) {
             mappingRegistry.pushCustomEnumMapper(enumMapper);
         }
     }
@@ -98,10 +99,10 @@ public class MapperClassGenerator {
     private void collectCustom(AnnotationWrapper annotationWrapper) {
 
 
-        if (annotationWrapper.getAsStrings("withMapper").size() > 0) {
+        if (annotationWrapper.getAsStrings("withCustom").size() > 0) {
             int mappingMethodCount = 0;
 
-            for (String customMapper : annotationWrapper.getAsStrings("withMapper")) {
+            for (String customMapper : annotationWrapper.getAsStrings("withCustom")) {
 
                 final TypeElement element = context.elements.getTypeElement(customMapper.replace(".class", ""));
 

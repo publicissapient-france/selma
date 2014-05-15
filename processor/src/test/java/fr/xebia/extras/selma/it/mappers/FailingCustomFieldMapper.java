@@ -25,7 +25,8 @@ import fr.xebia.extras.selma.beans.SimplePersonDto;
 /**
  *
  */
-@Mapper(fields={
+@Mapper
+@Fields({
         @Field({"nom", "lastname"}), @Field({"prenom", "firstname", "ddd"})
 })
 public interface FailingCustomFieldMapper {
