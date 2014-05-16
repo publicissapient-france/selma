@@ -1,6 +1,10 @@
-0.5 -
-* Custom Mapper can now be constructed by user
+0.5 - 5/16/2014
+* Custom Mapper can now be constructed by user and injected to the mapper
 * Do not clone immutable objects
+* Refactor @Mapper to use with prefix and remove fields
+* Use @Fields on top of a mapper class to be consistent with method scope
+* Rename withMapper to withCustom wich is way more expressive
+* TypeElement comparison moved to Types.isSameType(...)
 
 
 0.4 - 4/1/2014
