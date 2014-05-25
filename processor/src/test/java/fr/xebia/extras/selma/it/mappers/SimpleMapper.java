@@ -63,13 +63,15 @@ public interface SimpleMapper {
 
     Set<String> convertLnkedHashSetToSet(LinkedHashSet<String> in);
 
-    HashMap<String,Date> convertStringToDateMap(TreeMap<String, Date> in);
+    HashMap<String, Date> convertStringToDateMap(TreeMap<String, Date> in);
 
-    Map<BigInteger,Date> convertBigIntToDateMap(Map<BigInteger, Date> in);
+    Map<BigInteger, Date> convertBigIntToDateMap(Map<BigInteger, Date> in);
 
     BigInteger convertBigInt(BigInteger in);
 
     Date convertDate(Date in);
 
     UUID convertUUID(UUID in);
+
+    int convertIntegerToInt(Integer in);
 }

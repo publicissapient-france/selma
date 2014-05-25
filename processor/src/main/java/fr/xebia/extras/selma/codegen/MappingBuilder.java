@@ -34,6 +34,7 @@ import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 public abstract class MappingBuilder {
 
     private static final List<MappingSpecification> mappingSpecificationList = new LinkedList<MappingSpecification>();
+    private boolean nullSafe = false;
 
     private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
         boolean res = false;
@@ -52,7 +53,7 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new MappingSpecification() {
             @Override
             MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder() {
+                return new MappingBuilder(true) {
                     @Override
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
@@ -83,7 +84,7 @@ public abstract class MappingBuilder {
                 TypeElement typeElement = inOutType.inAsTypeElement();
                 final List<String> enumValues = collectEnumValues(typeElement);
 
-                return new MappingBuilder() {
+                return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                         // If we are in a nested context we should call an enum mapping method
@@ -114,7 +115,7 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new MappingSpecification() {
             @Override
             MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder() {
+                return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
@@ -163,7 +164,7 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
             @Override
             MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder() {
+                return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                         root.body(vars.setOrAssign("%s"));
@@ -185,7 +186,7 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
             @Override
             MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder() {
+                return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                         root.body(vars.setOrAssign("%s"));
@@ -380,6 +381,11 @@ public abstract class MappingBuilder {
         this.root = blank();
     }
 
+    private MappingBuilder(boolean nullSafe) {
+        this.nullSafe = nullSafe;
+        this.root = blank();
+    }
+
     private static Map.Entry<TypeMirror, Integer> getArrayDimensionsAndType(final ArrayType arrayType) {
         int res = 1;
         ArrayType type = arrayType;
@@ -404,7 +410,7 @@ public abstract class MappingBuilder {
 
         // Found a nested bean ?
         if (res == null && inOutType.areDeclared() && context.depth > 0) {
-            res = new MappingBuilder() {
+            res = new MappingBuilder(true) {
                 @Override
                 MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                     String mappingMethod = context.mappingMethod(inOutType);
@@ -496,7 +502,7 @@ public abstract class MappingBuilder {
     public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
         root = blank();
         MappingSourceNode ptr = buildNodes(context, vars);
-        if (context.depth > 0 && !vars.inTypeIsPrime()) {
+        if (context.depth > 0 && !nullSafe) {
             // working inside a bean
             root = notNullInField(vars);
             root.body(ptr);

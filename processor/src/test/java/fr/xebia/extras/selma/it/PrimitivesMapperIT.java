@@ -69,6 +69,21 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
     }
 
 
+    int defaultInt;
+
+    @Test
+    public void mapper_should_convert_integer_to_int() throws Exception {
+
+        SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
+
+        int res = mapper.convertIntegerToInt(new Integer(3));
+        assertEquals(3, res);
+
+        res = mapper.convertIntegerToInt(null);
+        assertEquals(defaultInt, res);
+    }
+
+
     @Test
     public void mapper_should_convert_boolean_to_boolean() throws Exception {
 
