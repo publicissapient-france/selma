@@ -20,6 +20,7 @@ import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.EnumIn;
 import fr.xebia.extras.selma.beans.EnumOut;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -74,4 +75,6 @@ public interface SimpleMapper {
     UUID convertUUID(UUID in);
 
     int convertIntegerToInt(Integer in);
+
+    BigDecimal convertBigDecimal(BigDecimal in);
 }

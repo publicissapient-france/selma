@@ -23,6 +23,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.*;
 import javax.lang.model.util.ElementFilter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -160,7 +161,7 @@ public abstract class MappingBuilder {
             }
         });
 
-        // Map BigInteger
+        // Map BigInteger / BigDecimal
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
             @Override
             MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
@@ -176,7 +177,8 @@ public abstract class MappingBuilder {
             @Override
             boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 if (super.match(context, inOutType)) {
-                    return BigInteger.class.getName().equals(inOutType.in().toString());
+                    String inType = inOutType.in().toString();
+                    return BigInteger.class.getName().equals(inType) || BigDecimal.class.getName().equals(inType);
                 }
                 return false;
             }

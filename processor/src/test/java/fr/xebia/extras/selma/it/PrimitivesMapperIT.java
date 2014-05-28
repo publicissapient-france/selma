@@ -24,6 +24,7 @@ import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -204,6 +205,18 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
         BigInteger in = new BigInteger("145654326543676");
         BigInteger res = mapper.convertBigInt(in);
+
+        assertEquals(in, res);
+        assertTrue(in == res);
+    }
+
+    @Test
+    public void mapper_should_copy_BigDecimal_reference() throws Exception {
+
+        SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
+
+        BigDecimal in = new BigDecimal("0.145654326543676");
+        BigDecimal res = mapper.convertBigDecimal(in);
 
         assertEquals(in, res);
         assertTrue(in == res);
