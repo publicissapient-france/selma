@@ -77,4 +77,6 @@ public interface SimpleMapper {
     int convertIntegerToInt(Integer in);
 
     BigDecimal convertBigDecimal(BigDecimal in);
+
+    Integer convertIntToInteger(int in);
 }
