@@ -154,10 +154,7 @@ public abstract class MappingBuilder {
 
             @Override
             boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                if (super.match(context, inOutType)) {
-                    return Date.class.getName().equals(inOutType.in().toString());
-                }
-                return false;
+                return super.match(context, inOutType) && Date.class.getName().equals(inOutType.in().toString());
             }
         });
 
@@ -199,10 +196,7 @@ public abstract class MappingBuilder {
 
             @Override
             boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                if (super.match(context, inOutType)) {
-                    return UUID.class.getName().equals(inOutType.in().toString());
-                }
-                return false;
+                return super.match(context, inOutType) && UUID.class.getName().equals(inOutType.in().toString());
             }
         });
 
@@ -396,7 +390,7 @@ public abstract class MappingBuilder {
             type = (ArrayType) type.getComponentType();
         }
 
-        return new AbstractMap.SimpleEntry<TypeMirror, Integer>(type.getComponentType(), new Integer(res));
+        return new AbstractMap.SimpleEntry<TypeMirror, Integer>(type.getComponentType(), res);
     }
 
     public static MappingBuilder getBuilderFor(final MapperGeneratorContext context, final InOutType inOutType) {
@@ -476,7 +470,7 @@ public abstract class MappingBuilder {
     }
 
     public static MappingBuilder newCustomMapper(final InOutType inOutType, final String name) {
-        MappingBuilder res = new MappingBuilder() {
+        return new MappingBuilder() {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
@@ -484,11 +478,10 @@ public abstract class MappingBuilder {
                 return root.body;
             }
         };
-        return res;
     }
 
     public static MappingBuilder newMappingInterceptor(final InOutType inOutType, final String name) {
-        MappingBuilder res = new MappingBuilder() {
+        return new MappingBuilder() {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
@@ -496,7 +489,6 @@ public abstract class MappingBuilder {
                 return root.body;
             }
         };
-        return res;
     }
 
     abstract MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException;
@@ -522,9 +514,9 @@ public abstract class MappingBuilder {
 
     /**
      * Builds a method that match identical items  and use default value otherwise
-     * @param inOutType
-     * @param defaultValue
-     * @return
+     * @param inOutType         in enum to out enum type relation
+     * @param defaultValue      The default value used as out
+     * @return A builder that generates a custom enum using a switch
      */
     public static MappingBuilder newCustomEnumMapper(final InOutType inOutType, final String defaultValue) {
         TypeElement typeElement = inOutType.inAsTypeElement();
@@ -575,6 +567,10 @@ public abstract class MappingBuilder {
         return list;
     }
 
+    public boolean isNullSafe() {
+        return nullSafe;
+    }
+
     static abstract class MappingSpecification {
 
         abstract MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType);
@@ -587,10 +583,7 @@ public abstract class MappingBuilder {
 
         @Override
         boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-            if (!inOutType.differs() && inOutType.areDeclared()) {
-                return true;
-            }
-            return false;
+            return !inOutType.differs() && inOutType.areDeclared();
         }
     }
 }

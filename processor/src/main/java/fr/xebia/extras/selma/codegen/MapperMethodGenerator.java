@@ -22,9 +22,9 @@ import fr.xebia.extras.selma.IgnoreFields;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
@@ -88,52 +88,51 @@ public class MapperMethodGenerator {
 
     private void buildMappingMethod(JavaWriter writer, InOutType inOutType, String name, boolean override) throws IOException {
 
-        MappingSourceNode methodNode = null;
+        boolean isPrimitiveOrImmutable = false;
+        final MappingSourceNode methodRoot;
         if(configuration.isFinalMappers()){
-            methodNode = mapMethod(inOutType.in().toString(), inOutType.out().toString(), name, override);
+            methodRoot = mapMethod(inOutType.in().toString(), inOutType.out().toString(), name, override);
         } else {
-            methodNode = mapMethodNotFinal(inOutType.in().toString(), inOutType.out().toString(), name, override);
+            methodRoot = mapMethodNotFinal(inOutType.in().toString(), inOutType.out().toString(), name, override);
         }
 
-        MappingSourceNode ptrBis = blank(), ptrBisRoot = ptrBis;
-        MappingSourceNode ptr = methodNode;
+        MappingSourceNode ptr = blank(), blankRoot = ptr;
 
-
-        TypeMirror typeElement = inOutType.in();
-
-        ptr = methodNode.body(declareOut(inOutType.out()));
+        MappingSourceNode methodNode = methodRoot.body(declareOut(inOutType.out()));
 
         MappingBuilder mappingBuilder = findBuilderFor(inOutType);
 
         if (mappingBuilder != null) {
 
-            ptrBis = ptrBis.body(mappingBuilder.build(context, new SourceNodeVars().withInOutType(inOutType).withAssign(true)));
+            ptr.body(mappingBuilder.build(context, new SourceNodeVars().withInOutType(inOutType).withAssign(true)));
             generateStack(context);
-
+            // set isPrimitiveOrImmutable so we can skip the null check
+            isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
         } else if (inOutType.areDeclared()) {
-            ptrBis = ptrBis.body(instantiateOut(inOutType.out().toString(), context.newParams()));
+            ptr = ptr.body(instantiateOut(inOutType.out().toString(), context.newParams()));
             context.depth++;
-            ptrBis = ptrBis.child(generate(inOutType));
+            ptr.child(generate(inOutType));
             context.depth--;
         } else {
-            handleNotSupported(inOutType, ptrBis);
+            handleNotSupported(inOutType, ptr);
         }
 
-        if (!inOutType.inIsPrimitive()) {
-            ptr = ptr.child(controlNull("in"));
-            ptr.body(ptrBisRoot.body);
+        isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
+        if (!isPrimitiveOrImmutable) {
+            methodNode = methodNode.child(controlNull("in"));
+            methodNode.body(blankRoot.body);
         } else {
-            ptr.child(ptrBisRoot.body);
+            methodNode.child(blankRoot.body);
         }
 
         // Call the interceptor if it exist
         MappingBuilder interceptor = mappingRegistry.mappingInterceptor(inOutType);
         if (interceptor != null){
-           ptr.child(interceptor.build(context, new SourceNodeVars()));
+            methodNode.child(interceptor.build(context, new SourceNodeVars()));
         }
 
         // Give it a try
-        methodNode.write(writer);
+        methodRoot.write(writer);
     }
 
     private void handleNotSupported(InOutType inOutType, MappingSourceNode ptr) {
@@ -149,8 +148,7 @@ public class MapperMethodGenerator {
 
     private MappingSourceNode generateStack(MapperGeneratorContext context) throws IOException {
 
-        MappingSourceNode ptr = blank();
-        MappingSourceNode root = ptr;
+        MappingSourceNode root = blank();
         MapperGeneratorContext.StackElem stackElem;
         while ((stackElem = context.popStack()) != null) {
             InOutType inOutType = stackElem.sourceNodeVars().inOutType;
