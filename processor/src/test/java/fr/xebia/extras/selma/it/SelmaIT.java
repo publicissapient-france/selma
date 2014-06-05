@@ -17,34 +17,34 @@
 
 package fr.xebia.extras.selma.it;
 
+import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.CityOut;
 import fr.xebia.extras.selma.beans.DataSource;
-import fr.xebia.extras.selma.it.mappers.BadMapperSignature;
-import fr.xebia.extras.selma.it.mappers.SelmaSourcedTestMapper;
-import fr.xebia.extras.selma.it.mappers.SelmaTestMapper;
+import fr.xebia.extras.selma.it.mappers.*;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import fr.xebia.extras.selma.Selma;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static fr.xebia.extras.selma.Selma.*;
+
 /**
  */
-@Compile(withClasses = {SelmaTestMapper.class, SelmaSourcedTestMapper.class})
+@Compile(withClasses = {SelmaTestMapper.class, SelmaSourcedTestMapper.class, SelmaCustomTestMapper.class, DataSource.class, CustomMapper.class})
 public class SelmaIT extends IntegrationTestBase {
 
 
     @Test
-    public void xmapper_static_should_return_same_mapper_in_two_times_call(){
+    public void selma_static_should_return_same_mapper_in_two_times_call() {
 
-        SelmaTestMapper mapper = Selma.mapper(SelmaTestMapper.class);
+        SelmaTestMapper mapper = Selma.getMapper(SelmaTestMapper.class);
 
-        Assert.assertTrue(mapper == Selma.mapper(SelmaTestMapper.class));
+        Assert.assertTrue(mapper == Selma.getMapper(SelmaTestMapper.class));
 
     }
 
     @Test
-    public void xmapper_static_with_factory_should_return_same_mapper_in_two_times_call(){
+    public void selma_static_with_factory_should_return_same_mapper_in_two_times_call() {
 
         SelmaTestMapper mapper = Selma.getMapper(SelmaTestMapper.class);
 
@@ -53,34 +53,49 @@ public class SelmaIT extends IntegrationTestBase {
 
 
     @Test
-    public void xmapper_static_with_source_should_return_same_mapper_in_two_times_call(){
-
+    public void selma_static_with_source_should_return_same_mapper_in_two_times_call() {
 
         DataSource dataSource = new DataSource();
-        SelmaSourcedTestMapper mapper = Selma.mapper(SelmaSourcedTestMapper.class, dataSource);
-        Assert.assertTrue(mapper == Selma.mapper(SelmaSourcedTestMapper.class, dataSource));
-
+        SelmaSourcedTestMapper mapper = mapper(SelmaSourcedTestMapper.class, dataSource);
+        Assert.assertTrue(mapper == mapper(SelmaSourcedTestMapper.class, dataSource));
     }
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void xmapper_should_raise_illegal_given_not_fitting_source(){
+    public void selma_should_raise_illegal_given_not_fitting_source() {
 
         CityOut dataSource = new CityOut();
-        SelmaSourcedTestMapper mapper = Selma.mapper(SelmaSourcedTestMapper.class, dataSource);
-        Assert.assertTrue(mapper == Selma.mapper(SelmaSourcedTestMapper.class, dataSource));
+        SelmaSourcedTestMapper mapper = mapper(SelmaSourcedTestMapper.class, dataSource);
+        Assert.assertTrue(mapper == mapper(SelmaSourcedTestMapper.class, dataSource));
     }
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void xmapper_should_raise_illegalArgException_on_not_existing_mapper(){
+    public void selma_should_raise_illegalArgException_on_not_existing_mapper() {
 
-        BadMapperSignature mapper = Selma.mapper(BadMapperSignature.class);
+        BadMapperSignature mapper = Selma.getMapper(BadMapperSignature.class);
     }
 
+    @Test
+    public void given_a_single_mapper_class_selma_dsl_should_build_it() {
+        SelmaTestMapper mapper = builder(SelmaTestMapper.class).build();
+        Assert.assertTrue(mapper == mapper(SelmaTestMapper.class));
+    }
 
+    @Test
+    public void given_a_mapper_and_custom_source_class_selma_dsl_should_build_it() {
+        CustomMapper customMapper = new CustomMapper();
+        DataSource dataSource = new DataSource();
+        SelmaCustomTestMapper mapper = builder(SelmaCustomTestMapper.class).withCustom(customMapper).withSources(dataSource).build();
+        Assert.assertTrue(mapper == getMapper(SelmaCustomTestMapper.class, dataSource, customMapper));
+    }
 
-
-
+    @Test(expected = IllegalArgumentException.class)
+    public void given_a_mapper_and_custom_class_when_needs_a_source_selma_dsl_should_raise_exception() {
+        CustomMapper customMapper = new CustomMapper();
+        DataSource dataSource = new DataSource();
+        SelmaCustomTestMapper mapper = builder(SelmaCustomTestMapper.class).withCustom(customMapper).build();
+        Assert.fail();
+    }
 
 }
