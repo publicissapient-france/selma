@@ -16,10 +16,7 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.ElementFilter;
 import java.io.IOException;
@@ -223,13 +220,31 @@ public abstract class MappingBuilder {
                     impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) + "<" + genericOut.toString() + ">";
                 }
                 final String implementation = impl;
+                TypeElement outElement = context.elements().getTypeElement(impl.replaceAll("<.*>", ""));
+
+                boolean hasSizeCtr = false;
+                List<ExecutableElement> constructors = ElementFilter.constructorsIn(context.elements().getAllMembers(outElement));
+                for (ExecutableElement constructor : constructors) {
+                    if (constructor.getParameters().size() == 1 && constructor.getParameters().get(0).asType().getKind() == TypeKind.INT) {
+                        hasSizeCtr = true;
+                        break;
+                    }
+                }
+                final boolean hasSizeConstructor = hasSizeCtr;
                 return new MappingBuilder() {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
                         final String itemVar = vars.itemVar();
                         final String tmpVar = vars.tmpVar("Collection");
-                        MappingSourceNode node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s.size())", implementation, vars.inGetter())))
+                        final String arg;
+                        if (hasSizeConstructor) {
+                            arg = String.format("%s.size()", vars.inGetter());
+                        } else {
+                            arg = "";
+                        }
+
+                        MappingSourceNode node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))
                                 .child(vars.setOrAssign(tmpVar))
                                 .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
 
