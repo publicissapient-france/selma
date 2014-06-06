@@ -30,7 +30,7 @@ import static fr.xebia.extras.selma.Selma.*;
 
 /**
  */
-@Compile(withClasses = {SelmaTestMapper.class, SelmaSourcedTestMapper.class, SelmaCustomTestMapper.class, DataSource.class, CustomMapper.class})
+@Compile(withClasses = {SelmaTestMapper.class, SelmaSourcedTestMapper.class, SelmaCustomTestMapper.class, CustomMapper.class})
 public class SelmaIT extends IntegrationTestBase {
 
 
