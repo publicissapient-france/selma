@@ -1,3 +1,10 @@
+0.6 - 6/17/2014
+* #19: remove not needed null checks
+* #20: Add support for BigDecimal
+* #18: New Builder style Mapper configuration
+* #21: Use collection size constructor only when available
+
+
 0.5 - 5/16/2014
 * Custom Mapper can now be constructed by user and injected to the mapper
 * Do not clone immutable objects
