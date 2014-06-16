@@ -197,7 +197,7 @@ public class Selma {
                         if (method != null) {
                             method.invoke(mapperInstance, customMapper);
                         } else {
-                            throw new IllegalArgumentException("given a CustomMapper of type " + customMapperClass.getSimpleName() + " while setter does not exist please fix it");
+                            throw new IllegalArgumentException("given a CustomMapper of type " + customMapperClass.getSimpleName() + " while setter does not exist, add it to @Mapper interface");
                         }
                     }
 
