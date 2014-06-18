@@ -16,11 +16,11 @@
  */
 package fr.xebia.extras.selma.it;
 
+import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.*;
 import fr.xebia.extras.selma.it.mappers.BeanMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import fr.xebia.extras.selma.Selma;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -28,11 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: slemesle
- * Date: 17/11/2013
- * Time: 22:35
- * To change this template use File | Settings | File Templates.
+ *
  */
 @Compile(withClasses = BeanMapper.class)
 public class BeanMapperIT extends IntegrationTestBase {

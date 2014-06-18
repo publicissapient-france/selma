@@ -36,7 +36,7 @@ public abstract class MappingBuilder {
 
     private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
         boolean res = false;
-        if (inOutType.isDeclaredToPrimitive()){
+        if (inOutType.isDeclaredToPrimitive()) {
             PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
             res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
         }
@@ -49,8 +49,7 @@ public abstract class MappingBuilder {
          * Mapping Primitives
          */
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
                     @Override
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
@@ -65,19 +64,17 @@ public abstract class MappingBuilder {
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return inOutType.areSamePrimitive() || areMatchingBoxedToPrimitive(inOutType, context);
             }
         });
 
 
         /**
-         * Enum Mapper
+         * Different Enum Mapper
          */
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
 
                 TypeElement typeElement = inOutType.inAsTypeElement();
                 final List<String> enumValues = collectEnumValues(typeElement);
@@ -103,16 +100,20 @@ public abstract class MappingBuilder {
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                return inOutType.areDeclared() && inOutType.areEnums();
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return inOutType.areDeclared() && inOutType.areEnums() && !inOutType.areSameDeclared();
             }
         });
 
-        // Map String or Boxed Primitive
+        /**
+         * Same Enum Mapper
+         */
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+
+                TypeElement typeElement = inOutType.inAsTypeElement();
+                final List<String> enumValues = collectEnumValues(typeElement);
+
                 return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
@@ -123,12 +124,29 @@ public abstract class MappingBuilder {
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return inOutType.areDeclared() && inOutType.areEnums() && inOutType.areSameDeclared();
+            }
+        });
+
+        // Map String or Boxed Primitive
+        mappingSpecificationList.add(new MappingSpecification() {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(true) {
+                    @Override
+                    MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+
+                        root.body(vars.setOrAssign("%s"));
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 boolean res;
-                if(inOutType.areSameDeclared()) {
+                if (inOutType.areSameDeclared()) {
                     DeclaredType declaredType = inOutType.inAsDeclaredType();
-                    res =  (isBoxedPrimitive(declaredType, context) || String.class.getName().equals(declaredType.toString()));
+                    res = (isBoxedPrimitive(declaredType, context) || String.class.getName().equals(declaredType.toString()));
                 } else {
                     res = isMatchingPrimitiveToBoxed(inOutType, context);
                 }
@@ -138,8 +156,7 @@ public abstract class MappingBuilder {
 
         // Map Dates
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder() {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
@@ -149,16 +166,14 @@ public abstract class MappingBuilder {
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return super.match(context, inOutType) && Date.class.getName().equals(inOutType.in().toString());
             }
         });
 
         // Map BigInteger / BigDecimal
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
@@ -168,8 +183,7 @@ public abstract class MappingBuilder {
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 if (super.match(context, inOutType)) {
                     String inType = inOutType.in().toString();
                     return BigInteger.class.getName().equals(inType) || BigDecimal.class.getName().equals(inType);
@@ -180,8 +194,7 @@ public abstract class MappingBuilder {
 
         // Map UUID
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
@@ -191,22 +204,19 @@ public abstract class MappingBuilder {
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return super.match(context, inOutType) && UUID.class.getName().equals(inOutType.in().toString());
             }
         });
 
         // Map collections
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
 
                 return inOutType.areDeclared() && isCollection(inOutType.inAsDeclaredType(), context) && isCollection(inOutType.outAsDeclaredType(), context);
             }
 
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
 
                 // We have a collection
                 final TypeMirror genericIn = inOutType.inAsDeclaredType().getTypeArguments().get(0);
@@ -245,13 +255,13 @@ public abstract class MappingBuilder {
                         }
 
                         MappingSourceNode node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))
-                                .child(vars.setOrAssign(tmpVar))
-                                .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                                                     .child(vars.setOrAssign(tmpVar))
+                                                     .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
 
                         context.pushStackForBody(node,
                                 new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut))
-                                        .withInField(itemVar)
-                                        .withOutField(String.format("%s.add", tmpVar)).withAssign(false).withIndexPtr(vars.nextPtr()));
+                                                    .withInField(itemVar)
+                                                    .withOutField(String.format("%s.add", tmpVar)).withAssign(false).withIndexPtr(vars.nextPtr()));
 
                         return root.body;
                     }
@@ -261,8 +271,7 @@ public abstract class MappingBuilder {
 
         // Map map
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 // We have a Map
                 final TypeMirror genericInKey = inOutType.inAsDeclaredType().getTypeArguments().get(0);
                 final TypeMirror genericOutKey = inOutType.outAsDeclaredType().getTypeArguments().get(0);
@@ -288,54 +297,50 @@ public abstract class MappingBuilder {
                         final String tmpVar = vars.tmpVar("Map");
                         final String keyVar = vars.tmpVar("Key");
                         MappingSourceNode node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s()", implementation)))
-                                .child(vars.setOrAssign(tmpVar))
-                                .child(mapMap(itemVar, genericInKey.toString(), genericInValue.toString(), vars.inGetter()))
-                                .body(assign(String.format("%s %s", genericOutKey, keyVar), "null"));
+                                                     .child(vars.setOrAssign(tmpVar))
+                                                     .child(mapMap(itemVar, genericInKey.toString(), genericInValue.toString(), vars.inGetter()))
+                                                     .body(assign(String.format("%s %s", genericOutKey, keyVar), "null"));
                         context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInValue, genericOutValue))
-                                .withInField(String.format("%s.getValue()", itemVar)).withInFieldPrefix(String.format("%s,", keyVar))
-                                .withOutField(String.format("%s.put", tmpVar))
-                                .withAssign(false).withIndexPtr(vars.nextPtr()));
+                                                                            .withInField(String.format("%s.getValue()", itemVar)).withInFieldPrefix(String.format("%s,", keyVar))
+                                                                            .withOutField(String.format("%s.put", tmpVar))
+                                                                            .withAssign(false).withIndexPtr(vars.nextPtr()));
                         context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInKey, genericOutKey))
-                                .withInField(String.format("%s.getKey()", itemVar))
-                                .withOutField(keyVar)
-                                .withAssign(true).withIndexPtr(vars.nextPtr()));
+                                                                            .withInField(String.format("%s.getKey()", itemVar))
+                                                                            .withOutField(keyVar)
+                                                                            .withAssign(true).withIndexPtr(vars.nextPtr()));
                         return root.body;
                     }
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return inOutType.areDeclared() && isMap(inOutType.inAsDeclaredType(), context) && isMap(inOutType.outAsDeclaredType(), context);
             }
         });
 
         // Map array of primitive
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder() {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
                         root.body(vars.setOrAssign(String.format("new %s[%%s.length]", inOutType.inArrayComponentType())))
-                                .child(arrayCopy(vars.inGetter(), vars.outSetterPath()));
+                            .child(arrayCopy(vars.inGetter(), vars.outSetterPath()));
 
                         return root.body;
                     }
                 };
             }
 
-            @Override
-            boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return inOutType.inIsArray() && inOutType.isInArrayComponentPrimitive() && !inOutType.differs();
             }
         });
 
         // Map array of Declared or array of array
         mappingSpecificationList.add(new MappingSpecification() {
-            @Override
-            MappingBuilder getBuilder(MapperGeneratorContext context, final InOutType inOutType) {
+            @Override MappingBuilder getBuilder(MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder() {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
@@ -354,22 +359,21 @@ public abstract class MappingBuilder {
                             i++;
                         }
                         node = root.body(assign(String.format("%s %s", inOutType.out().toString(), tmpVar), newArray))
-                                .child(assign("int " + totalCountVar, totalCountVal))
-                                .child(vars.setOrAssign(tmpVar))
-                                .child(mapArrayBis(indexVar, totalCountVar));
+                                   .child(assign("int " + totalCountVar, totalCountVal))
+                                   .child(vars.setOrAssign(tmpVar))
+                                   .child(mapArrayBis(indexVar, totalCountVar));
 
                         context.pushStackForBody(node,
                                 new SourceNodeVars().withInOutType(new InOutType(inOutType.inArrayComponentType(), inOutType.outArrayComponentType()))
-                                        .withInField(String.format("%s[%s]", vars.inGetter(), indexVar))
-                                        .withOutField(String.format("%s[%s]", tmpVar, indexVar)).withAssign(true).withIndexPtr(vars.nextPtr()));
+                                                    .withInField(String.format("%s[%s]", vars.inGetter(), indexVar))
+                                                    .withOutField(String.format("%s[%s]", tmpVar, indexVar)).withAssign(true).withIndexPtr(vars.nextPtr()));
 
                         return root.body;
                     }
                 };
             }
 
-            @Override
-            boolean match(MapperGeneratorContext context, InOutType inOutType) {
+            @Override boolean match(MapperGeneratorContext context, InOutType inOutType) {
                 return !inOutType.differs() && inOutType.inIsArray() && inOutType.isInArrayComponentDeclaredOrArray();
             }
         });
@@ -379,7 +383,7 @@ public abstract class MappingBuilder {
     private static boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {
         boolean res = false;
 
-        if (inOutType.isPrimitiveToDeclared()){
+        if (inOutType.isPrimitiveToDeclared()) {
             PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
             res = outAsPrimitive != null && outAsPrimitive.getKind() == inOutType.inKind();
         }
@@ -500,7 +504,7 @@ public abstract class MappingBuilder {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
-                root.body( statement(String.format("%s(in,out)", name)) );
+                root.body(statement(String.format("%s(in,out)", name)));
                 return root.body;
             }
         };
@@ -529,8 +533,9 @@ public abstract class MappingBuilder {
 
     /**
      * Builds a method that match identical items  and use default value otherwise
-     * @param inOutType         in enum to out enum type relation
-     * @param defaultValue      The default value used as out
+     *
+     * @param inOutType    in enum to out enum type relation
+     * @param defaultValue The default value used as out
      * @return A builder that generates a custom enum using a switch
      */
     public static MappingBuilder newCustomEnumMapper(final InOutType inOutType, final String defaultValue) {
@@ -555,7 +560,7 @@ public abstract class MappingBuilder {
                         node.body(vars.setOrAssign(String.format("%s.%s", inOutType.out(), value)));
                     }
                     node = node.child(mapDefaultCase());
-                    if ("".equals(defaultValue)){
+                    if ("".equals(defaultValue)) {
                         node.body(vars.setOrAssign("null"));
                     } else {
                         node.body(vars.setOrAssign(String.format("%s.%s", inOutType.out(), defaultValue)));
@@ -568,13 +573,11 @@ public abstract class MappingBuilder {
     }
 
 
-
-
     static public <T> List<T> intersection(List<T> list1, List<T> list2) {
         List<T> list = new ArrayList<T>();
 
         for (T t : list1) {
-            if(list2.contains(t)) {
+            if (list2.contains(t)) {
                 list.add(t);
             }
         }
@@ -596,8 +599,7 @@ public abstract class MappingBuilder {
 
     static abstract class SameDeclaredMappingSpecification extends MappingSpecification {
 
-        @Override
-        boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+        @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
             return !inOutType.differs() && inOutType.areDeclared();
         }
     }

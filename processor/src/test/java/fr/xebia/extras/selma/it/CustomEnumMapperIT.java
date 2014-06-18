@@ -34,7 +34,7 @@ import org.junit.Test;
 public class CustomEnumMapperIT extends IntegrationTestBase {
 
     @Test
-    public void given_a_mapper_for_2_enum_with_default_value_on_class_when_input_is_not_mappable_then_default_value_should_be_used(){
+    public void given_a_mapper_for_2_enum_with_default_value_on_class_when_input_is_not_mappable_then_default_value_should_be_used() {
         CustomClassEnumMapper mapper = Selma.mapper(CustomClassEnumMapper.class);
 
 
@@ -44,7 +44,7 @@ public class CustomEnumMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void given_a_mapper_for_2_enum_with_default_value_on_method_when_input_is_not_mappable_then_default_value_should_be_used(){
+    public void given_a_mapper_for_2_enum_with_default_value_on_method_when_input_is_not_mappable_then_default_value_should_be_used() {
         CustomMethodEnumMapper mapper = Selma.mapper(CustomMethodEnumMapper.class);
 
         EnumB res = mapper.asEnumB(EnumA.B);
@@ -53,10 +53,20 @@ public class CustomEnumMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void given_a_mapper_for_2_enum_without_default_value_on_method_when_input_is_not_mappable_then_default_to_null(){
+    public void given_a_mapper_for_2_enum_without_default_value_on_method_when_input_is_not_mappable_then_default_to_null() {
         CustomMethodNoDefaultEnumMapper mapper = Selma.mapper(CustomMethodNoDefaultEnumMapper.class);
 
         EnumB res = mapper.asEnumB(EnumA.B);
+
+        Assert.assertNull(res);
+    }
+
+
+    @Test
+    public void given_a_mapper_for_2_enum_without_default_value_on_method_when_input_is_null_then_default_to_null() {
+        CustomMethodNoDefaultEnumMapper mapper = Selma.mapper(CustomMethodNoDefaultEnumMapper.class);
+
+        EnumB res = mapper.asEnumB(null);
 
         Assert.assertNull(res);
     }
