@@ -16,8 +16,6 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import javax.lang.model.type.TypeMirror;
-
 /**
  * Created with IntelliJ IDEA.
  * User: slemesle
@@ -51,14 +49,6 @@ public class SourceNodeVars {
         inFieldPrefix = "";
     }
 
-    public SourceNodeVars(String field, BeanWrapper inBean, BeanWrapper outBean) {
-        this.field = field;
-        this.inBean = inBean;
-        this.outBean = outBean;
-        inField = (inBean == null ? "in" : inBean.getInGetterFor(field));
-        outField = (outBean == null ? "out" : outBean.getOutSetterPathFor(field));
-        inFieldPrefix = "";
-    }
 
     public SourceNodeVars() {
         this.field = null;
@@ -69,9 +59,6 @@ public class SourceNodeVars {
         inFieldPrefix = "";
     }
 
-    public SourceNodeVars(String inField) {
-        this.field = inField;
-    }
 
     public SourceNodeVars withInField(String _inField) {
         inField = _inField;
@@ -97,16 +84,8 @@ public class SourceNodeVars {
         return inField;
     }
 
-    public String outType() {
-        return outBean.getTypeFor(field).toString();
-    }
-
     public String outSetterPath() {
         return outField;
-    }
-
-    public String outSetter() {
-        return outField + (inBean == null ? "" : "()");
     }
 
     public MappingSourceNode setOrAssign(String value) {
@@ -117,26 +96,21 @@ public class SourceNodeVars {
     }
 
     public String itemVar() {
-        return String.format("%s%sItem", (char)ptr, (field == null ? "out" : field));
+        return String.format("%s%sItem", (char) ptr, (field == null ? "out" : field));
     }
 
 
     public String itemEntry() {
-        return String.format("%s%sEntry", (char)ptr, (field == null ? "out" : field));
+        return String.format("%s%sEntry", (char) ptr, (field == null ? "out" : field));
     }
 
     public String indexVar() {
-        return indexVar((char)ptr);
+        return indexVar((char) ptr);
     }
 
     public String indexVar(char indexChar) {
         return String.format("%c%sIndex", indexChar, (field == null ? "out" : field));
     }
-
-    public boolean inTypeIsPrime() {
-        return inOutType.inIsPrimitive();
-    }
-
 
     public String tmpVar(String suffix) {
         return String.format("%s%sTmp%s", (char) ptr, (field == null ? "out" : field), suffix);
@@ -156,7 +130,7 @@ public class SourceNodeVars {
     }
 
     public char nextPtr() {
-        return (char)(ptr+1);
+        return (char) (ptr + 1);
     }
 
     public SourceNodeVars withIndexPtr(char _ptr) {
