@@ -24,7 +24,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Source code generation context
@@ -161,6 +163,11 @@ public class MapperGeneratorContext {
 
     public void warn(Element element, String templateMessage, Object... args) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(templateMessage, args), element);
+    }
+
+
+    public void notice(Element element, String templateMessage, Object... args) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format(templateMessage, args), element);
     }
 
     public void setNewParams(String newParams) {

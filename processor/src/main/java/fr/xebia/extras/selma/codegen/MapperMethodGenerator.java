@@ -193,12 +193,12 @@ public class MapperMethodGenerator {
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 
-            if (isIgnoredField(field, inOutType)) {
-//                context.warn(inBean.getFieldElement(field), "Field %s from in bean will be ignored as @IgnoredFields require", field);
+            if (isIgnoredField(field, inOutType.inAsDeclaredType())) {
+                context.notice(inBean.getFieldElement(field), "Field %s from in bean will be ignored as @IgnoredFields require", field);
                 continue;
             }
 
-            if (isMissingInDestination && canBeIgnored(field, inOutType)) {
+            if (isMissingInDestination && canBeIgnored(field, inOutType.inAsDeclaredType())) {
                 continue;
             } else {
 
@@ -233,7 +233,7 @@ public class MapperMethodGenerator {
         if (!configuration.isIgnoreMissingProperties()){
             for (String outField : outFields) {
 
-                if (!isIgnoredField(outField, inOutType)) {
+                if (!isIgnoredField(outField, inOutType.outAsDeclaredType())) {
                     context.error(outBean.getSetterElement(outField), String.format("setter for field %s from out bean %s has no getter in in bean %s !\n" +
                             "-->  Add @IgnoreField to mapper interface / method or add missing setter\"", outField, inOutType.out(), inOutType.in()));
                 } else {
@@ -244,7 +244,7 @@ public class MapperMethodGenerator {
         return root.child;
     }
 
-    private boolean canBeIgnored(String field, InOutType inOutType) {
+    private boolean canBeIgnored(String field, DeclaredType inOutType) {
 
         return configuration.isIgnoreMissingProperties() || isIgnoredField(field, inOutType);
     }
@@ -257,22 +257,21 @@ public class MapperMethodGenerator {
     }
 
 
-    public boolean isIgnoredField(String field, InOutType inOutType) {
+    public boolean isIgnoredField(String field, DeclaredType type) {
         boolean res = false;
-        DeclaredType inType = inOutType.inAsDeclaredType();
-        String fqcn = inType.toString();
-        String simpleName = inType.asElement().getSimpleName().toString();
+        String fqcn = type.toString();
+        String simpleName = type.asElement().getSimpleName().toString();
 
         for (String ignoredField : ignoredFields) {
 
             if(ignoredField.equalsIgnoreCase(field)){
                 res = true;
                 break;
-            } else if (ignoredField.contains("::")) {
-                if ((fqcn + "::" + field).equalsIgnoreCase(ignoredField)) {
+            } else if (ignoredField.contains(".")) {
+                if ((fqcn + "." + field).equalsIgnoreCase(ignoredField)) {
                     res = true;
                     break;
-                } else if ((simpleName + "::" + field).equalsIgnoreCase(ignoredField)) {
+                } else if ((simpleName + "." + field).equalsIgnoreCase(ignoredField)) {
                     res = true;
                     break;
                 }

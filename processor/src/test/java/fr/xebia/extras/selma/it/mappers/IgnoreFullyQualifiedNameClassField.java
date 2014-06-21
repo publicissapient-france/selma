@@ -25,8 +25,10 @@ import fr.xebia.extras.selma.beans.LibraryDTO;
  * Created by slemesle on 21/06/2014.
  */
 @Mapper
-@IgnoreFields("fr.xebia.extras.selma.beans.Library::name")
+@IgnoreFields("fr.xebia.extras.selma.beans.Library.name")
 public interface IgnoreFullyQualifiedNameClassField {
 
     LibraryDTO asLibraryDTO(Library in);
+
+    Library asLibrary(LibraryDTO in);
 }
