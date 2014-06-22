@@ -34,7 +34,7 @@ public class FailingMappersIT extends IntegrationTestBase {
     @Test
     public void compilation_should_fail_on_missing_out_property_without_ignore() throws Exception {
 
-        assertCompilationError(PersonIn.class, "public boolean isMale() {", String.format("getter for field male from in bean %s is missing in destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
+        assertCompilationError(PersonIn.class, "public boolean isMale() {", String.format("setter for field male from in bean %s is missing in destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
 
     }
 

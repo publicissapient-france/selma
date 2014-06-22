@@ -21,7 +21,6 @@ import fr.xebia.extras.selma.Fields;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import java.io.IOException;
 import java.util.Set;
 
@@ -189,17 +188,17 @@ public class MapperMethodGenerator {
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 
-            if (isIgnoredField(field, inOutType.inAsDeclaredType())) {
-                continue;
+            if (ignoredFields.isIgnoredField(field, inOutType.inAsDeclaredType())) {
+                continue; // Skip ignored in field
             }
 
-            if (isMissingInDestination && canBeIgnored(field, inOutType.inAsDeclaredType())) {
-                continue;
+            if (isMissingInDestination && configuration.isIgnoreMissingProperties()) {
+                continue;  // Skip ignored missing properties in destination bean
             } else {
 
 
                 if (isMissingInDestination) {
-                    context.error(inBean.getFieldElement(field), String.format("getter for field %s from in bean %s is missing in destination bean %s using field %s !\n" +
+                    context.error(inBean.getFieldElement(field), String.format("setter for field %s from in bean %s is missing in destination bean %s using field %s !\n" +
                             " --> Add @IgnoreField to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), outField));
                     continue;
                 }
@@ -225,23 +224,18 @@ public class MapperMethodGenerator {
             outFields.remove(outField);
         }
 
-        if (!configuration.isIgnoreMissingProperties()) {
+        if (!configuration.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
             for (String outField : outFields) {
 
-                if (!isIgnoredField(outField, inOutType.outAsDeclaredType())) {
+                if (!ignoredFields.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
                     context.error(outBean.getSetterElement(outField), String.format("setter for field %s from out bean %s has no getter in in bean %s !\n" +
                             "-->  Add @IgnoreField to mapper interface / method or add missing setter\"", outField, inOutType.out(), inOutType.in()));
                 } else {
-                    context.notice(outBean.getSetterElement(outField), "Field %s not populated in destination bean will be ignored as @IgnoredFields require", outField);
+                    context.warn(outBean.getSetterElement(outField), "Field %s not populated in destination bean will be ignored as @IgnoredFields require", outField);
                 }
             }
         }
         return root.child;
-    }
-
-    private boolean canBeIgnored(String field, DeclaredType inOutType) {
-
-        return configuration.isIgnoreMissingProperties() || isIgnoredField(field, inOutType);
     }
 
     private MappingSourceNode lastChild(MappingSourceNode ptr) {
@@ -250,11 +244,5 @@ public class MapperMethodGenerator {
         }
         return ptr;
     }
-
-
-    public boolean isIgnoredField(String field, DeclaredType type) {
-        return ignoredFields.isIgnoredField(field, type);
-    }
-
 
 }
