@@ -19,17 +19,16 @@ package fr.xebia.extras.selma.codegen;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
+ * Conveniance annotation wrapper class to retrieve easily annotation parameters
+ *
  * User: slemesle
  * Date: 25/11/2013
  * Time: 13:40
- * To change this template use File | Settings | File Templates.
  */
 public class AnnotationWrapper {
     private final AnnotationMirror annotationMirror;
@@ -59,20 +58,6 @@ public class AnnotationWrapper {
                 break;
             }
         }
-
-
-//        Map<? extends ExecutableElement, ? extends AnnotationValue> values = context.elements().getElementValuesWithDefaults(findMapperAnnotation(method.getAnnotationMirrors()));
-
-      /*  for (ExecutableElement element : values.keySet()) {
-            if("ignoreMissingProperties".equals(element.getSimpleName().toString())){
-                ignoreMissingProperties = (Boolean)values.get(element).getValue();
-            } else if ("ignoreNotSupported".equals(element.getSimpleName().toString())){
-                ignoreNotSupported = (Boolean)values.get(element).getValue();
-            } else if ("useDuplicate".equals(element.getSimpleName().toString())){
-                useDuplicate = (Boolean)values.get(element).getValue();
-            }
-        }
-        */
 
         if (annotationMirror != null) {
             return new AnnotationWrapper(context, annotationMirror);

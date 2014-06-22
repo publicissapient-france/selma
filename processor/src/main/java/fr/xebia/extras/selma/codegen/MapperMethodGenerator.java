@@ -51,7 +51,7 @@ public class MapperMethodGenerator {
         this.mappingRegistry = new MappingRegistry(mappingRegistry);
         this.ignoredFields = new TreeSet<String>();
         if (this.mapperMethod.hasIgnoreFields()) { // Add Specific method Ignore Fields
-            this.ignoredFields.addAll( AnnotationWrapper.buildFor(context, mapperMethod, IgnoreFields.class).getAsStrings("value"));
+            this.ignoredFields.addAll(AnnotationWrapper.buildFor(context, mapperMethod, IgnoreFields.class).getAsStrings("value"));
         }
         this.ignoredFields.addAll(configuration.getIgnoredFields());
 

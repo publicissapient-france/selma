@@ -262,7 +262,6 @@ public class MapperClassGenerator {
             MapperMethodGenerator.create(writer, mapperMethod, context, mappingRegistry, configuration).build();
 
             writer.emitEmptyLine();
-
         }
         writer.endType();
         writer.close();
