@@ -17,7 +17,10 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.*;
+import fr.xebia.extras.selma.EnumMapper;
+import fr.xebia.extras.selma.Fields;
+import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.SelmaConstants;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
@@ -47,6 +50,7 @@ public class MapperClassGenerator {
     private final TypeElement element;
     private final SourceConfiguration configuration;
     private final List<TypeElement> customMaperFields;
+    private final IgnoreFieldsWrapper ignoreFieldsWrapper;
 
     public MapperClassGenerator(String classe, Collection<ExecutableElement> executableElements, ProcessingEnvironment processingEnvironment) {
         this.origClasse = classe;
@@ -60,8 +64,8 @@ public class MapperClassGenerator {
 
         AnnotationWrapper mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
         AnnotationWrapper fields = AnnotationWrapper.buildFor(context, element, Fields.class);
-        AnnotationWrapper ignoreFields = AnnotationWrapper.buildFor(context, element, IgnoreFields.class);
-        configuration = SourceConfiguration.buildFrom(mapper, ignoreFields);
+        ignoreFieldsWrapper = new IgnoreFieldsWrapper(context, element);
+        configuration = SourceConfiguration.buildFrom(mapper, ignoreFieldsWrapper);
         if (registry.contains(origClasse)) {
             return;
         }
@@ -265,6 +269,9 @@ public class MapperClassGenerator {
         }
         writer.endType();
         writer.close();
+
+        // Report unused ignore fields
+        this.ignoreFieldsWrapper.reportUnusedFields();
     }
 
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {

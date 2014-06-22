@@ -27,11 +27,11 @@ import fr.xebia.extras.selma.beans.PersonOut;
  *
  */
 @Mapper()
-@IgnoreFields("name")
+@IgnoreFields({"name", "notUsedClassField"})
 public interface IgnoreFieldMapper {
 
 
-    @IgnoreFields({"male", "biography", "extras"})
+    @IgnoreFields({"male", "biography", "extras", "notUsedMethodField"})
     PersonOut asPersonOut(PersonIn in);
 
 

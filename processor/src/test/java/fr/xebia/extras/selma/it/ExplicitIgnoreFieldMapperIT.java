@@ -34,6 +34,18 @@ import java.util.Date;
 public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase{
 
     @Test
+    public void given_explicit_ignore_fields_not_existing_for_class_compiler_should_report_warning() throws Exception {
+
+        assertCompilationWarning(IgnoreFieldMapper.class, "public interface IgnoreFieldMapper {", "Ignored field \"notUsedClassField\" is never used");
+    }
+
+    @Test
+    public void given_explicit_ignore_fields_not_existing_for_method_compiler_should_report_warning() throws Exception {
+
+        assertCompilationWarning(IgnoreFieldMapper.class, "public interface IgnoreFieldMapper {", "Ignored field \"notUsedMethodField\" is never used");
+    }
+
+    @Test
     public void given_explicit_ignore_fields_for_method_generated_mapper_should_ignore_them(){
 
         PersonIn in = new PersonIn();

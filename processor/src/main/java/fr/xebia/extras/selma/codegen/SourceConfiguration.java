@@ -18,8 +18,6 @@ package fr.xebia.extras.selma.codegen;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  *
@@ -27,33 +25,33 @@ import java.util.TreeSet;
 public class SourceConfiguration {
 
 
+    private final IgnoreFieldsWrapper ignoredFields;
     private boolean ignoreMissingProperties;
     private boolean ignoreNotSupported;
     private List<String> sourceClass;
     private boolean finalMappers;
-    private Set<String> ignoredFields;
 
 
-    private SourceConfiguration(){}
+    private SourceConfiguration(IgnoreFieldsWrapper ignoreFields) {
+        this.ignoredFields = ignoreFields;
+    }
 
-    public static SourceConfiguration buildFrom(AnnotationWrapper mapper, AnnotationWrapper ignoreFields) {
-        SourceConfiguration res = new SourceConfiguration();
+    public static SourceConfiguration buildFrom(AnnotationWrapper mapper, IgnoreFieldsWrapper ignoreFields) {
+        SourceConfiguration res = new SourceConfiguration(ignoreFields);
 
         res.ignoreMissingProperties(mapper.getAsBoolean("ignoreMissingProperties"));
         res.ignoreNotSupported(mapper.getAsBoolean("ignoreNotSupported"));
         res.finalMappers(mapper.getAsBoolean("withFinalMappers"));
         res.sourceClass(mapper.getAsStrings("withSources"));
+/*
         if(ignoreFields != null){
             res.ignoredFields(ignoreFields.getAsStrings("value"));
         } else {
             res.ignoredFields(Collections.<String>emptyList());
         }
+*/
 
         return res;
-    }
-
-    private void ignoredFields(List<String> value) {
-        this.ignoredFields = new TreeSet<String>(value);
     }
 
     private void finalMappers(boolean finalMappers) {
@@ -64,7 +62,7 @@ public class SourceConfiguration {
         return finalMappers;
     }
 
-    private void sourceClass(List<String> source){
+    private void sourceClass(List<String> source) {
         this.sourceClass = source;
     }
 
@@ -86,7 +84,7 @@ public class SourceConfiguration {
         return ignoreNotSupported;
     }
 
-    public Set<String> getIgnoredFields() {
+    public IgnoreFieldsWrapper ignoredFields() {
         return ignoredFields;
     }
 
