@@ -26,14 +26,14 @@ import fr.xebia.extras.selma.beans.SimplePersonDto;
  *
  */
 @Mapper
-@Fields({@Field({"nom", "lastname"}), @Field({"prenom", "firstname"})})
+@Fields({@Field({"nom", "lastname"}), @Field({"prenom", "firstname"}), @Field({"classFieldFrom", "classFieldTo"})})
 public interface CustomFieldMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in);
 
 
     @Fields({
-      @Field({"nom", "firstname"}), @Field({"prenom", "lastname"})
+            @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
     })
     SimplePersonDto asPersonDtoReverseName(SimplePerson in);
 

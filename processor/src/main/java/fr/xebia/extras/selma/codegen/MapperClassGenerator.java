@@ -18,7 +18,6 @@ package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.EnumMapper;
-import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.SelmaConstants;
 
@@ -51,6 +50,7 @@ public class MapperClassGenerator {
     private final SourceConfiguration configuration;
     private final List<TypeElement> customMaperFields;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
+    private final FieldsWrapper fields;
 
     public MapperClassGenerator(String classe, Collection<ExecutableElement> executableElements, ProcessingEnvironment processingEnvironment) {
         this.origClasse = classe;
@@ -63,9 +63,11 @@ public class MapperClassGenerator {
         element = context.elements.getTypeElement(classe);
 
         AnnotationWrapper mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
-        AnnotationWrapper fields = AnnotationWrapper.buildFor(context, element, Fields.class);
         ignoreFieldsWrapper = new IgnoreFieldsWrapper(context, element);
         configuration = SourceConfiguration.buildFrom(mapper, ignoreFieldsWrapper);
+        fields = new FieldsWrapper(context, element);
+        mappingRegistry.fields(fields);
+
         if (registry.contains(origClasse)) {
             return;
         }
@@ -73,24 +75,7 @@ public class MapperClassGenerator {
         // Here we collect custom mappers
         collectCustom(mapper);
         collectEnums(mapper);
-        if (fields != null) {
-            collectFields(fields);
-        }
-
         validateTypes();
-    }
-
-    /**
-     * Here we collects custom field name mapping
-     *
-     * @param fields
-     */
-    private void collectFields(AnnotationWrapper fields) {
-
-        for (AnnotationWrapper field : fields.getAsAnnotationWrapper("value")) {
-            mappingRegistry.pushFieldMap(element, field);
-        }
-
     }
 
     private void collectEnums(AnnotationWrapper mapper) {
@@ -271,7 +256,10 @@ public class MapperClassGenerator {
         writer.close();
 
         // Report unused ignore fields
-        this.ignoreFieldsWrapper.reportUnusedFields();
+        ignoreFieldsWrapper.reportUnusedFields();
+
+        // Report unused custom fields mapping
+        fields.reportUnused();
     }
 
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {

@@ -16,10 +16,7 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,14 +27,13 @@ public class MappingRegistry {
     public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
     final Map<InOutType, MappingBuilder> registryMap;
     final Map<InOutType, MappingBuilder> interceptorMap;
-    final BidiMap<String> fieldsRegistry;
     final MapperGeneratorContext context;
+    private FieldsWrapper fields;
 
 
     public MappingRegistry(MapperGeneratorContext context) {
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
-        this.fieldsRegistry = new BidiMap<String>();
         this.context = context;
     }
 
@@ -45,7 +41,6 @@ public class MappingRegistry {
     public MappingRegistry(MappingRegistry registry) {
         this.registryMap = new HashMap<InOutType, MappingBuilder>(registry.registryMap);
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>(registry.interceptorMap);
-        this.fieldsRegistry = new BidiMap<String>(registry.fieldsRegistry);
         this.context = registry.context;
     }
 
@@ -115,16 +110,12 @@ public class MappingRegistry {
         return interceptorMap.get(inOutType);
     }
 
-    public void pushFieldMap(Element element, AnnotationWrapper field) {
-        List<String> fields = field.getAsStrings("value");
-        if(fields.size() != 2){
-            context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
-        } else {
-            fieldsRegistry.push(fields.get(0).toLowerCase(), fields.get(1).toLowerCase());
-        }
+    public void fields(FieldsWrapper fields) {
+
+        this.fields = fields;
     }
 
-    public String getFieldFor(String field) {
-        return fieldsRegistry.get(field.toLowerCase());
+    public FieldsWrapper fields() {
+        return fields;
     }
 }

@@ -18,14 +18,15 @@ package fr.xebia.extras.selma.codegen;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by slemesle on 27/03/2014.
  */
 public class BidiMap<K> {
 
-    private final Map<K,K> from;
-    private final Map<K,K> to;
+    private final Map<K, K> from;
+    private final Map<K, K> to;
 
     public BidiMap() {
         from = new HashMap<K, K>();
@@ -42,17 +43,35 @@ public class BidiMap<K> {
         this.to = to;
     }
 
-
-    public void push(K _from, K _to){
+    public void push(K _from, K _to) {
         from.put(_from, _to);
         to.put(_to, _from);
+
     }
 
-    public K get(K key){
+    public K get(K key) {
         K val = from.get(key);
-        if (val == null){
+        if (val == null) {
             val = to.get(key);
         }
         return val;
+    }
+
+    public void remove(K field) {
+        K val = from.get(field);
+        if (val == null) {
+            val = to.get(field);
+            if (val != null) {
+                to.remove(field);
+                from.remove(val);
+            }
+        } else {
+            from.remove(field);
+            to.remove(val);
+        }
+    }
+
+    public Set<Map.Entry<K, K>> entrySet() {
+        return from.entrySet();
     }
 }

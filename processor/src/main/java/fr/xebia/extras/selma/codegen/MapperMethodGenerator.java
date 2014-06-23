@@ -17,7 +17,6 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.Fields;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -38,21 +37,17 @@ public class MapperMethodGenerator {
     private final MappingRegistry mappingRegistry;
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoredFields;
+    private final FieldsWrapper customFields;
 
-    public MapperMethodGenerator(JavaWriter writer, ExecutableElement mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
+    public MapperMethodGenerator(JavaWriter writer, ExecutableElement method, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
         this.writer = writer;
-        this.mapperMethod = new MethodWrapper(mapperMethod, context);
+        this.mapperMethod = new MethodWrapper(method, context);
         this.context = context;
         this.configuration = configuration;
 
         this.mappingRegistry = new MappingRegistry(mappingRegistry);
-        this.ignoredFields = new IgnoreFieldsWrapper(context, mapperMethod, configuration.ignoredFields());
-
-        if (this.mapperMethod.hasFields()) { // Add Specific method Field mapping
-            for (AnnotationWrapper field : AnnotationWrapper.buildFor(context, mapperMethod, Fields.class).getAsAnnotationWrapper("value")) {
-                this.mappingRegistry.pushFieldMap(mapperMethod, field);
-            }
-        }
+        this.ignoredFields = new IgnoreFieldsWrapper(context, method, configuration.ignoredFields());
+        this.customFields = new FieldsWrapper(context, mapperMethod, mappingRegistry.fields());
     }
 
     public static MapperMethodGenerator create(JavaWriter writer, ExecutableElement mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
@@ -60,7 +55,6 @@ public class MapperMethodGenerator {
     }
 
     public void build() throws IOException {
-
 
         buildMappingMethod(writer, mapperMethod.inOutType(), mapperMethod.getSimpleName(), true);
 
@@ -71,6 +65,9 @@ public class MapperMethodGenerator {
 
         // Report unused ignore fields
         ignoredFields.reportUnusedFields();
+
+        // Report unused custom fields mapping
+        customFields.reportUnused();
     }
 
     private void buildMappingMethods(JavaWriter writer) throws IOException {
@@ -181,10 +178,7 @@ public class MapperMethodGenerator {
         Set<String> outFields = outBean.getSetterFields();
         for (String field : inBean.getFields()) {
 
-            String outField = mappingRegistry.getFieldFor(field);
-            if (outField == null) {
-                outField = field;
-            }
+            String outField = customFields.getFieldFor(field);
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 

@@ -17,14 +17,9 @@
 package fr.xebia.extras.selma.it;
 
 import fr.xebia.extras.selma.Selma;
-import fr.xebia.extras.selma.beans.EnumA;
-import fr.xebia.extras.selma.beans.EnumB;
 import fr.xebia.extras.selma.beans.SimplePerson;
 import fr.xebia.extras.selma.beans.SimplePersonDto;
-import fr.xebia.extras.selma.it.mappers.CustomClassEnumMapper;
 import fr.xebia.extras.selma.it.mappers.CustomFieldMapper;
-import fr.xebia.extras.selma.it.mappers.CustomMethodEnumMapper;
-import fr.xebia.extras.selma.it.mappers.CustomMethodNoDefaultEnumMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
@@ -78,6 +73,18 @@ public class CustomFieldMapperIT extends IntegrationTestBase {
 
         Assert.assertEquals(person.getPrenom(), personDto.getLastName());
         Assert.assertEquals(person.getNom(), personDto.getFirstName());
+    }
+
+    @Test
+    public void given_custom_fields_not_existing_for_class_compiler_should_report_warning() throws Exception {
+
+        assertCompilationWarning(CustomFieldMapper.class, "public interface CustomFieldMapper {", "Custom @Field({\"classfieldfrom\",\"classfieldto\"}) mapping is never used !");
+    }
+
+    @Test
+    public void given_custom_fields_not_existing_for_method_compiler_should_report_warning() throws Exception {
+
+        assertCompilationWarning(CustomFieldMapper.class, "SimplePersonDto asPersonDtoReverseName(SimplePerson in);", "Custom @Field({\"methodfieldfrom\",\"methodfieldto\"}) mapping is never used !");
     }
 
 }
