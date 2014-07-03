@@ -23,10 +23,8 @@ import fr.xebia.extras.selma.beans.CityOut;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
 
-/**
- *
- */
-@Mapper()
+
+@Mapper
 @IgnoreFields({"name", "notUsedClassField"})
 public interface IgnoreFieldMapper {
 

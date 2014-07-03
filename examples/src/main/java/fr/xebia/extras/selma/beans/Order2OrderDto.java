@@ -26,5 +26,6 @@ public interface Order2OrderDto {
 
     OrderDto to(Order in);
 
+    ProductDto to(Product in);
 
 }
