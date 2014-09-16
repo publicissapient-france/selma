@@ -29,6 +29,7 @@ public class MappingRegistry {
     final Map<InOutType, MappingBuilder> interceptorMap;
     final MapperGeneratorContext context;
     private FieldsWrapper fields;
+    private CustomMapperWrapper customMapers;
 
 
     public MappingRegistry(MapperGeneratorContext context) {
@@ -42,15 +43,19 @@ public class MappingRegistry {
         this.registryMap = new HashMap<InOutType, MappingBuilder>(registry.registryMap);
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>(registry.interceptorMap);
         this.context = registry.context;
+        this.customMapers = registry.customMapers;
     }
 
     public MappingBuilder findMappingFor(InOutType inOutType) {
 
-        MappingBuilder res;
+        MappingBuilder res = customMapers.getMapper(inOutType);
         // First look in registry
-        if (registryMap.get(inOutType) != null) {
+
+        if (res == null) {
             res = registryMap.get(inOutType);
-        } else { // look in chain
+        }
+        if (res == null) {
+            // look in chain
 
             res = MappingBuilder.getBuilderFor(context, inOutType);
             if (res != null && !inOutType.areDeclared()) {
@@ -107,7 +112,7 @@ public class MappingRegistry {
     }
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {
-        return interceptorMap.get(inOutType);
+        return customMapers.getMappingInterceptor(inOutType);
     }
 
     public void fields(FieldsWrapper fields) {
@@ -117,5 +122,10 @@ public class MappingRegistry {
 
     public FieldsWrapper fields() {
         return fields;
+    }
+
+    public void customMappers(CustomMapperWrapper customMapers) {
+
+        this.customMapers = customMapers;
     }
 }

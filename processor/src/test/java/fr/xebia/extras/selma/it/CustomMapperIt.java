@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.it;
 
+import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.PersonIn;
@@ -24,7 +25,6 @@ import fr.xebia.extras.selma.it.mappers.CustomMapper;
 import fr.xebia.extras.selma.it.mappers.CustomMapperSupport;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import fr.xebia.extras.selma.Selma;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -36,6 +36,11 @@ public class CustomMapperIt extends IntegrationTestBase {
 
 
     public static final String MAPPED_BY_GIVEN_CUSTOM = "Mapped by given custom";
+
+    @Test
+    public void given_not_used_custom_mapper_method_compilation_should_raise_a_warning() throws Exception {
+        assertCompilationWarning(CustomMapperSupport.class, "public interface CustomMapperSupport {", "Custom Mapper \"asCityOut\" is never used");
+    }
 
     @Test
     public void should_map_bean_with_custom_mapper() throws IllegalAccessException, InstantiationException, ClassNotFoundException {

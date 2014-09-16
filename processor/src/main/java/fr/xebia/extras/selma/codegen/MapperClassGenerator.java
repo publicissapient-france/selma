@@ -25,7 +25,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.*;
@@ -51,6 +50,7 @@ public class MapperClassGenerator {
     private final List<TypeElement> customMaperFields;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
     private final FieldsWrapper fields;
+    private CustomMapperWrapper customMappers;
 
     public MapperClassGenerator(String classe, Collection<ExecutableElement> executableElements, ProcessingEnvironment processingEnvironment) {
         this.origClasse = classe;
@@ -73,7 +73,10 @@ public class MapperClassGenerator {
         }
 
         // Here we collect custom mappers
-        collectCustom(mapper);
+        //collectCustom(mapper);
+        customMappers = new CustomMapperWrapper(mapper, context);
+        mappingRegistry.customMappers(customMappers);
+
         collectEnums(mapper);
         validateTypes();
     }
@@ -85,7 +88,7 @@ public class MapperClassGenerator {
         }
     }
 
-    private void collectCustom(AnnotationWrapper annotationWrapper) {
+    /*private void collectCustom(AnnotationWrapper annotationWrapper) {
 
 
         if (annotationWrapper.getAsStrings("withCustom").size() > 0) {
@@ -133,11 +136,7 @@ public class MapperClassGenerator {
                     customMaperFields.add(element);
                 }
             }
-        }
-
-    }
-
-    private boolean isValidCustomMapping(MethodWrapper methodWrapper) {
+        }/*private boolean isValidCustomMapping(MethodWrapper methodWrapper) {
         boolean res = true;
 
         if (MapperProcessor.exclusions.contains(methodWrapper.getSimpleName())) {
@@ -167,6 +166,9 @@ public class MapperClassGenerator {
 
         return res;
     }
+
+    }*/
+
 
     private void validateTypes() {
 
@@ -255,6 +257,8 @@ public class MapperClassGenerator {
         writer.endType();
         writer.close();
 
+        customMappers.reportUnused();
+
         // Report unused ignore fields
         ignoreFieldsWrapper.reportUnusedFields();
 
@@ -283,7 +287,7 @@ public class MapperClassGenerator {
             builder.append("this.source").append(i);
         }
 
-        emitCustomMappersFields(writer, false);
+        customMappers.emitCustomMappersFields(writer, false);
 
         if (configuration.getSourceClass().size() > 0) {
             builder.deleteCharAt(0);
@@ -302,12 +306,13 @@ public class MapperClassGenerator {
             writer.emitStatement(assign);
         }
         // Add customMapper instantiation
-        emitCustomMappersFields(writer, true);
+        customMappers.emitCustomMappersFields(writer, true);
 
         writer.endMethod();
         writer.emitEmptyLine();
     }
 
+/*
     private void emitCustomMappersFields(JavaWriter writer, boolean assign) throws IOException {
         for (TypeElement customMaperField : customMaperFields) {
             final String field = String.format(CUSTOM_MAPPER_FIELD_TPL, customMaperField.getSimpleName().toString());
@@ -328,6 +333,7 @@ public class MapperClassGenerator {
             }
         }
     }
+*/
 
     public PackageElement getPackage(Element type) {
         while (type.getKind() != ElementKind.PACKAGE) {

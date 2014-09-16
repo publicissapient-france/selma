@@ -176,7 +176,7 @@ public class Selma {
                         try {
                             method = mapperImpl.getMethod(setter, customMapperClass);
                         } catch (NoSuchMethodException e) {
-                            throw new SelmaException(e, "No setter found for custom mapper %s named %s in %s", customMapperClass, setter, generatedClassName);
+                            //   throw new SelmaException(e, "No setter found for custom mapper %s named %s in %s", customMapperClass, setter, generatedClassName);
                         } catch (SecurityException e) {
                             throw new SelmaException(e, "Setter for custom mapper %s named %s not accessible in %s", customMapperClass, setter, generatedClassName);
                         }
@@ -189,7 +189,7 @@ public class Selma {
                             try {
                                 method = mapperImpl.getMethod(setter, classe);
                             } catch (NoSuchMethodException e) {
-                                throw new SelmaException(e, "No setter found for custom mapper %s named %s in %s", customMapperClass, setter, generatedClassName);
+                                //    throw new SelmaException(e, "No setter found for custom mapper %s named %s in %s", customMapperClass, setter, generatedClassName);
                             } catch (SecurityException e) {
                                 throw new SelmaException(e, "Setter for custom mapper %s named %s not accessible in %s", customMapperClass, setter, generatedClassName);
                             }
