@@ -74,7 +74,7 @@ public class MapperClassGenerator {
 
         // Here we collect custom mappers
         //collectCustom(mapper);
-        customMappers = new CustomMapperWrapper(mapper, context);
+        customMappers = new CustomMapperWrapper(element, context);
         mappingRegistry.customMappers(customMappers);
 
         collectEnums(mapper);

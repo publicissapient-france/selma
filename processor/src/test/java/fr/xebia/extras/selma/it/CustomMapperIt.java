@@ -39,7 +39,7 @@ public class CustomMapperIt extends IntegrationTestBase {
 
     @Test
     public void given_not_used_custom_mapper_method_compilation_should_raise_a_warning() throws Exception {
-        assertCompilationWarning(CustomMapperSupport.class, "public interface CustomMapperSupport {", "Custom Mapper \"asCityOut\" is never used");
+        assertCompilationWarning(CustomMapperSupport.class, "public interface CustomMapperSupport {", "Custom mapping method \"fr.xebia.extras.selma.it.mappers.CustomMapper.asCityOut\" is never used");
     }
 
     @Test
