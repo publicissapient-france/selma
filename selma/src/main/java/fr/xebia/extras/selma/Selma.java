@@ -19,7 +19,6 @@ package fr.xebia.extras.selma;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -32,18 +31,26 @@ import static java.util.Arrays.asList;
  * <p/>
  * It offers a Builder API to retrieve the Mapper you want :
  * <code>
- * // Without factory
- * Selma.mapper(MapperInterface.class).build();
+ * // Without sources
+ * Selma.builder(MapperInterface.class).build();
  * <p/>
- * // With factory
- * Selma.mapper(MapperInterface.class).withFactory(factoryInstance).build();
+ * // With sources
+ * Selma.builder(MapperInterface.class).withSources(sourceInstance).build();
+ * </code>
+ *
+ * <code>
+ * // Without customMapper
+ * Selma.builder(MapperInterface.class).withCustomMappers(customMappers).build();
+ * <p/>
+ * // With sources
+ * Selma.builder(MapperInterface.class).withCustomMappers(customMappers).build();
  * </code>
  * <p/>
  * It also offers two simple static methods getMapper(MapperInterface.class) offering the same service level.
  * <p/>
  * Please notice that Selma holds a cache of the instantiated Mappers, and will maintain them as Singleton.
+ * You can bypass the cache using the builder API and specifying disableCache() on it.
  * <p/>
- * TODO Provide a nicer way of building mapper
  */
 public class Selma {
 
@@ -51,20 +58,19 @@ public class Selma {
     private static final Map<String, Object> mappers = new ConcurrentHashMap<String, Object>();
 
     /**
-     * Retrieve the generated Mapper for the corresponding interface in the classpath and instantiate it with default factory.
+     * Return a builder style component to build the Mapper using this builder you can pass the sources, custom mappers and bypass the default cache registry.
      *
      * @param mapperClass The Mapper interface class
-     * @param <T>         The Mapper interface itself
-     * @return A new Mapper instance or previously instantiated selma
+     * @return a new MapperBuilder used to instantiate the mapper class
      * @throws IllegalArgumentException If for some reason the Mapper class can not be loaded or instantiated
      */
-    public static <T> MapperBuilder<T> builder(Class<T> mapperClass) throws IllegalArgumentException {
+    public static <T> MapperBuilder<T> builder(Class<T> mapperClass) {
 
         return new MapperBuilder<T>(mapperClass);
     }
 
     /**
-     * Retrieve the generated Mapper for the corresponding interface in the classpath and instantiate it with default factory.
+     * Retrieve the generated Mapper for the corresponding interface in the classpath and instantiate it.
      *
      * @param mapperClass The Mapper interface class
      * @param <T>         The Mapper interface itself
@@ -125,16 +131,20 @@ public class Selma {
      */
     public synchronized static <T, V, U> T getMapper(Class<T> mapperClass, V source, U customMapper) throws IllegalArgumentException {
 
-
         return getMapper(mapperClass, source == null ? null : Arrays.asList(source), customMapper == null ? null : Arrays.asList(customMapper));
     }
 
 
-    public synchronized static <T, V, U> T getMapper(Class<T> mapperClass, List source, List customMappers) throws IllegalArgumentException {
+    private synchronized static <T, V, U> T getMapper(Class<T> mapperClass, List source, List customMappers) throws IllegalArgumentException {
+        return getMapper(mapperClass, source, customMappers, true);
+    }
+
+
+    private synchronized static <T, V, U> T getMapper(Class<T> mapperClass, List source, List customMappers, boolean useCache) throws IllegalArgumentException {
 
         final String mapperKey = String.format("%s-%s-%s", mapperClass.getCanonicalName(), source, customMappers);
 
-        if (!mappers.containsKey(mapperKey)) {
+        if (!mappers.containsKey(mapperKey) || !useCache) {
             // First look for the context class loader
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -158,7 +168,7 @@ public class Selma {
                     throw new IllegalArgumentException("Mapper class " + mapperImpl.toString() + " constructor needs a source " + retainedConstructor.toString());
                 }
 
-                if (source != null) {
+                if (source != null && source.size() > 0) {
                     mapperInstance = retainedConstructor.newInstance(source.toArray());
                 } else {
                     mapperInstance = mapperImpl.newInstance();
@@ -213,7 +223,9 @@ public class Selma {
                 throw new IllegalArgumentException(String.format("Instantiation of Mapper class %s failed (No constructor with %s parameter !) : %s", generatedClassName, source.getClass().getSimpleName(), e.getMessage()), e);
             }
 
-            mappers.put(mapperKey, mapperInstance);
+            if (useCache) {
+                mappers.put(mapperKey, mapperInstance);
+            }
             return mapperInstance;
         }
 
@@ -226,39 +238,44 @@ public class Selma {
         private final Class<T> mapperClass;
         private final List customMappers;
         private final List sources;
+        private final boolean cache;
 
-        public MapperBuilder(Class<T> mapperClass) {
+        private MapperBuilder(Class<T> mapperClass) {
 
             this.mapperClass = mapperClass;
+            customMappers = null;
+            sources = null;
+            cache = true;
+        }
 
-            customMappers = new ArrayList<Object>();
-            sources = new ArrayList<Object>();
+        private MapperBuilder(Class<T> mapperClass, List sources, List customMappers, boolean cache) {
+
+            this.mapperClass = mapperClass;
+            this.sources = sources;
+            this.customMappers = customMappers;
+            this.cache = cache;
         }
 
         public T build() {
             final T res;
-            if (customMappers.size() > 0) {
-                if (sources.size() > 0) {
-                    res = getMapper(mapperClass, sources.get(0), customMappers.get(0));
-                } else {
-                    res = getMapper(mapperClass, null, customMappers.get(0));
-                }
-            } else {
-                res = getMapper(mapperClass);
-            }
+            res = getMapper(mapperClass, sources, customMappers, cache);
             return res;
         }
 
         public MapperBuilder<T> withCustom(Object... customMapper) {
 
-            customMappers.addAll(asList(customMapper));
-            return this;
+            return new MapperBuilder<T>(mapperClass, sources, asList(customMapper), cache);
         }
 
         public MapperBuilder<T> withSources(Object... dataSource) {
 
-            sources.addAll(asList(dataSource));
-            return this;
+            return new MapperBuilder<T>(mapperClass, asList(dataSource), customMappers, cache);
         }
+
+        public MapperBuilder<T> disableCache() {
+
+            return new MapperBuilder<T>(mapperClass, sources, customMappers, false);
+        }
+
     }
 }

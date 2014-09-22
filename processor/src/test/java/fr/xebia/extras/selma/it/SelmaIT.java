@@ -77,9 +77,15 @@ public class SelmaIT extends IntegrationTestBase {
     }
 
     @Test
-    public void given_a_single_mapper_class_selma_dsl_should_build_it() {
+    public void given_a_single_mapper_class_selma_dsl_should_build_and_cache_it_for_later_use() {
         SelmaTestMapper mapper = builder(SelmaTestMapper.class).build();
         Assert.assertTrue(mapper == mapper(SelmaTestMapper.class));
+    }
+
+    @Test
+    public void given_a_single_mapper_with_diasbled_cahce_class_selma_dsl_should_build_it_two_times() {
+        SelmaTestMapper mapper = builder(SelmaTestMapper.class).disableCache().build();
+        Assert.assertFalse(mapper == mapper(SelmaTestMapper.class));
     }
 
     @Test
