@@ -1,3 +1,8 @@
+0.8 -
+* #13: Add compiler warning for unused EnumMapper
+* #14: Add compiler warning for unused CustomMapper and Interceptor
+* #25: Add mappers cache bypass and check for cached instance class validity
+
 0.7 - 7/3/2014
 * #22: Same enum mapping is now processed as an immutable class
 * #23: Ignore field now support fully qualified name
