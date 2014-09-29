@@ -67,20 +67,6 @@ public class MappingRegistry {
         return res;
     }
 
-    /**
-     * Adds a custom mapping method to the registry for later use at codegen.
-     *
-     * @param customMapper
-     * @param method
-     */
-    public void pushCustomMapper(final String customMapper, final MethodWrapper method) {
-
-
-        InOutType inOutType = method.inOutType();
-        MappingBuilder res = MappingBuilder.newCustomMapper(inOutType, String.format("%s.%s", customMapper, method.getSimpleName()));
-
-        registryMap.put(inOutType, res);
-    }
 
     public void pushCustomEnumMapper(AnnotationWrapper enumMapper) {
 
@@ -92,9 +78,9 @@ public class MappingRegistry {
 
         String defaultValue = enumMapper.getAsString("defaultValue");
 
-        if (!inOutType.areEnums()){
+        if (!inOutType.areEnums()) {
             context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
-        } else if (inOutType.in().toString().contains(DEFAULT_ENUM) || inOutType.out().toString().contains(DEFAULT_ENUM)){
+        } else if (inOutType.in().toString().contains(DEFAULT_ENUM) || inOutType.out().toString().contains(DEFAULT_ENUM)) {
 
             context.error(enumMapper.asElement(), "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
         } else {
@@ -103,12 +89,6 @@ public class MappingRegistry {
             registryMap.put(inOutType, res);
         }
 
-    }
-
-    public void pushMappingInterceptor(String customMapper, MethodWrapper method) {
-        InOutType inOutType = method.inOutArgs();
-        MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType, String.format("%s.%s", customMapper, method.getSimpleName()));
-        interceptorMap.put(inOutType, res);
     }
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {
