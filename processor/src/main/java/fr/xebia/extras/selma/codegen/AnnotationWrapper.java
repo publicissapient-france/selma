@@ -32,12 +32,14 @@ import java.util.List;
  */
 public class AnnotationWrapper {
     private final AnnotationMirror annotationMirror;
+    private final Element annotatedElement;
     private final HashMap<String, AnnotationValue> map;
     private final MapperGeneratorContext context;
 
 
-    public AnnotationWrapper(MapperGeneratorContext context, AnnotationMirror annotationMirror) {
+    public AnnotationWrapper(MapperGeneratorContext context, AnnotationMirror annotationMirror, Element annotatedElement) {
         this.annotationMirror = annotationMirror;
+        this.annotatedElement = annotatedElement;
         this.map = new HashMap<String, AnnotationValue>();
         this.context = context;
 
@@ -60,7 +62,7 @@ public class AnnotationWrapper {
         }
 
         if (annotationMirror != null) {
-            return new AnnotationWrapper(context, annotationMirror);
+            return new AnnotationWrapper(context, annotationMirror, method);
         } else {
             return null;
         }
@@ -93,7 +95,7 @@ public class AnnotationWrapper {
             List<? extends AnnotationValue> values = (List<? extends AnnotationValue>) myValue.getValue();
             for (AnnotationValue value : values) {
                 if (value.getValue() instanceof AnnotationMirror){
-                    res.add(new AnnotationWrapper(context, (AnnotationMirror)value));
+                    res.add(new AnnotationWrapper(context, (AnnotationMirror) value, annotatedElement));
                 }
             }
         }
@@ -120,4 +122,9 @@ public class AnnotationWrapper {
     public Element asElement() {
         return this.annotationMirror.getAnnotationType().asElement();
     }
+
+    public Element getAnnotatedElement() {
+        return annotatedElement;
+    }
+
 }

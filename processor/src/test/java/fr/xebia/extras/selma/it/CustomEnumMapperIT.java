@@ -33,6 +33,19 @@ import org.junit.Test;
 @Compile(withClasses = {CustomClassEnumMapper.class, CustomMethodEnumMapper.class, CustomMethodNoDefaultEnumMapper.class})
 public class CustomEnumMapperIT extends IntegrationTestBase {
 
+
+    @Test
+    public void given_a_mapper_with_unused_class_enumMapper_when_compiled_then_compilation_should_raise_a_warning_for_unused_enumMapper() throws Exception {
+
+        assertCompilationWarning(CustomClassEnumMapper.class, "public interface CustomClassEnumMapper {", "@EnumMapper(from=fr.xebia.extras.selma.beans.EnumIn, to=fr.xebia.extras.selma.beans.EnumOut) is never used");
+    }
+
+    @Test
+    public void given_a_mapper_with_unused_method_enumMapper_when_compiled_then_compilation_should_raise_a_warning_for_unused_enumMapper() throws Exception {
+
+        assertCompilationWarning(CustomMethodEnumMapper.class, "CityOut asEnumBeanIn(CityIn in);", "@EnumMapper(from=fr.xebia.extras.selma.beans.EnumIn, to=fr.xebia.extras.selma.beans.EnumOut) is never used");
+    }
+
     @Test
     public void given_a_mapper_for_2_enum_with_default_value_on_class_when_input_is_not_mappable_then_default_value_should_be_used() {
         CustomClassEnumMapper mapper = Selma.mapper(CustomClassEnumMapper.class);

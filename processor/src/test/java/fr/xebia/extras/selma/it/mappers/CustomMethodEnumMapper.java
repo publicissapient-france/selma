@@ -18,8 +18,7 @@ package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.EnumMapper;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.EnumA;
-import fr.xebia.extras.selma.beans.EnumB;
+import fr.xebia.extras.selma.beans.*;
 
 /**
  * Created by slemesle on 12/03/2014.
@@ -29,5 +28,7 @@ public interface CustomMethodEnumMapper {
 
     @EnumMapper(defaultValue = "C")
     EnumB asEnumB(EnumA in);
+
+    @EnumMapper(from = EnumIn.class, to = EnumOut.class) CityOut asEnumBeanIn(CityIn in);
 
 }

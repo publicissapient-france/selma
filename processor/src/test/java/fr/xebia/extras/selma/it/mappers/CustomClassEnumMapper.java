@@ -20,12 +20,14 @@ import fr.xebia.extras.selma.EnumMapper;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.EnumA;
 import fr.xebia.extras.selma.beans.EnumB;
+import fr.xebia.extras.selma.beans.EnumIn;
+import fr.xebia.extras.selma.beans.EnumOut;
 
 /**
  * Created by slemesle on 12/03/2014.
  */
 
-@Mapper(withEnums = @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"))
+@Mapper(withEnums = {@EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"), @EnumMapper(from = EnumIn.class, to = EnumOut.class)})
 public interface CustomClassEnumMapper {
 
     EnumB asEnumB(EnumA in);

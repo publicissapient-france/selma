@@ -17,14 +17,12 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.EnumMapper;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.SelmaConstants;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.*;
@@ -48,6 +46,7 @@ public class MapperClassGenerator {
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
     private final FieldsWrapper fields;
+    private EnumMappersWrapper enumMappers;
     private CustomMapperWrapper customMappers;
 
     public MapperClassGenerator(String classe, Collection<ExecutableElement> executableElements, ProcessingEnvironment processingEnvironment) {
@@ -70,20 +69,14 @@ public class MapperClassGenerator {
         }
 
         // Here we collect custom mappers
-        //collectCustom(mapper);
         customMappers = new CustomMapperWrapper(element, context);
         mappingRegistry.customMappers(customMappers);
 
-        collectEnums(mapper);
+        enumMappers = new EnumMappersWrapper(mapper, context);
+        mappingRegistry.enumMappers(enumMappers);
         validateTypes();
     }
 
-    private void collectEnums(AnnotationWrapper mapper) {
-
-        for (AnnotationWrapper enumMapper : mapper.getAsAnnotationWrapper("withEnums")) {
-            mappingRegistry.pushCustomEnumMapper(enumMapper);
-        }
-    }
 
 
     private void validateTypes() {
@@ -92,7 +85,7 @@ public class MapperClassGenerator {
 
             MethodWrapper methodWrapper = new MethodWrapper(mapperMethod, context);
 
-            processEnumMapper(methodWrapper);
+            enumMappers.buildForMethod(methodWrapper);
 
             InOutType inOutType = methodWrapper.inOutType();
             if (inOutType.differs()) {
@@ -106,28 +99,6 @@ public class MapperClassGenerator {
             }
 
         }
-    }
-
-    private void processEnumMapper(MethodWrapper methodWrapper) {
-        if (methodWrapper.hasEnumMapper()) {
-
-            TypeMirror enumOut = methodWrapper.returnType();
-            TypeMirror enumIn = methodWrapper.firstParameterType();
-            InOutType inOutType = new InOutType(enumIn, enumOut);
-
-            AnnotationWrapper enumMapper = AnnotationWrapper.buildFor(context, methodWrapper.element(), EnumMapper.class);
-
-            // when mapping is used on a method mapping one enum to another we can use these values
-            if (!inOutType.areEnums()) {
-
-                mappingRegistry.pushCustomEnumMapper(enumMapper);
-            } else {
-                // Use from and to in annotation
-                mappingRegistry.pushCustomEnumMapper(inOutType, enumMapper);
-            }
-
-        }
-
     }
 
     public void build() throws IOException {
@@ -173,6 +144,7 @@ public class MapperClassGenerator {
         writer.endType();
         writer.close();
 
+        // Report unused customMappers
         customMappers.reportUnused();
 
         // Report unused ignore fields
@@ -180,6 +152,9 @@ public class MapperClassGenerator {
 
         // Report unused custom fields mapping
         fields.reportUnused();
+
+        // Report unused enumMapper
+        enumMappers.reportUnused();
     }
 
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {

@@ -24,12 +24,12 @@ import java.util.Map;
  */
 public class MappingRegistry {
 
-    public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
     final Map<InOutType, MappingBuilder> registryMap;
     final Map<InOutType, MappingBuilder> interceptorMap;
     final MapperGeneratorContext context;
     private FieldsWrapper fields;
     private CustomMapperWrapper customMapers;
+    private EnumMappersWrapper enumMappers;
 
 
     public MappingRegistry(MapperGeneratorContext context) {
@@ -44,6 +44,7 @@ public class MappingRegistry {
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>(registry.interceptorMap);
         this.context = registry.context;
         this.customMapers = registry.customMapers;
+        this.enumMappers = registry.enumMappers;
     }
 
     public MappingBuilder findMappingFor(InOutType inOutType) {
@@ -51,6 +52,9 @@ public class MappingRegistry {
         MappingBuilder res = customMapers.getMapper(inOutType);
         // First look in registry
 
+        if (res == null) {
+            res = enumMappers.get(inOutType);
+        }
         if (res == null) {
             res = registryMap.get(inOutType);
         }
@@ -65,30 +69,6 @@ public class MappingRegistry {
         }
 
         return res;
-    }
-
-
-    public void pushCustomEnumMapper(AnnotationWrapper enumMapper) {
-
-        InOutType inOutType = new InOutType(enumMapper.getAsTypeMirror("from"), enumMapper.getAsTypeMirror("to"));
-        pushCustomEnumMapper(inOutType, enumMapper);
-    }
-
-    public void pushCustomEnumMapper(InOutType inOutType, AnnotationWrapper enumMapper) {
-
-        String defaultValue = enumMapper.getAsString("defaultValue");
-
-        if (!inOutType.areEnums()) {
-            context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
-        } else if (inOutType.in().toString().contains(DEFAULT_ENUM) || inOutType.out().toString().contains(DEFAULT_ENUM)) {
-
-            context.error(enumMapper.asElement(), "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
-        } else {
-
-            MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);
-            registryMap.put(inOutType, res);
-        }
-
     }
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {
@@ -107,5 +87,10 @@ public class MappingRegistry {
     public void customMappers(CustomMapperWrapper customMapers) {
 
         this.customMapers = customMapers;
+    }
+
+    public void enumMappers(EnumMappersWrapper enumMappers) {
+
+        this.enumMappers = enumMappers;
     }
 }
