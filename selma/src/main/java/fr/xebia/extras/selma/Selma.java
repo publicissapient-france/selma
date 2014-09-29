@@ -144,7 +144,8 @@ public class Selma {
 
         final String mapperKey = String.format("%s-%s-%s", mapperClass.getCanonicalName(), source, customMappers);
 
-        if (!mappers.containsKey(mapperKey) || !useCache) {
+        Object mapperInstance = mappers.get(mapperKey);
+        if ((mapperInstance == null || !mapperClass.isAssignableFrom(mapperInstance.getClass())) || !useCache) {
             // First look for the context class loader
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -152,8 +153,6 @@ public class Selma {
                 classLoader = Selma.class.getClassLoader();
             }
 
-            @SuppressWarnings("unchecked")
-            T mapperInstance = null;
             String generatedClassName = mapperClass.getCanonicalName() + SelmaConstants.MAPPER_CLASS_SUFFIX;
             try {
 
@@ -226,10 +225,10 @@ public class Selma {
             if (useCache) {
                 mappers.put(mapperKey, mapperInstance);
             }
-            return mapperInstance;
+            return (T) mapperInstance;
         }
 
-        return (T) mappers.get(mapperKey);
+        return (T) mapperInstance;
     }
 
     public static class MapperBuilder<T> {
