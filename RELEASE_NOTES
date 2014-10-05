@@ -1,7 +1,8 @@
-0.8 -
+0.8 - 10/5/2014
 * #13: Add compiler warning for unused EnumMapper
 * #14: Add compiler warning for unused CustomMapper and Interceptor
 * #25: Add mappers cache bypass and check for cached instance class validity
+* #25: Verify validity of the built mapper instances against current class loader for use with Play dev mode
 
 0.7 - 7/3/2014
 * #22: Same enum mapping is now processed as an immutable class
