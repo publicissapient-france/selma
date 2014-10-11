@@ -44,6 +44,16 @@ public abstract class MappingBuilder {
     }
 
     public static final String JAVA_TIME_LOCAL_DATE_CLASS = "java.time.LocalDate";
+    public static final String JAVA_TIME_DURATION_CLASS = "java.time.Duration";
+    public static final String JAVA_TIME_INSTANT_CLASS = "java.time.Instant";
+    public static final String JAVA_TIME_LOCAL_DATE_TIME_CLASS = "java.time.LocalDateTime";
+
+    private static final Set<String> immutableTypes = new HashSet<String>(Arrays.asList(BigInteger.class.getName(),
+            BigDecimal.class.getName(), UUID.class.getName(), JAVA_TIME_LOCAL_DATE_CLASS, JAVA_TIME_DURATION_CLASS,
+            JAVA_TIME_INSTANT_CLASS, JAVA_TIME_LOCAL_DATE_TIME_CLASS, "java.time.LocalTime", "java.time.MonthDay",
+            "java.time.OffsetDateTime", "java.time.OffsetTime", "java.time.Period", "java.time.Year",
+            "java.time.YearMonth", "java.time.ZonedDateTime", "java.time.ZoneOffset"));
+
 
     static {  // init specs here
 
@@ -173,7 +183,7 @@ public abstract class MappingBuilder {
             }
         });
 
-        // Map BigInteger / BigDecimal
+        // Map Immutables
         mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
@@ -188,43 +198,9 @@ public abstract class MappingBuilder {
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 if (super.match(context, inOutType)) {
                     String inType = inOutType.in().toString();
-                    return BigInteger.class.getName().equals(inType) || BigDecimal.class.getName().equals(inType);
+                    return immutableTypes.contains(inType);
                 }
                 return false;
-            }
-        });
-
-        // Map UUID
-        mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
-            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder(true) {
-                    @Override
-                    MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
-                        root.body(vars.setOrAssign("%s"));
-                        return root.body;
-                    }
-                };
-            }
-
-            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                return super.match(context, inOutType) && UUID.class.getName().equals(inOutType.in().toString());
-            }
-        });
-
-        // Map LocalDate
-        mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
-            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder(true) {
-                    @Override
-                    MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
-                        root.body(vars.setOrAssign("%s"));
-                        return root.body;
-                    }
-                };
-            }
-
-            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                return super.match(context, inOutType) && JAVA_TIME_LOCAL_DATE_CLASS.equals(inOutType.in().toString());
             }
         });
 
