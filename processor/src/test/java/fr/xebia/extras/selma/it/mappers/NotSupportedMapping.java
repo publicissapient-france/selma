@@ -18,6 +18,8 @@ package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.Mapper;
 
+import java.io.File;
+
 /**
  * Created with IntelliJ IDEA.
  * User: slemesle
@@ -28,6 +30,7 @@ import fr.xebia.extras.selma.Mapper;
 @Mapper(ignoreNotSupported = false, ignoreMissingProperties = false)
 public interface NotSupportedMapping {
 
-    String[][] map(String[][] in);
+    File map(File in);
+
 
 }

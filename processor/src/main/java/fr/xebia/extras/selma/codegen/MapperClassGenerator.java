@@ -186,6 +186,7 @@ public class MapperClassGenerator {
 
         // newParams hold the parameters we pass to Pojo constructor
         context.setNewParams(builder.toString());
+        context.setSourcesCount(configuration.getSourceClass().size());
 
         // First build default constructor
         writer.emitEmptyLine();

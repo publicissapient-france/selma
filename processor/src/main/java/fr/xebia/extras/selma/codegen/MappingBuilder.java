@@ -43,6 +43,8 @@ public abstract class MappingBuilder {
         return res;
     }
 
+    public static final String JAVA_TIME_LOCAL_DATE_CLASS = "java.time.LocalDate";
+
     static {  // init specs here
 
         /**
@@ -206,6 +208,23 @@ public abstract class MappingBuilder {
 
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return super.match(context, inOutType) && UUID.class.getName().equals(inOutType.in().toString());
+            }
+        });
+
+        // Map LocalDate
+        mappingSpecificationList.add(new SameDeclaredMappingSpecification() {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(true) {
+                    @Override
+                    MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                        root.body(vars.setOrAssign("%s"));
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return super.match(context, inOutType) && JAVA_TIME_LOCAL_DATE_CLASS.equals(inOutType.in().toString());
             }
         });
 

@@ -18,6 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -169,6 +170,21 @@ public class BeanWrapper {
     public Element getSetterElement(String field) {
 
         return fieldsGraph.get(field).setter.element();
+    }
+
+    public boolean hasCallableConstructor() {
+        boolean res = false;
+        List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
+        for (ExecutableElement constructor : constructors) {
+            if (constructor.getModifiers().contains(Modifier.PUBLIC) && !constructor.getModifiers().contains(Modifier.ABSTRACT)) {
+
+                if (constructor.getParameters().size() == context.getSourcesCount()) {
+                    res = true;
+                    break;
+                }
+            }
+        }
+        return res;
     }
 
     class FieldItem {

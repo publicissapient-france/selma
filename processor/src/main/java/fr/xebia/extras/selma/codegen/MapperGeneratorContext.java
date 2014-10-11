@@ -51,6 +51,7 @@ public class MapperGeneratorContext {
     // Handle method stack to build all mapping method not already built
     LinkedList<MappingMethod> methodStack;
     private String newParams;
+    private int sourcesCount;
 
     public MapperGeneratorContext(ProcessingEnvironment processingEnvironment, SourceConfiguration configuration) {
         this.elements = processingEnvironment.getElementUtils();
@@ -178,6 +179,13 @@ public class MapperGeneratorContext {
         return newParams;
     }
 
+    public void setSourcesCount(int sourcesCount) {
+        this.sourcesCount = sourcesCount;
+    }
+
+    public int getSourcesCount() {
+        return sourcesCount;
+    }
 
     class StackElem {
         final MappingSourceNode lastNode;

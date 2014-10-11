@@ -20,8 +20,11 @@ import com.squareup.javawriter.JavaWriter;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
@@ -31,6 +34,7 @@ import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 public class MapperMethodGenerator {
 
 
+    private static final Pattern STANDARD_JAVA_PACKAGE = Pattern.compile("^(java|javax)\\.+$");
     private final JavaWriter writer;
     private final MethodWrapper mapperMethod;
     private final MapperGeneratorContext context;
@@ -101,7 +105,8 @@ public class MapperMethodGenerator {
             generateStack(context);
             // set isPrimitiveOrImmutable so we can skip the null check
             isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
-        } else if (inOutType.areDeclared()) {
+
+        } else if (inOutType.areDeclared() && isSupported(inOutType.out())) {
             ptr = ptr.body(instantiateOut(inOutType.out().toString(), context.newParams()));
             context.depth++;
             ptr.child(generate(inOutType));
@@ -128,9 +133,28 @@ public class MapperMethodGenerator {
         methodRoot.write(writer);
     }
 
+    /**
+     * Method called when encountered a bean not known in registry so considered as
+     * custom bean to map.
+     *
+     * @param out
+     * @return
+     */
+    private boolean isSupported(TypeMirror out) {
+        boolean res = false;
+        Matcher matcher = STANDARD_JAVA_PACKAGE.matcher(out.toString());
+        if (!matcher.matches()) {
+            TypeElement outTypeElement = (TypeElement) context.type.asElement(out);
+            BeanWrapper outBean = new BeanWrapper(context, outTypeElement);
+            res = outBean.hasCallableConstructor();
+        }
+
+        return res;
+    }
+
     private void handleNotSupported(InOutType inOutType, MappingSourceNode ptr) {
         final String message = String.format("Failed to generate mapping method for type %s to %s not supported on %s.%s !\n" +
-                "--> Add a custom mapper or @IgnoreFields to fix this", inOutType.in(), inOutType.out(), mapperMethod.element().getEnclosingElement(), mapperMethod.element().toString());
+                "--> Add a custom mapper or @IgnoreFields to fix this ! If you think this a Bug in Selma please report issue here [https://github.com/xebia-france/selma/issues].", inOutType.in(), inOutType.out(), mapperMethod.element().getEnclosingElement(), mapperMethod.element().toString());
         ptr.body(notSupported(message));
         if (configuration.isIgnoreNotSupported()) {
             context.warn(message, mapperMethod.element());

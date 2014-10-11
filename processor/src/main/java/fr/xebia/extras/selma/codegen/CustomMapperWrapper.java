@@ -139,7 +139,7 @@ public class CustomMapperWrapper {
                 }
 
                 if (mappingMethodCount == 0) {
-                    context.error(element, "No valid mapping method found in custom selma class %s\\n A custom mapping method is public static returns a type not void and takes two parameter (bean to convert and factory for instantiation).", customMapper);
+                    context.error(element, "No valid mapping method found in custom selma class %s\\n A custom mapping method is public and returns a type not void, it takes one parameter or more if you specified datasource.", customMapper);
                 } else {
 
                     List<ExecutableElement> constructors = ElementFilter.constructorsIn(element.getEnclosedElements());
