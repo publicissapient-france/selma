@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.codegen;
 import fr.xebia.extras.selma.Mapper;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -44,7 +45,16 @@ public final class MapperProcessor extends AbstractProcessor {
     static Types types;
 
 
-    protected static final Set<String> exclusions = new HashSet<String>(Arrays.asList("equals", "getClass", "hashCode", "toString", "notify", "notifyAll", "wait", "clone", "finalize"));
+    protected static final Set<ExecutableElement> exclusions = new HashSet<ExecutableElement>();
+
+    @Override public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+
+        TypeElement objectElement = processingEnv.getElementUtils().getTypeElement(Object.class.getName());
+        List<ExecutableElement> objectElementsMethods = ElementFilter.methodsIn(objectElement.getEnclosedElements());
+        exclusions.clear();
+        exclusions.addAll(objectElementsMethods);
+    }
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
@@ -53,6 +63,7 @@ public final class MapperProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+
         types = processingEnv.getTypeUtils();
         populateAllMappers(roundEnv);
 
@@ -84,7 +95,7 @@ public final class MapperProcessor extends AbstractProcessor {
                 continue;
             } else {
                 TypeElement typeElement = (TypeElement)element;
-                List<? extends Element> allMembers =  element.getEnclosedElements();
+                List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(typeElement);
                 List<? extends Element> methods = ElementFilter.methodsIn(allMembers);
 
                 for (Element method : methods) {
@@ -106,7 +117,7 @@ public final class MapperProcessor extends AbstractProcessor {
 
     private boolean isValidMapperMethod(ExecutableElement executableElement) {
 
-        if(exclusions.contains(executableElement.getSimpleName().toString())){
+        if (exclusions.contains(executableElement)) {
 
             return false;
         }
