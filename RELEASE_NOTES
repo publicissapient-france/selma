@@ -1,3 +1,11 @@
+0.9 -
+* Upgrade JavaWriter to 2.5.0
+* #27: Add support for new java.time date style LocalDate in MappingBuilder
+* #27: Fix not supported mapping error so it can be raised properly when Selma can not generate working code for mapping
+* #31: Improve error message for missing field. Selma now gives a complete @IgnoreFields sample with bean and field name
+* #31: Fix ???
+*
+
 0.8 - 10/5/2014
 * #13: Add compiler warning for unused EnumMapper
 * #14: Add compiler warning for unused CustomMapper and Interceptor
