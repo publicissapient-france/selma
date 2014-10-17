@@ -69,10 +69,13 @@ public @interface Mapper {
 
 
     /**
-     * For test purpose, this allow to disable use of *final* modifier for generated mappers classes
-     * TODO prefix using 'with
-     * @return
+     * For test purpose, this allows to disable use of *final* modifier for generated mappers classes
      */
     boolean withFinalMappers() default true;
 
+    /**
+     * This is used to declare custom immutable types. Selma will copy by reference these types, when it meets same
+     * type for matching fields in source and destination bean.
+     */
+    Class<?>[] withImmutables() default {};
 }

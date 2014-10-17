@@ -584,6 +584,16 @@ public abstract class MappingBuilder {
         return nullSafe;
     }
 
+    public static MappingBuilder newImmutable() {
+        return new MappingBuilder(true) {
+            @Override
+            MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                root.body(vars.setOrAssign("%s"));
+                return root.body;
+            }
+        };
+    }
+
     static abstract class MappingSpecification {
 
         abstract MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType);

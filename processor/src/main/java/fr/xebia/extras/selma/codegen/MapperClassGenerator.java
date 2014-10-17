@@ -46,6 +46,7 @@ public class MapperClassGenerator {
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
     private final FieldsWrapper fields;
+    private ImmutableTypesWrapper immutablesMapper;
     private EnumMappersWrapper enumMappers;
     private CustomMapperWrapper customMappers;
 
@@ -74,6 +75,10 @@ public class MapperClassGenerator {
 
         enumMappers = new EnumMappersWrapper(mapper, context);
         mappingRegistry.enumMappers(enumMappers);
+
+        immutablesMapper = new ImmutableTypesWrapper(mapper, context);
+        mappingRegistry.immutableTypes(immutablesMapper);
+
         validateTypes();
     }
 

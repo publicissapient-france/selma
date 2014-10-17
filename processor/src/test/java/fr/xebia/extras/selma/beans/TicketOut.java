@@ -14,25 +14,38 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.mappers;
-
-import fr.xebia.extras.selma.EnumMapper;
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.EnumA;
-import fr.xebia.extras.selma.beans.EnumB;
-import fr.xebia.extras.selma.beans.EnumIn;
-import fr.xebia.extras.selma.beans.EnumOut;
+package fr.xebia.extras.selma.beans;
 
 /**
- * Created by slemesle on 12/03/2014.
+ * Created by slemesle on 17/10/2014.
  */
+public class TicketOut {
 
-@Mapper(withEnums = {
-        @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"),
-        @EnumMapper(from = EnumIn.class, to = EnumOut.class)
-})
-public interface CustomClassEnumMapper {
+    private String login;
 
-    EnumB asEnumB(EnumA in);
+    private TicketTocken tocken;
 
+    public TicketOut() {
+    }
+
+    public TicketOut(String login, TicketTocken tocken) {
+        this.login = login;
+        this.tocken = tocken;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public TicketTocken getTocken() {
+        return tocken;
+    }
+
+    public void setTocken(TicketTocken tocken) {
+        this.tocken = tocken;
+    }
 }

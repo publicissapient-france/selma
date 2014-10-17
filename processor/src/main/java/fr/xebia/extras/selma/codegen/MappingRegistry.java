@@ -30,6 +30,7 @@ public class MappingRegistry {
     private FieldsWrapper fields;
     private CustomMapperWrapper customMapers;
     private EnumMappersWrapper enumMappers;
+    private ImmutableTypesWrapper immutableTypes;
 
 
     public MappingRegistry(MapperGeneratorContext context) {
@@ -45,6 +46,7 @@ public class MappingRegistry {
         this.context = registry.context;
         this.customMapers = registry.customMapers;
         this.enumMappers = registry.enumMappers;
+        this.immutableTypes = registry.immutableTypes;
     }
 
     public MappingBuilder findMappingFor(InOutType inOutType) {
@@ -57,6 +59,9 @@ public class MappingRegistry {
         }
         if (res == null) {
             res = registryMap.get(inOutType);
+        }
+        if (res == null) {
+            res = immutableTypes.get(inOutType);
         }
         if (res == null) {
             // look in chain
@@ -92,5 +97,9 @@ public class MappingRegistry {
     public void enumMappers(EnumMappersWrapper enumMappers) {
 
         this.enumMappers = enumMappers;
+    }
+
+    public void immutableTypes(ImmutableTypesWrapper immutablesMapper) {
+        this.immutableTypes = immutablesMapper;
     }
 }

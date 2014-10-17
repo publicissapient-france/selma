@@ -14,25 +14,29 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.mappers;
+package fr.xebia.extras.selma.beans;
 
-import fr.xebia.extras.selma.EnumMapper;
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.EnumA;
-import fr.xebia.extras.selma.beans.EnumB;
-import fr.xebia.extras.selma.beans.EnumIn;
-import fr.xebia.extras.selma.beans.EnumOut;
+import java.util.Date;
 
 /**
- * Created by slemesle on 12/03/2014.
+ * Created by slemesle on 17/10/2014.
  */
+public class TicketTocken {
 
-@Mapper(withEnums = {
-        @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"),
-        @EnumMapper(from = EnumIn.class, to = EnumOut.class)
-})
-public interface CustomClassEnumMapper {
+    private final String hash;
+    private final Date expireAt;
 
-    EnumB asEnumB(EnumA in);
+    public TicketTocken(String hash, Date expireAt) {
+        this.hash = hash;
+        this.expireAt = expireAt;
+    }
 
+
+    public String getHash() {
+        return hash;
+    }
+
+    public Date getExpireAt() {
+        return expireAt;
+    }
 }

@@ -16,23 +16,19 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
-import fr.xebia.extras.selma.EnumMapper;
+import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.EnumA;
-import fr.xebia.extras.selma.beans.EnumB;
-import fr.xebia.extras.selma.beans.EnumIn;
-import fr.xebia.extras.selma.beans.EnumOut;
+import fr.xebia.extras.selma.beans.TicketIn;
+import fr.xebia.extras.selma.beans.TicketOut;
+import fr.xebia.extras.selma.beans.TicketTocken;
 
 /**
- * Created by slemesle on 12/03/2014.
+ * Created by slemesle on 17/10/2014.
  */
+@Mapper(withImmutables = {TicketTocken.class})
+@IgnoreFields("fr.xebia.extras.selma.beans.TicketIn.password")
+public interface ImmutableTypesMapper {
 
-@Mapper(withEnums = {
-        @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"),
-        @EnumMapper(from = EnumIn.class, to = EnumOut.class)
-})
-public interface CustomClassEnumMapper {
-
-    EnumB asEnumB(EnumA in);
+    TicketOut asTicketOut(TicketIn source);
 
 }
