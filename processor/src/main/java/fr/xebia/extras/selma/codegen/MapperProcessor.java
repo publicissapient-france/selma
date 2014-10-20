@@ -34,7 +34,7 @@ import java.io.StringWriter;
 import java.util.*;
 
 /**
- *  Process the @Mapper and generate the corresponding implementations
+ * Process the @Mapper and generate the corresponding implementations
  */
 @SupportedAnnotationTypes({"fr.xebia.extras.selma.Mapper"})
 public final class MapperProcessor extends AbstractProcessor {
@@ -94,7 +94,7 @@ public final class MapperProcessor extends AbstractProcessor {
             if (!isValidMapperUse(element)) {
                 continue;
             } else {
-                TypeElement typeElement = (TypeElement)element;
+                TypeElement typeElement = (TypeElement) element;
                 List<? extends Element> allMembers = processingEnv.getElementUtils().getAllMembers(typeElement);
                 List<? extends Element> methods = ElementFilter.methodsIn(allMembers);
 
@@ -106,7 +106,6 @@ public final class MapperProcessor extends AbstractProcessor {
                         VariableElement variableElementInType = executableElement.getParameters().get(0);
                         String inType = variableElementInType.asType().toString();
                         String outType = executableElement.getReturnType().toString();
-                        info(executableElement, "Found selma method : %s %s (%s);", outType, executableElement.getSimpleName(), inType);
                         putMapper(element, executableElement);
                     }
                 }
@@ -170,7 +169,7 @@ public final class MapperProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, element);
     }
 
-    private void info(Element element, String msgTemplate, Object ... args ) {
+    private void info(Element element, String msgTemplate, Object... args) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format(msgTemplate, args), element);
     }
 

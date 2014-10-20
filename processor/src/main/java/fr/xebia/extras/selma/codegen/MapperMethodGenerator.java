@@ -217,7 +217,7 @@ public class MapperMethodGenerator {
 
                 if (isMissingInDestination) {
                     context.error(inBean.getFieldElement(field), String.format("setter for field %s from source bean %s is missing in destination bean %s using field %s !\n" +
-                            " --> Add @IgnoreField(\"%s.%s\") to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), outField, inOutType.in(), field));
+                            " --> Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), outField, inOutType.in(), field));
                     continue;
                 }
 
@@ -246,8 +246,8 @@ public class MapperMethodGenerator {
             for (String outField : outFields) {
 
                 if (!ignoredFields.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
-                    context.error(outBean.getSetterElement(outField), String.format("setter for field %s from destination bean %s has no getter in source bean %s !\n" +
-                            "-->  Add @IgnoreField(\"%s.%s\") to mapper interface / method or add missing setter\"", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField));
+                    context.error(outBean.getSetterElement(outField), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
+                            "-->  Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing setter", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField);
                 } else {
                     context.warn(outBean.getSetterElement(outField), "Field %s not populated in destination bean will be ignored as @IgnoredFields require", outField);
                 }

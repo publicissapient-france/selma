@@ -126,8 +126,6 @@ public class CustomMapperWrapper {
                 for (ExecutableElement method : methods) {
                     MethodWrapper methodWrapper = new MethodWrapper(method, context);
                     if (isValidCustomMapping(methodWrapper)) {
-                        context.info(method, "Found an elligible custom mapping method ...");
-
 
                         if (methodWrapper.isCustomMapper()) {
                             pushCustomMapper(element, methodWrapper);

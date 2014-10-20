@@ -79,14 +79,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.2</version>
                 <configuration>
                     <testSource>6</testSource>
                     <testTarget>6</testTarget>
                     <source>6</source>
                     <target>6</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                    <!--<compilerArgument>-Xlint:unchecked</compilerArgument>-->
+                    <showWarnings>true</showWarnings>
+                    <optimize>true</optimize>
+                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
             <plugin>
