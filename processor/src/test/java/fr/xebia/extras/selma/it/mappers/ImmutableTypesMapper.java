@@ -25,7 +25,7 @@ import fr.xebia.extras.selma.beans.TicketTocken;
 /**
  * Created by slemesle on 17/10/2014.
  */
-@Mapper(withImmutables = {TicketTocken.class})
+@Mapper(withImmutables = {TicketTocken.class, java.lang.Byte.class})
 @IgnoreFields("fr.xebia.extras.selma.beans.TicketIn.password")
 public interface ImmutableTypesMapper {
 

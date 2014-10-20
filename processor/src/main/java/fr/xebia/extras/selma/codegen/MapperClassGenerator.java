@@ -160,6 +160,7 @@ public class MapperClassGenerator {
 
         // Report unused enumMapper
         enumMappers.reportUnused();
+        immutablesMapper.reportUnused();
     }
 
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {

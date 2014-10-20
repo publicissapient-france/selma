@@ -48,4 +48,10 @@ public class ImmutableTypesMappingIT extends IntegrationTestBase {
         Assert.assertThat(ticketOut.getTocken(), CoreMatchers.is(tocken));
     }
 
+    @Test
+    public void given_mapper_with_not_used_immutable_type_when_compiled_then_report_warning_unused() throws Exception {
+
+        assertCompilationWarning(ImmutableTypesMapper.class, "public interface ImmutableTypesMapper {", "Immutable class \"java.lang.Byte\" is never used");
+    }
+
 }

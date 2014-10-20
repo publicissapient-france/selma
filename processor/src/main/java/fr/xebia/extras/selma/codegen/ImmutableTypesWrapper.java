@@ -55,4 +55,10 @@ public class ImmutableTypesWrapper {
         return mappingBuilder;
     }
 
+    public void reportUnused() {
+        for (InOutType immutableIO : unusedImmutables) {
+            context.warn(mapper.getAnnotatedElement(), "Immutable class \"%s\" is never used", immutableIO.in());
+        }
+    }
+
 }
