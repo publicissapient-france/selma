@@ -36,6 +36,12 @@ public class InOutType {
     private final TypeMirror out;
     private final boolean outPutAsParam;
 
+    public InOutType(InOutType ioType, boolean outPutAsParam) {
+        in = ioType.in;
+        out = ioType.out;
+        this.outPutAsParam = outPutAsParam;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

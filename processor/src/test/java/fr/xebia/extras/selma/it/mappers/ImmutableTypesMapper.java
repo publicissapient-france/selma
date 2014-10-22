@@ -31,4 +31,7 @@ public interface ImmutableTypesMapper {
 
     TicketOut asTicketOut(TicketIn source);
 
+
+    TicketOut asTicketOut(TicketIn source, TicketOut dest);
+
 }

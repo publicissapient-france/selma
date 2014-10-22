@@ -36,7 +36,7 @@ import java.util.Date;
 public class ImmutableTypesMappingIT extends IntegrationTestBase {
 
     @Test
-    public void given_mapper_with_immutable_type_when_mapp_then_immutable_type_should_be_copied_by_reference() {
+    public void given_mapper_with_immutable_type_when_map_then_immutable_type_should_be_copied_by_reference() {
 
         TicketTocken tocken = new TicketTocken("12345432", new Date());
         TicketIn source = new TicketIn("toto", "#T0t0;", tocken);
@@ -46,6 +46,21 @@ public class ImmutableTypesMappingIT extends IntegrationTestBase {
         TicketOut ticketOut = immutableTypesMapper.asTicketOut(source);
 
         Assert.assertThat(ticketOut.getTocken(), CoreMatchers.is(tocken));
+    }
+
+    @Test
+    public void given_mapper_with_immutable_type_when_map_update_graph_then_immutable_type_should_be_copied_by_reference() {
+
+        TicketTocken tocken = new TicketTocken("12345432", new Date());
+        TicketIn source = new TicketIn("toto", "#T0t0;", tocken);
+
+        ImmutableTypesMapper immutableTypesMapper = Selma.builder(ImmutableTypesMapper.class).build();
+
+        TicketOut out = new TicketOut();
+        TicketOut res = immutableTypesMapper.asTicketOut(source, out);
+
+        Assert.assertTrue(out == res);
+        Assert.assertThat(res.getTocken(), CoreMatchers.is(tocken));
     }
 
     @Test

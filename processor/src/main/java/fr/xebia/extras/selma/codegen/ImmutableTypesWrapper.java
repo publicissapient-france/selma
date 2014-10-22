@@ -41,6 +41,7 @@ public class ImmutableTypesWrapper {
 
             InOutType ioType = new InOutType(element.asType(), element.asType(), false);
             this.immutables.put(ioType, MappingBuilder.newImmutable());
+            this.immutables.put(new InOutType(ioType, true), MappingBuilder.newImmutable());
             this.unusedImmutables.add(ioType);
         }
     }
