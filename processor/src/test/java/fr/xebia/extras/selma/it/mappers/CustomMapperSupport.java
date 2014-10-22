@@ -29,4 +29,6 @@ public interface CustomMapperSupport {
 
     PersonOut mapWithCustom(PersonIn in);
 
+    PersonOut mapWithCustom(PersonIn in, PersonOut out);
+
 }

@@ -87,7 +87,6 @@ public class CustomMapperWrapper {
     /**
      * Adds a custom mapping method to the registry for later use at codegen.
      *
-     * @param customMapper
      * @param method
      */
     private void pushCustomMapper(final TypeElement element, final MethodWrapper method) {
@@ -99,6 +98,7 @@ public class CustomMapperWrapper {
         MappingBuilder res = MappingBuilder.newCustomMapper(inOutType, methodCall);
 
         registryMap.put(inOutType, res);
+        registryMap.put(new InOutType(inOutType.in(), inOutType.out(), true), res);
         unusedCustomMappers.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
     }
 
@@ -108,7 +108,10 @@ public class CustomMapperWrapper {
         String customMapperFieldName = buildMapperFieldName(element);
         InOutType inOutType = method.inOutArgs();
         MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType, String.format("%s.%s", customMapperFieldName, method.getSimpleName()));
+
+        // Push IOType for both mutable and immutable mapping
         interceptorMap.put(inOutType, res);
+        interceptorMap.put(new InOutType(inOutType.in(), inOutType.out(), false), res);
         unusedInterceptor.add(inOutType);
     }
 

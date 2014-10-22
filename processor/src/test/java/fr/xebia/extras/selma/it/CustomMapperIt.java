@@ -71,6 +71,35 @@ public class CustomMapperIt extends IntegrationTestBase {
     }
 
     @Test
+    public void should_map_bean_with_custom_mapper_when_update_graph() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        CustomMapperSupport mapper = Selma.getMapper(CustomMapperSupport.class);
+
+        PersonIn personIn = new PersonIn();
+        personIn.setAddress(new AddressIn());
+        personIn.getAddress().setCity(new CityIn());
+        personIn.getAddress().getCity().setCapital(true);
+        personIn.getAddress().getCity().setName("Paris");
+        personIn.getAddress().getCity().setPopulation(3 * 1000 * 1000);
+
+        personIn.getAddress().setPrincipal(true);
+        personIn.getAddress().setNumber(55);
+        personIn.getAddress().setStreet("rue de la truanderie");
+
+        PersonOut out = new PersonOut();
+        PersonOut res = mapper.mapWithCustom(personIn, out);
+
+        Assert.assertNotNull(res);
+        Assert.assertTrue(out == res);
+        Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
+        Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
+        Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
+
+        Assert.assertEquals(personIn.getAddress().getCity().getName() + " Mapped by CustomMapper", res.getAddress().getCity().getName());
+        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + 10000, res.getAddress().getCity().getPopulation());
+        Assert.assertEquals(personIn.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
+    }
+
+    @Test
     public void should_map_bean_with_passed_custom_mapper_instance() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         CustomMapperSupport mapper = Selma.getMapperWithCustom(CustomMapperSupport.class, new CustomMapper(MAPPED_BY_GIVEN_CUSTOM));
 

@@ -29,4 +29,7 @@ public interface MappingInterceptorSupport {
 
     PersonOut mapWithInterceptor(PersonIn in);
 
+
+    PersonOut mapWithInterceptor(PersonIn in, PersonOut out);
+
 }

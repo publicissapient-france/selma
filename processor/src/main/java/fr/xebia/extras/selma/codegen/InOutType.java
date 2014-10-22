@@ -63,7 +63,7 @@ public class InOutType {
         final StringBuilder sb = new StringBuilder("InOutType{");
         sb.append("in=").append(in);
         sb.append(", out=").append(out);
-        sb.append(", outPutAsParam=").append(out);
+        sb.append(", outPutAsParam=").append(outPutAsParam);
         sb.append('}');
         return sb.toString();
     }
