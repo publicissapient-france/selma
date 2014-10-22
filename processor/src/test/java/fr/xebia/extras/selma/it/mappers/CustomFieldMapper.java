@@ -31,10 +31,16 @@ public interface CustomFieldMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in);
 
+    SimplePersonDto asPersonDto(SimplePerson in, SimplePersonDto dest);
 
     @Fields({
             @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
     })
     SimplePersonDto asPersonDtoReverseName(SimplePerson in);
+
+
+    @Fields({
+            @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
+    }) SimplePersonDto asPersonDtoReverseName(SimplePerson in, SimplePersonDto dest);
 
 }

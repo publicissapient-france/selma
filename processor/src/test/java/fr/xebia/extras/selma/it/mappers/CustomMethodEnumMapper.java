@@ -29,6 +29,10 @@ public interface CustomMethodEnumMapper {
     @EnumMapper(defaultValue = "C")
     EnumB asEnumB(EnumA in);
 
+    @EnumMapper(defaultValue = "C") EnumB asEnumB(EnumA in, EnumB out);
+
     @EnumMapper(from = EnumIn.class, to = EnumOut.class) CityOut asEnumBeanIn(CityIn in);
+
+    @EnumMapper(from = EnumIn.class, to = EnumOut.class) CityOut asEnumBeanIn(CityIn in, CityOut out);
 
 }

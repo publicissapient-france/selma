@@ -67,6 +67,7 @@ public class EnumMappersWrapper {
 
             unusedEnumMappers.put(inOutType, enumMapper);
             registryMap.put(inOutType, res);
+            registryMap.put(new InOutType(inOutType, true), res);
         }
     }
 
