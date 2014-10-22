@@ -53,7 +53,7 @@ public class BeanWrapper {
         for (Iterator<ExecutableElement> it = methods.iterator(); it.hasNext(); ) {
             ExecutableElement method = it.next();
 
-            if(exclusions.contains(method.getSimpleName().toString())){
+            if (exclusions.contains(method.getSimpleName().toString())) {
                 continue;
             }
             MethodWrapper methodWrapper = new MethodWrapper(method, context);
@@ -124,6 +124,10 @@ public class BeanWrapper {
         return String.format("out.%s", getSetterFor(field));
     }
 
+    public String getOutGetterPathFor(String field) {
+        return String.format("out.%s", getGetterFor(field));
+    }
+
     public String getGetterFor(String field) {
         String res = null;
         FieldItem item = fieldsGraph.get(field);
@@ -139,7 +143,7 @@ public class BeanWrapper {
         FieldItem item = fieldsGraph.get(field);
 
         if (item != null) {
-            if (item.getter != null){
+            if (item.getter != null) {
                 result = item.getter.returnType();
             } else {
                 result = item.setter.firstParameterType();
@@ -160,7 +164,7 @@ public class BeanWrapper {
     public Set<String> getSetterFields() {
         Set<String> res = new TreeSet<String>();
         for (String s : fieldsGraph.keySet()) {
-            if (fieldsGraph.get(s).setter != null){
+            if (fieldsGraph.get(s).setter != null) {
                 res.add(s);
             }
         }

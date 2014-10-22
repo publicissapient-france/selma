@@ -34,6 +34,7 @@ public class InOutType {
 
     private final TypeMirror in;
     private final TypeMirror out;
+    private final boolean outPutAsParam;
 
     @Override
     public boolean equals(Object o) {
@@ -45,13 +46,14 @@ public class InOutType {
         if (!MapperProcessor.types.isSameType(in, inOutType.in)) return false;
         if (!MapperProcessor.types.isSameType(out, inOutType.out)) return false;
 
-        return true;
+        return inOutType.outPutAsParam == outPutAsParam;
     }
 
     @Override
     public int hashCode() {
-        int result = in.toString().hashCode();
-        result = 31 * result + out.toString().hashCode();
+        int result = in != null ? in.hashCode() : 0;
+        result = 31 * result + (out != null ? out.hashCode() : 0);
+        result = 31 * result + (outPutAsParam ? 1 : 0);
         return result;
     }
 
@@ -61,15 +63,17 @@ public class InOutType {
         final StringBuilder sb = new StringBuilder("InOutType{");
         sb.append("in=").append(in);
         sb.append(", out=").append(out);
+        sb.append(", outPutAsParam=").append(out);
         sb.append('}');
         return sb.toString();
     }
 
-    public InOutType(TypeMirror in, TypeMirror out) {
+    public InOutType(TypeMirror in, TypeMirror out, boolean outPutAsParam) {
         this.in = in;
         this.out = out;
+        this.outPutAsParam = outPutAsParam;
 
-        if (in == null || out == null ){
+        if (in == null || out == null) {
             throw new IllegalArgumentException(String.format("in type %s and out type %s can not be null", in, out));
         }
     }
@@ -180,5 +184,9 @@ public class InOutType {
 
     public TypeKind outKind() {
         return out.getKind();
+    }
+
+    public boolean isOutPutAsParam() {
+        return outPutAsParam;
     }
 }

@@ -70,12 +70,12 @@ public class MethodWrapper {
     }
 
     public InOutType inOutType() {
-        return new InOutType(firstParameterType(), returnType());
+        return new InOutType(firstParameterType(), returnType(), parameterCount() == 2);
     }
 
 
     public InOutType inOutArgs() {
-        return new InOutType(firstParameterType(), secondParameterType());
+        return new InOutType(firstParameterType(), secondParameterType(), parameterCount() == 2);
     }
 
     private TypeMirror secondParameterType() {
@@ -143,10 +143,10 @@ public class MethodWrapper {
     }
 
 
-    public boolean hasAnnotation(String annotation){
+    public boolean hasAnnotation(String annotation) {
         boolean res = false;
         for (AnnotationMirror annotationMirror : method.getAnnotationMirrors()) {
-            if(annotationMirror.getAnnotationType().toString().equals(annotation)){
+            if (annotationMirror.getAnnotationType().toString().equals(annotation)) {
                 res = true;
                 break;
             }
@@ -155,7 +155,7 @@ public class MethodWrapper {
 
     }
 
-    public boolean hasIgnoreFields(){
+    public boolean hasIgnoreFields() {
         return hasAnnotation(IgnoreFields.class.getCanonicalName());
     }
 

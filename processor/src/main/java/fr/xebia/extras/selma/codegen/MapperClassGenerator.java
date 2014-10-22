@@ -46,6 +46,7 @@ public class MapperClassGenerator {
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
     private final FieldsWrapper fields;
+    private List<MethodWrapper> methodWrappers;
     private ImmutableTypesWrapper immutablesMapper;
     private EnumMappersWrapper enumMappers;
     private CustomMapperWrapper customMappers;
@@ -65,6 +66,7 @@ public class MapperClassGenerator {
         fields = new FieldsWrapper(context, element);
         mappingRegistry.fields(fields);
 
+
         if (registry.contains(origClasse)) {
             return;
         }
@@ -79,16 +81,18 @@ public class MapperClassGenerator {
         immutablesMapper = new ImmutableTypesWrapper(mapper, context);
         mappingRegistry.immutableTypes(immutablesMapper);
 
-        validateTypes();
+        methodWrappers = validateTypes();
     }
 
 
+    private List<MethodWrapper> validateTypes() {
 
-    private void validateTypes() {
+        List<MethodWrapper> res = new ArrayList<MethodWrapper>();
 
         for (ExecutableElement mapperMethod : mapperMethods) {
 
             MethodWrapper methodWrapper = new MethodWrapper(mapperMethod, context);
+            res.add(methodWrapper);
 
             enumMappers.buildForMethod(methodWrapper);
 
@@ -104,6 +108,7 @@ public class MapperClassGenerator {
             }
 
         }
+        return res;
     }
 
     public void build() throws IOException {
@@ -117,10 +122,10 @@ public class MapperClassGenerator {
         JavaWriter writer = null;
         JavaFileObject sourceFile = null;
 
-        for (ExecutableElement mapperMethod : mapperMethods) {
+        for (MethodWrapper mapperMethod : methodWrappers) {
 
             if (firstMethod) {
-                String packageName = getPackage(mapperMethod).getQualifiedName().toString();
+                String packageName = getPackage(mapperMethod.element()).getQualifiedName().toString();
                 TypeElement type = processingEnv.getElementUtils().getTypeElement(origClasse);
                 String strippedTypeName = strippedTypeName(type.getQualifiedName().toString(), packageName);
                 String adapterName = new StringBuilder(type.toString()).append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();

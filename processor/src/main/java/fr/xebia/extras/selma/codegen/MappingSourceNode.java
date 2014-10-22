@@ -19,7 +19,6 @@ package fr.xebia.extras.selma.codegen;
 import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.SelmaConstants;
 
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.EnumSet;
@@ -100,8 +99,31 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode mapMethod(final InOutType inOutType, final String name, final boolean override) {
 
-    public static MappingSourceNode mapMethodNotFinal(final String inType, final String outType, final String name, final boolean override) {
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+
+                writer.emitJavadoc("Mapping method overridden by Selma");
+                if (override) {
+                    writer.emitAnnotation(Override.class);
+                }
+                if (inOutType.isOutPutAsParam()) {
+                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC, FINAL), inOutType.in().toString(), SelmaConstants.IN_VAR, inOutType.out().toString(), SelmaConstants.OUT_VAR);
+                } else {
+                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC, FINAL), inOutType.in().toString(), SelmaConstants.IN_VAR);
+                }
+                writeBody(writer);
+
+                writer.emitStatement("return out");
+                writer.endMethod();
+                writer.emitEmptyLine();
+            }
+        };
+    }
+
+
+    public static MappingSourceNode mapMethodNotFinal(final InOutType inOutType, final String name, final boolean override) {
 
         return new MappingSourceNode() {
             @Override
@@ -111,7 +133,11 @@ public abstract class MappingSourceNode {
                 if (override) {
                     writer.emitAnnotation(Override.class);
                 }
-                writer.beginMethod(outType, name, EnumSet.of(PUBLIC), inType, SelmaConstants.IN_VAR);
+                if (inOutType.isOutPutAsParam()) {
+                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC), inOutType.in().toString(), SelmaConstants.IN_VAR, inOutType.out().toString(), SelmaConstants.OUT_VAR);
+                } else {
+                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC), inOutType.in().toString(), SelmaConstants.IN_VAR);
+                }
 
                 writeBody(writer);
 
@@ -123,13 +149,17 @@ public abstract class MappingSourceNode {
     }
 
 
-    public static MappingSourceNode controlNull(final String field) {
+    public static MappingSourceNode controlNull(final String field, final boolean outPutAsParam) {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
                 writer.beginControlFlow(String.format("if (%s != null)", field));
                 // body is Mandatory here
                 writeBody(writer);
+                if (outPutAsParam) {
+                    writer.nextControlFlow("else");
+                    writer.emitStatement("out = null");
+                }
                 writer.endControlFlow();
             }
         };
@@ -304,14 +334,20 @@ public abstract class MappingSourceNode {
     }
 
 
-    public static MappingSourceNode instantiateOut(final String outType, final String params) {
+    public static MappingSourceNode instantiateOut(final InOutType inOutType, final String params) {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
                    /*
                         out = new X();
                    */
-                writer.emitStatement("out = new %s(%s)", outType, params);
+                if (inOutType.isOutPutAsParam()) {
+                    writer.beginControlFlow("if (out == null)");
+                    writer.emitStatement("out = new %s(%s)", inOutType.out().toString(), params);
+                    writer.endControlFlow();
+                } else {
+                    writer.emitStatement("out = new %s(%s)", inOutType.out().toString(), params);
+                }
             }
         };
     }

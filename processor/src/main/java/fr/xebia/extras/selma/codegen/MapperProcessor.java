@@ -25,6 +25,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -63,8 +64,9 @@ public final class MapperProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
-        types = processingEnv.getTypeUtils();
+        boolean res = true;
+        if (annotations.size() > 0) {
+            types = processingEnv.getTypeUtils();
         populateAllMappers(roundEnv);
 
         try {
@@ -75,8 +77,8 @@ public final class MapperProcessor extends AbstractProcessor {
             e.printStackTrace(new PrintWriter(writer));
             error(writer.toString(), null);
         }
-
-        return false;
+        }
+        return res;
     }
 
     private void generateMappingClassses() throws IOException {
@@ -102,10 +104,6 @@ public final class MapperProcessor extends AbstractProcessor {
                     ExecutableElement executableElement = (ExecutableElement) method;
 
                     if (isValidMapperMethod(executableElement)) {
-                        // Here we have a Mapper method to build
-                        VariableElement variableElementInType = executableElement.getParameters().get(0);
-                        String inType = variableElementInType.asType().toString();
-                        String outType = executableElement.getReturnType().toString();
                         putMapper(element, executableElement);
                     }
                 }
@@ -125,8 +123,8 @@ public final class MapperProcessor extends AbstractProcessor {
             error(executableElement, "@Mapper method %s can not have less than one parameter", executableElement.getSimpleName());
             return false;
         }
-        if (executableElement.getParameters().size() > 1) {
-            error(executableElement, "@Mapper method %s can not have more than one parameter", executableElement.getSimpleName());
+        if (executableElement.getParameters().size() > 2) {
+            error(executableElement, "@Mapper method %s can not have more than two parameters", executableElement.getSimpleName());
             return false;
         }
 
@@ -134,11 +132,21 @@ public final class MapperProcessor extends AbstractProcessor {
             error(executableElement, "@Mapper method %s can not return void", executableElement.getSimpleName());
             return false;
         }
+
+        if (executableElement.getParameters().size() == 2) {
+            TypeMirror returnType = executableElement.getReturnType();
+            VariableElement variableElement = executableElement.getParameters().get(1);
+            if (!variableElement.asType().toString().equals(returnType.toString())) {
+                error(executableElement, "@Mapper method %s second parameter type should be %s as the return type is", executableElement.getSimpleName(), executableElement.getReturnType());
+                return false;
+            }
+        }
+
         return true;
     }
 
 
-    private void error(ExecutableElement element, String templateMessage, Object... args) {
+    private void error(Element element, String templateMessage, Object... args) {
 
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(templateMessage, args), element);
     }
@@ -156,21 +164,17 @@ public final class MapperProcessor extends AbstractProcessor {
     }
 
     private boolean isValidMapperUse(Element element) {
-
+        boolean res = true;
         if (element.getKind() != ElementKind.INTERFACE) {
-            error("@Mapper can only be used on interface not on " + element.getKind(), element);
-            return false;
+            error(element, "@Mapper can only be used on interface not on %s", element.getKind());
+            res = false;
         }
 
-        return true;
+        return res;
     }
 
     private void error(String msg, Element element) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, element);
-    }
-
-    private void info(Element element, String msgTemplate, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format(msgTemplate, args), element);
     }
 
 }

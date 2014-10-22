@@ -27,16 +27,23 @@ import org.junit.Test;
 public class BadMapperSignatureIT extends IntegrationTestBase {
 
     @Test
-    public void bad_mapper_signature_compilation_should_fail_on_2_in_parameters() throws Exception {
+    public void bad_mapper_signature_compilation_should_fail_on_3_in_parameters() throws Exception {
 
-        assertCompilationError(BadMapperSignature.class,"String mapTwoParameters (String in, String inBis);", "@Mapper method mapTwoParameters can not have more than one parameter");
+        assertCompilationError(BadMapperSignature.class, "String mapThreeParameters (String in, String inBis, String inTer);", "@Mapper method mapThreeParameters can not have more than two parameters");
 
     }
 
     @Test
     public void bad_mapper_signature_compilation_should_fail_on_parameters_type_differs() throws Exception {
 
-        assertCompilationError(BadMapperSignature.class,"String mapDifferentTypes (boolean in);", "differs and this kind of conversion is not supported here");
+        assertCompilationError(BadMapperSignature.class, "String mapDifferentTypes (boolean in);", "@Mapper method mapTwoParametersDifferentTypes second parameter type should be java.lang.String as the return type is");
+
+    }
+
+    @Test
+    public void bad_mapper_signature_compilation_should_fail_on_two_parameters_type_differs() throws Exception {
+
+        assertCompilationError(BadMapperSignature.class, "String mapTwoParametersDifferentTypes (String in, boolean out);", "differs and this kind of conversion is not supported here");
 
     }
 

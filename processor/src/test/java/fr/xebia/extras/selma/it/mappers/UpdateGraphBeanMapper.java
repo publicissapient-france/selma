@@ -17,23 +17,15 @@
 package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.beans.AddressIn;
+import fr.xebia.extras.selma.beans.AddressOut;
 
 /**
- * Created with IntelliJ IDEA.
- * User: slemesle
- * Date: 22/11/2013
- * Time: 14:27
- * To change this template use File | Settings | File Templates.
+ *
  */
 @Mapper
-public interface BadMapperSignature {
+public interface UpdateGraphBeanMapper {
 
-    String mapThreeParameters(String in, String inBis, String inTer);
-
-
-    String mapDifferentTypes (boolean in);
-
-
-    String mapTwoParametersDifferentTypes(String in, boolean out);
+    AddressOut asAddressOut(AddressIn in, AddressOut out);
 
 }

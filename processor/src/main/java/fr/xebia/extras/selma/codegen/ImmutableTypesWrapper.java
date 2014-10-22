@@ -39,7 +39,7 @@ public class ImmutableTypesWrapper {
         for (String immutableClass : immutables) {
             final TypeElement element = context.elements.getTypeElement(immutableClass.replace(".class", ""));
 
-            InOutType ioType = new InOutType(element.asType(), element.asType());
+            InOutType ioType = new InOutType(element.asType(), element.asType(), false);
             this.immutables.put(ioType, MappingBuilder.newImmutable());
             this.unusedImmutables.add(ioType);
         }

@@ -25,6 +25,7 @@ package fr.xebia.extras.selma.codegen;
  */
 public class SourceNodeVars {
 
+    String outFieldGetter;
     String field;
 
     BeanWrapper inBean;
@@ -46,6 +47,7 @@ public class SourceNodeVars {
         this.outBean = outBean;
         inField = (inBean == null ? "in" : inBean.getInGetterFor(inF));
         outField = (outBean == null ? "out" : outBean.getOutSetterPathFor(outF));
+        outFieldGetter = (outBean == null ? "out" : outBean.getOutGetterPathFor(outF));
         inFieldPrefix = "";
     }
 
@@ -56,6 +58,7 @@ public class SourceNodeVars {
         this.outBean = null;
         inField = "in";
         outField = "out";
+        outFieldGetter = "out";
         inFieldPrefix = "";
     }
 
@@ -91,6 +94,13 @@ public class SourceNodeVars {
     public MappingSourceNode setOrAssign(String value) {
 
         String formattedValue = inFieldPrefix + String.format(value, inGetter());
+
+        return (assign ? MappingSourceNode.assign(outField, formattedValue) : MappingSourceNode.set(outField, formattedValue));
+    }
+
+    public MappingSourceNode setOrAssignWithOutPut(String value) {
+
+        String formattedValue = inFieldPrefix + String.format(value, inGetter(), outFieldGetter + "()");
 
         return (assign ? MappingSourceNode.assign(outField, formattedValue) : MappingSourceNode.set(outField, formattedValue));
     }

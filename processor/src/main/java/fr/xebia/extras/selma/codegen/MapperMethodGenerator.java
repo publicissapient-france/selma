@@ -18,7 +18,6 @@ package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
@@ -43,18 +42,18 @@ public class MapperMethodGenerator {
     private final IgnoreFieldsWrapper ignoredFields;
     private final FieldsWrapper customFields;
 
-    public MapperMethodGenerator(JavaWriter writer, ExecutableElement method, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
+    public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
         this.writer = writer;
-        this.mapperMethod = new MethodWrapper(method, context);
+        this.mapperMethod = method;
         this.context = context;
         this.configuration = configuration;
 
         this.mappingRegistry = new MappingRegistry(mappingRegistry);
-        this.ignoredFields = new IgnoreFieldsWrapper(context, method, configuration.ignoredFields());
+        this.ignoredFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields());
         this.customFields = new FieldsWrapper(context, mapperMethod, mappingRegistry.fields());
     }
 
-    public static MapperMethodGenerator create(JavaWriter writer, ExecutableElement mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
+    public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
         return new MapperMethodGenerator(writer, mapperMethod, context, mappingRegistry, configuration);
     }
 
@@ -88,14 +87,14 @@ public class MapperMethodGenerator {
         boolean isPrimitiveOrImmutable = false;
         final MappingSourceNode methodRoot;
         if (configuration.isFinalMappers()) {
-            methodRoot = mapMethod(inOutType.in().toString(), inOutType.out().toString(), name, override);
+            methodRoot = mapMethod(inOutType, name, override);
         } else {
-            methodRoot = mapMethodNotFinal(inOutType.in().toString(), inOutType.out().toString(), name, override);
+            methodRoot = mapMethodNotFinal(inOutType, name, override);
         }
 
         MappingSourceNode ptr = blank(), blankRoot = ptr;
 
-        MappingSourceNode methodNode = methodRoot.body(declareOut(inOutType.out()));
+        MappingSourceNode methodNode = (inOutType.isOutPutAsParam() ? methodRoot.body(blank()) : methodRoot.body(declareOut(inOutType.out())));
 
         MappingBuilder mappingBuilder = findBuilderFor(inOutType);
 
@@ -107,7 +106,8 @@ public class MapperMethodGenerator {
             isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
 
         } else if (inOutType.areDeclared() && isSupported(inOutType.out())) {
-            ptr = ptr.body(instantiateOut(inOutType.out().toString(), context.newParams()));
+
+            ptr = ptr.body(instantiateOut(inOutType, context.newParams()));
             context.depth++;
             ptr.child(generate(inOutType));
             context.depth--;
@@ -117,7 +117,7 @@ public class MapperMethodGenerator {
 
         isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
         if (!isPrimitiveOrImmutable) {
-            methodNode = methodNode.child(controlNull("in"));
+            methodNode = methodNode.child(controlNull("in", inOutType.isOutPutAsParam()));
             methodNode.body(blankRoot.body);
         } else {
             methodNode.child(blankRoot.body);
@@ -137,7 +137,7 @@ public class MapperMethodGenerator {
      * Method called when encountered a bean not known in registry so considered as
      * custom bean to map.
      *
-     * @param out
+     * @param out TypeMirror that will be checked
      * @return
      */
     private boolean isSupported(TypeMirror out) {
@@ -222,10 +222,10 @@ public class MapperMethodGenerator {
                 }
 
                 try {
-                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField)));
+                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField), inOutType.isOutPutAsParam()));
                     if (mappingBuilder != null) {
                         ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outField, inBean, outBean)
-                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField))).withAssign(false)));
+                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField), inOutType.isOutPutAsParam())).withAssign(false)));
 
                         generateStack(context);
                     } else {

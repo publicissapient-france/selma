@@ -49,7 +49,7 @@ public class EnumMappersWrapper {
 
 
     private void buildEnumMapper(AnnotationWrapper enumMapper) {
-        InOutType inOutType = new InOutType(enumMapper.getAsTypeMirror("from"), enumMapper.getAsTypeMirror("to"));
+        InOutType inOutType = new InOutType(enumMapper.getAsTypeMirror("from"), enumMapper.getAsTypeMirror("to"), false);
         buildEnumMapperForInOutType(enumMapper, inOutType);
     }
 
@@ -76,7 +76,7 @@ public class EnumMappersWrapper {
 
             TypeMirror enumOut = methodWrapper.returnType();
             TypeMirror enumIn = methodWrapper.firstParameterType();
-            InOutType inOutType = new InOutType(enumIn, enumOut);
+            InOutType inOutType = new InOutType(enumIn, enumOut, false);
 
             AnnotationWrapper enumMapper = AnnotationWrapper.buildFor(context, methodWrapper.element(), EnumMapper.class);
 

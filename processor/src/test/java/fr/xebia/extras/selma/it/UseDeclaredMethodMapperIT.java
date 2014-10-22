@@ -37,7 +37,7 @@ import java.util.Arrays;
 public class UseDeclaredMethodMapperIT extends IntegrationTestBase {
 
     @Test
-    public void given_an_interface_with_2_methods_one_handling_nested_property_of_the_other_compilation_should_succed() throws Exception {
+    public void given_an_interface_with_2_methods_one_handling_nested_property_of_the_other_compilation_should_succeed() throws Exception {
         Assert.assertTrue(compilationSuccess());
     }
 

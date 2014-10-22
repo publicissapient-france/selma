@@ -254,7 +254,7 @@ public abstract class MappingBuilder {
                                                      .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
 
                         context.pushStackForBody(node,
-                                new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut))
+                                new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut, vars.inOutType.isOutPutAsParam()))
                                                     .withInField(itemVar)
                                                     .withOutField(String.format("%s.add", tmpVar)).withAssign(false).withIndexPtr(vars.nextPtr()));
 
@@ -295,11 +295,11 @@ public abstract class MappingBuilder {
                                                      .child(vars.setOrAssign(tmpVar))
                                                      .child(mapMap(itemVar, genericInKey.toString(), genericInValue.toString(), vars.inGetter()))
                                                      .body(assign(String.format("%s %s", genericOutKey, keyVar), "null"));
-                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInValue, genericOutValue))
+                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInValue, genericOutValue, vars.inOutType.isOutPutAsParam()))
                                                                             .withInField(String.format("%s.getValue()", itemVar)).withInFieldPrefix(String.format("%s,", keyVar))
                                                                             .withOutField(String.format("%s.put", tmpVar))
                                                                             .withAssign(false).withIndexPtr(vars.nextPtr()));
-                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInKey, genericOutKey))
+                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInKey, genericOutKey, vars.inOutType.isOutPutAsParam()))
                                                                             .withInField(String.format("%s.getKey()", itemVar))
                                                                             .withOutField(keyVar)
                                                                             .withAssign(true).withIndexPtr(vars.nextPtr()));
@@ -359,7 +359,7 @@ public abstract class MappingBuilder {
                                    .child(mapArrayBis(indexVar, totalCountVar));
 
                         context.pushStackForBody(node,
-                                new SourceNodeVars().withInOutType(new InOutType(inOutType.inArrayComponentType(), inOutType.outArrayComponentType()))
+                                new SourceNodeVars().withInOutType(new InOutType(inOutType.inArrayComponentType(), inOutType.outArrayComponentType(), vars.inOutType.isOutPutAsParam()))
                                                     .withInField(String.format("%s[%s]", vars.inGetter(), indexVar))
                                                     .withOutField(String.format("%s[%s]", tmpVar, indexVar)).withAssign(true).withIndexPtr(vars.nextPtr()));
 
@@ -396,6 +396,15 @@ public abstract class MappingBuilder {
         this.root = blank();
     }
 
+    protected void setOrAssignNestedBean(final MapperGeneratorContext context, final SourceNodeVars vars, final InOutType inOutType) {
+        String mappingMethod = context.mappingMethod(inOutType);
+        if (inOutType.isOutPutAsParam()) {
+            this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", mappingMethod)));
+        } else {
+            this.root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+        }
+    }
+
     private static Map.Entry<TypeMirror, Integer> getArrayDimensionsAndType(final ArrayType arrayType) {
         int res = 1;
         ArrayType type = arrayType;
@@ -423,10 +432,11 @@ public abstract class MappingBuilder {
             res = new MappingBuilder(true) {
                 @Override
                 MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
-                    String mappingMethod = context.mappingMethod(inOutType);
-                    root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+                    setOrAssignNestedBean(context, vars, inOutType);
                     return root.body;
                 }
+
+
             };
         }
 
@@ -480,7 +490,7 @@ public abstract class MappingBuilder {
     }
 
     private static MappingSourceNode notNullInField(final SourceNodeVars vars) {
-        return controlNull(vars.inGetter());
+        return controlNull(vars.inGetter(), false);
     }
 
     public static MappingBuilder newCustomMapper(final InOutType inOutType, final String name) {
