@@ -90,6 +90,53 @@ public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase{
         Assert.assertEquals(in.isCapital(), res.isCapital());
     }
 
+    @Test
+    public void given_explicit_ignore_fields_for_update_graph_method_generated_mapper_should_ignore_them() {
+
+        PersonIn in = new PersonIn();
+        in.setAge(11);
+        in.setBirthDay(new Date());
+        in.setEnumIn(EnumIn.VAL_1);
+        in.setIndices(new Long[]{1l, 2l, 3l});
+        in.setMale(true);
+        in.setFirstName("john");
+        in.setLastName("Doe");
+        in.setAddress(new AddressIn());
+        in.getAddress().setCity(new CityIn());
+        in.getAddress().setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
+        in.getAddress().setPrincipal(false);
+        in.getAddress().setNumber(42);
+        in.getAddress().setStreet("Victor Hugo");
+        in.getAddress().getCity().setName("Paris");
+        in.getAddress().getCity().setCapital(true);
+        in.getAddress().getCity().setPopulation(10);
+
+        PersonOut dest = new PersonOut();
+        PersonOut res = Selma.getMapper(IgnoreFieldMapper.class).asPersonOut(in, dest);
+
+        Assert.assertNotNull(res);
+        Assert.assertNull(res.getAddress().getExtras());
+        Assert.assertNull(res.getBiography());
+        Assert.assertNotNull(res.getAddress().getCity());
+        Assert.assertNull(res.getAddress().getCity().getName());
+    }
+
+    @Test
+    public void given_explicit_ignore_fields_for_interface_on_update_graph_generated_mapper_should_ignore_them() {
+
+        CityIn in = new CityIn();
+        in.setName("Paris");
+        in.setPopulation(120);
+        in.setCapital(true);
+
+        CityOut dest = new CityOut();
+        CityOut res = Selma.getMapper(IgnoreFieldMapper.class).asCityOut(in, dest);
+
+        Assert.assertNotNull(res);
+        Assert.assertNull(res.getName());
+        Assert.assertEquals(in.getPopulation(), res.getPopulation());
+        Assert.assertEquals(in.isCapital(), res.isCapital());
+    }
 
 
 }

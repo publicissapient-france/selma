@@ -33,5 +33,11 @@ public interface IgnoreFieldMapper {
     PersonOut asPersonOut(PersonIn in);
 
 
+    @IgnoreFields({"male", "biography", "extras", "notUsedMethodField"})
+    PersonOut asPersonOut(PersonIn in, PersonOut dest);
+
+
     CityOut asCityOut(CityIn in);
+
+    CityOut asCityOut(CityIn in, CityOut dest);
 }
