@@ -57,7 +57,6 @@ public class CustomMapperWrapper {
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
 
-
         collectCustomMappers();
     }
 

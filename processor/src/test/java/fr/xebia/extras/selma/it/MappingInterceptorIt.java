@@ -21,8 +21,6 @@ import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
-import fr.xebia.extras.selma.it.mappers.CustomMapper;
-import fr.xebia.extras.selma.it.mappers.CustomMapperSupport;
 import fr.xebia.extras.selma.it.mappers.MappingInterceptor;
 import fr.xebia.extras.selma.it.mappers.MappingInterceptorSupport;
 import fr.xebia.extras.selma.it.utils.Compile;
@@ -34,7 +32,7 @@ import org.junit.Test;
  *
  */
 @Compile(withClasses = {MappingInterceptor.class, MappingInterceptorSupport.class})
-public class MappingInterceptorIt extends IntegrationTestBase {
+public class MappingInterceptorIT extends IntegrationTestBase {
 
 
     @Test
@@ -56,6 +54,39 @@ public class MappingInterceptorIt extends IntegrationTestBase {
         PersonOut res = mapper.mapWithInterceptor(personIn);
 
         Assert.assertNotNull(res);
+
+        Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
+        Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
+        Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
+
+        Assert.assertEquals(personIn.getAddress().getCity().getName(), res.getAddress().getCity().getName());
+        Assert.assertEquals(personIn.getAddress().getCity().getPopulation(), res.getAddress().getCity().getPopulation());
+        Assert.assertEquals(personIn.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
+
+        Assert.assertEquals(personIn.getFirstName() + " BIO", res.getBiography());
+    }
+
+    @Test
+    public void given_bean_with_custom_mapper_when_update_graph_then_should_update_graph_with_custom() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        MappingInterceptorSupport mapper = Selma.getMapper(MappingInterceptorSupport.class);
+
+        PersonIn personIn = new PersonIn();
+        personIn.setFirstName("Selma");
+        personIn.setAddress(new AddressIn());
+        personIn.getAddress().setCity(new CityIn());
+        personIn.getAddress().getCity().setCapital(true);
+        personIn.getAddress().getCity().setName("Paris");
+        personIn.getAddress().getCity().setPopulation(3 * 1000 * 1000);
+
+        personIn.getAddress().setPrincipal(true);
+        personIn.getAddress().setNumber(55);
+        personIn.getAddress().setStreet("rue de la truanderie");
+
+        PersonOut out = new PersonOut();
+        PersonOut res = mapper.mapWithInterceptor(personIn, out);
+
+        Assert.assertNotNull(res);
+        Assert.assertTrue(out == res);
 
         Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
         Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
