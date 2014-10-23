@@ -32,7 +32,7 @@ import org.junit.Test;
  *
  */
 @Compile(withClasses = {MappingInterceptor.class, MappingInterceptorSupport.class})
-public class MappingInterceptorIT extends IntegrationTestBase {
+public class MappingInterceptorIt extends IntegrationTestBase {
 
 
     @Test
