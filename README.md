@@ -35,7 +35,11 @@ Then, define a Mapper interface describing the mapping you want:
 @Mapper
 public interface SelmaMapper {
 
-    OutBean asOutBean(InBean in);
+    // Imutable mapping
+    OutBean asOutBean(InBean source);
+
+    // Update graph
+    OutBean updateOutBean(InBean source, OutBean destination);
 
 }
 ```
@@ -48,6 +52,11 @@ Then ? Well just use the generated Mapper:
 
     OutBean res = mapper.asOutBean(in);
 
+    // Or
+    OutBean dest = dao.getById(42);
+
+    OutBean res = mapper.updateOutBean(in, dest);
+    // res is the updated bean dest with in values
 ```
 
 And voilà !
@@ -77,7 +86,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.8</version>
+            <version>0.9</version>
             <scope>provided</scope>
         </dependency>
 
@@ -85,7 +94,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.8</version>
+            <version>0.9</version>
         </dependency>
 ```
 
