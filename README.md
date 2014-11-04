@@ -61,7 +61,7 @@ Then ? Well just use the generated Mapper:
 
 And voilà !
 
-Visit our site: (http://xebia-france.github.io/selma/)
+Visit our site: (http://selma-java.org)
 
 ## Features
 
