@@ -25,7 +25,7 @@
     <groupId>fr.xebia.extras</groupId>
     <artifactId>selma-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.9</version>
+    <version>0.10-SNAPSHOT</version>
     <description>Mapping converter utility</description>
     <scm>
         <connection>scm:git:git@github.com:xebia-france/selma.git</connection>
