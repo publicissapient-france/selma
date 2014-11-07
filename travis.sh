@@ -1,5 +1,6 @@
 #!/bin/bash
 
+env
 
 if [ ${TRAVIS_PULL_REQUEST} = 'false' ] && [ ${DEPLOY} = 'true' ]; then
     mvn clean deploy --settings target/travis/settings.xml

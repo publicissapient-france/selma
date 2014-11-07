@@ -4,12 +4,8 @@ script: ./travis.sh
 
 jdk:
 - openjdk6
+- openjdk7
 - oraclejdk8
-
-matrix:
-  include:
-  - jdk: openjdk7
-  - env: DEPLOY=true
 
 # whitelist
 branches:
@@ -20,3 +16,4 @@ env:
   global:
     - secure: "ELThTQqmQjdhMXK+eRL5uCC5ygUHacpmx2QLVFfiXmMiSUH++F4FhaP7wLxPLPTWePqw7dtJ0Jb1j8NrLgUmQkn9AIil9V5GNNjpvEaUZBa3y0zd5cyfFc28wdcmgQ9CucaJuS6v8gXbM9/OvQWRzLULdAK2EKdyNwS1H2I2ED4="
     - secure: "OQamliY3ibuHuox2dxr7Bgnx56xX+wM5IOi3HjptmE77k23OrpVklsrep1EsDHU9GmLAXWz+rVVhujMLgFYikovOxuOQKHyi+/sJFEnCXx8o6I3Ha1YpZCgmtWN+D82eSlIPflPPl8MAypn8Zl3ndaf5MOzr8vJyhIGGzFGSPHg="
+    - DEPLOY=false
