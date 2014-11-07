@@ -1,6 +1,21 @@
 language: java
-script: mvn clean install
+before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
+script: "mvn clean verify --settings target/travis/settings.xml"
 jdk:
 - openjdk6
-- openjdk7
 - oraclejdk8
+
+matrix:
+  include:
+  - jdk: openjdk7
+  script: [ ${TRAVIS_PULL_REQUEST} = 'false' ] &amp;&amp; mvn clean deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
+
+# whitelist
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - secure: "ELThTQqmQjdhMXK+eRL5uCC5ygUHacpmx2QLVFfiXmMiSUH++F4FhaP7wLxPLPTWePqw7dtJ0Jb1j8NrLgUmQkn9AIil9V5GNNjpvEaUZBa3y0zd5cyfFc28wdcmgQ9CucaJuS6v8gXbM9/OvQWRzLULdAK2EKdyNwS1H2I2ED4="
+    - secure: "OQamliY3ibuHuox2dxr7Bgnx56xX+wM5IOi3HjptmE77k23OrpVklsrep1EsDHU9GmLAXWz+rVVhujMLgFYikovOxuOQKHyi+/sJFEnCXx8o6I3Ha1YpZCgmtWN+D82eSlIPflPPl8MAypn8Zl3ndaf5MOzr8vJyhIGGzFGSPHg="
