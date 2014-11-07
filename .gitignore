@@ -1,7 +1,0 @@
-.idea/**
-**/target/**
-**/*.iml
-**/.settings/**
-**/.project
-**/.classpath
-**/.factorypath

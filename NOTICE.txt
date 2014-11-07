@@ -1,7 +1,0 @@
-This project uses JUnit (http://junit.org)
-developped by Harmcrest (www.hamcrest.org)
-
-This project uses jacoco
-
-This project uses JavaWriter
-
