@@ -23,25 +23,30 @@ import javax.lang.model.type.DeclaredType;
 /**
  * Created by slemesle on 10/11/14.
  */
-public class MappingsWrapper {
+public class MapsWrapper {
 
     public static final String WITH_CUSTOM_FIELDS = "withCustomFields";
     public static final String WITH_IGNORE_FIELDS = "withIgnoreFields";
+    public static final String WITH_ENUMS = "withEnums";
     //private final IgnoreFieldsWrapper ignoreFields;
     private final FieldsWrapper customFields;
-    private final AnnotationWrapper mappings;
+    private final AnnotationWrapper maps;
     private final MappingRegistry registry;
     private final IgnoreFieldsWrapper ignoreFields;
+    private final EnumMappersWrapper enumMappers;
 
-    public MappingsWrapper(MapperGeneratorContext context, SourceConfiguration configuration, MethodWrapper method, MappingRegistry mappingRegistry) {
+    public MapsWrapper(MapperGeneratorContext context, SourceConfiguration configuration, MethodWrapper method, MappingRegistry mappingRegistry) {
 
         this.registry = new MappingRegistry(mappingRegistry);
 
-        mappings = AnnotationWrapper.buildFor(context, method.element(), Maps.class);
+        maps = AnnotationWrapper.buildFor(context, method.element(), Maps.class);
 
-        ignoreFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields(), mappings == null ? null :mappings.getAsStrings(WITH_IGNORE_FIELDS));
+        ignoreFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields(), maps == null ? null : maps.getAsStrings(WITH_IGNORE_FIELDS));
 
-        this.customFields = new FieldsWrapper(context, method, mappingRegistry.fields(), mappings == null ? null :mappings.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
+        this.customFields = new FieldsWrapper(context, method, mappingRegistry.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
+
+        enumMappers = new EnumMappersWrapper(registry.getEnumMappers(),  maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS));
+        registry.enumMappers(enumMappers);
     }
 
     public void reportUnused() {
@@ -50,6 +55,9 @@ public class MappingsWrapper {
 
         // Report unused custom field to field
         customFields.reportUnused();
+
+        // Report unused custom enum mappers
+        enumMappers.reportUnused();
     }
 
     public String getFieldFor(String field) {

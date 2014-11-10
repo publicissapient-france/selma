@@ -102,4 +102,8 @@ public class MappingRegistry {
     public void immutableTypes(ImmutableTypesWrapper immutablesMapper) {
         this.immutableTypes = immutablesMapper;
     }
+
+    public EnumMappersWrapper getEnumMappers() {
+        return enumMappers;
+    }
 }

@@ -38,9 +38,7 @@ public class MapperMethodGenerator {
     private final MethodWrapper mapperMethod;
     private final MapperGeneratorContext context;
     private final SourceConfiguration configuration;
-  //  private final IgnoreFieldsWrapper ignoredFields;
-   // private final FieldsWrapper customFields;
-    private final MappingsWrapper mappings;
+    private final MapsWrapper mappings;
 
     public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
         this.writer = writer;
@@ -48,9 +46,8 @@ public class MapperMethodGenerator {
         this.context = context;
         this.configuration = configuration;
 
-        this.mappings = new MappingsWrapper(context, configuration, method, mappingRegistry);
+        this.mappings = new MapsWrapper(context, configuration, method, mappingRegistry);
 
-//        this.ignoredFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields());
     }
 
     public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {

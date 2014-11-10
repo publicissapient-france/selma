@@ -29,7 +29,7 @@ import java.util.*;
 import static javax.lang.model.element.Modifier.*;
 
 /**
- *
+ * Handles the generation of the Mapper class
  */
 public class MapperClassGenerator {
 

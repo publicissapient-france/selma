@@ -33,7 +33,7 @@ public class EnumMappersWrapper {
 
     private final Map<InOutType, MappingBuilder> registryMap;
     private final HashMap<InOutType, AnnotationWrapper> unusedEnumMappers;
-
+    private EnumMappersWrapper parent = null;
 
 
     public EnumMappersWrapper(List<AnnotationWrapper> annotationWrappers, MapperGeneratorContext context) {
@@ -48,6 +48,11 @@ public class EnumMappersWrapper {
             }
         }
 
+    }
+
+    public EnumMappersWrapper(EnumMappersWrapper parent, List<AnnotationWrapper> enums) {
+        this(enums, parent.context);
+        this.parent = parent;
     }
 
 
@@ -96,10 +101,14 @@ public class EnumMappersWrapper {
     }
 
     public MappingBuilder get(InOutType inOutType) {
+
         MappingBuilder res = registryMap.get(inOutType);
         if (res != null) {
             unusedEnumMappers.remove(inOutType);
+        } else if (parent != null) { // Search in parent after current scope
+            res = parent.get(inOutType);
         }
+
         return res;
     }
 
