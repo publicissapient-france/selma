@@ -36,13 +36,16 @@ public class IgnoreFieldsWrapper {
     private final Element mapperMethod;
     private IgnoreFieldsWrapper parent;
 
-    public IgnoreFieldsWrapper(MapperGeneratorContext context, Element mapperMethod) {
+    public IgnoreFieldsWrapper(MapperGeneratorContext context, Element mapperMethod, List<String> ignoreFieldsParam) {
         this.context = context;
         this.mapperMethod = mapperMethod;
         annotationWrapper = AnnotationWrapper.buildFor(context, mapperMethod, IgnoreFields.class);
 
+        // TODO : Remove IgnoreFields annotation support once deleted in 1.0 ?
         if (annotationWrapper != null) {
             fields = annotationWrapper.getAsStrings("value");
+        } else if (ignoreFieldsParam != null && ignoreFieldsParam.size() > 0) {
+            fields = ignoreFieldsParam;
         } else {
             fields = Collections.EMPTY_LIST;
         }
@@ -50,10 +53,11 @@ public class IgnoreFieldsWrapper {
         parent = null;
     }
 
-    public IgnoreFieldsWrapper(MapperGeneratorContext context, Element mapperMethod, IgnoreFieldsWrapper parent) {
-        this(context, mapperMethod);
+    public IgnoreFieldsWrapper(MapperGeneratorContext context, Element mapperMethod, IgnoreFieldsWrapper parent, List<String> ignoreFieldsParam) {
+        this(context, mapperMethod, ignoreFieldsParam);
         this.parent = parent;
     }
+
 
 
     /**

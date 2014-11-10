@@ -20,6 +20,7 @@ package fr.xebia.extras.selma.codegen;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -185,6 +186,10 @@ public class MapperGeneratorContext {
 
     public int getSourcesCount() {
         return sourcesCount;
+    }
+
+    public TypeElement getTypeElement(String classe) {
+        return elements.getTypeElement(classe);
     }
 
     class StackElem {

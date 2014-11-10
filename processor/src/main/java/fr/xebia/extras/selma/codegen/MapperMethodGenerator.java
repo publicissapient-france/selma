@@ -37,9 +37,8 @@ public class MapperMethodGenerator {
     private final JavaWriter writer;
     private final MethodWrapper mapperMethod;
     private final MapperGeneratorContext context;
-    private final MappingRegistry mappingRegistry;
     private final SourceConfiguration configuration;
-    private final IgnoreFieldsWrapper ignoredFields;
+  //  private final IgnoreFieldsWrapper ignoredFields;
    // private final FieldsWrapper customFields;
     private final MappingsWrapper mappings;
 
@@ -51,9 +50,7 @@ public class MapperMethodGenerator {
 
         this.mappings = new MappingsWrapper(context, configuration, method, mappingRegistry);
 
-        this.mappingRegistry = new MappingRegistry(mappingRegistry);
-        this.ignoredFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields());
-        //this.customFields = new FieldsWrapper(context, mapperMethod, mappingRegistry.fields());
+//        this.ignoredFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields());
     }
 
     public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
@@ -69,8 +66,6 @@ public class MapperMethodGenerator {
             buildMappingMethods(writer);
         }
 
-        // Report unused ignore fields
-        ignoredFields.reportUnusedFields();
 
         // Report unused custom fields mapping
         mappings.reportUnused();
@@ -127,7 +122,7 @@ public class MapperMethodGenerator {
         }
 
         // Call the interceptor if it exist
-        MappingBuilder interceptor = mappingRegistry.mappingInterceptor(inOutType);
+        MappingBuilder interceptor = mappings.mappingInterceptor(inOutType);
         if (interceptor != null) {
             methodNode.child(interceptor.build(context, new SourceNodeVars()));
         }
@@ -141,7 +136,7 @@ public class MapperMethodGenerator {
      * custom bean to map.
      *
      * @param out TypeMirror that will be checked
-     * @return
+     * @return boolean telling whether this type can be supported by mapping code generation
      */
     private boolean isSupported(TypeMirror out) {
         boolean res = false;
@@ -187,7 +182,7 @@ public class MapperMethodGenerator {
     }
 
     MappingBuilder findBuilderFor(InOutType inOutType) {
-        return mappingRegistry.findMappingFor(inOutType);
+        return mappings.findMappingFor(inOutType);
     }
 
     private MappingSourceNode generate(InOutType inOutType) throws IOException {
@@ -209,7 +204,7 @@ public class MapperMethodGenerator {
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 
-            if (ignoredFields.isIgnoredField(field, inOutType.inAsDeclaredType())) {
+            if (mappings.isIgnoredField(field, inOutType.inAsDeclaredType())) {
                 continue; // Skip ignored in field
             }
 
@@ -248,7 +243,7 @@ public class MapperMethodGenerator {
         if (!configuration.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
             for (String outField : outFields) {
 
-                if (!ignoredFields.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
+                if (!mappings.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
                     context.error(outBean.getSetterElement(outField), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
                             "-->  Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing setter", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField);
                 } else {

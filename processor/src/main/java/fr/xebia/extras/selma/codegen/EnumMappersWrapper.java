@@ -20,6 +20,7 @@ import fr.xebia.extras.selma.EnumMapper;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,21 +29,23 @@ import java.util.Map;
 public class EnumMappersWrapper {
 
     public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
-    private final AnnotationWrapper mapperClassAnnotation;
     private final MapperGeneratorContext context;
 
     private final Map<InOutType, MappingBuilder> registryMap;
     private final HashMap<InOutType, AnnotationWrapper> unusedEnumMappers;
 
-    public EnumMappersWrapper(AnnotationWrapper mapperClassAnnotation, MapperGeneratorContext context) {
-        this.mapperClassAnnotation = mapperClassAnnotation;
+
+
+    public EnumMappersWrapper(List<AnnotationWrapper> annotationWrappers, MapperGeneratorContext context) {
         this.context = context;
         unusedEnumMappers = new HashMap<InOutType, AnnotationWrapper>();
         registryMap = new HashMap<InOutType, MappingBuilder>();
 
-        for (AnnotationWrapper enumMapper : mapperClassAnnotation.getAsAnnotationWrapper("withEnums")) {
+        if (annotationWrappers != null) {
+            for (AnnotationWrapper enumMapper : annotationWrappers) {
 
-            buildEnumMapper(enumMapper);
+                buildEnumMapper(enumMapper);
+            }
         }
 
     }
