@@ -46,7 +46,7 @@ public class TestCompiler {
     private final Map<String, TestCompilerEnv> environments;
 
 
-    private TestCompiler() {
+    protected TestCompiler() {
 
         String basePath = System.getProperty("user.dir");
 

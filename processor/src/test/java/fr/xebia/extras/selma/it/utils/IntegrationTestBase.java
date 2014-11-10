@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.it.utils;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.matchers.JUnitMatchers;
 
 import javax.tools.*;
@@ -41,24 +42,29 @@ public class IntegrationTestBase {
     private DiagnosticCollector<JavaFileObject> diagnostics;
     private boolean compilationResult;
 
+    private static TestCompiler testCompiler;
 
+    @BeforeClass
+    public static final void beforeClass(){
+        testCompiler = new TestCompiler();
+    }
 
     @Before
     public void setup() throws Exception {
-        TestCompiler.getInstance().compileFor(getClass());
-        TestCompiler.getInstance().compileFor(getClass()).assertCompilation();
+        testCompiler.compileFor(getClass());
+        testCompiler.compileFor(getClass()).assertCompilation();
     }
 
 
 
     protected boolean compilationSuccess() throws Exception {
-        return TestCompiler.getInstance().compileFor(getClass()).compilationSuccess();
+        return testCompiler.compileFor(getClass()).compilationSuccess();
     }
 
 
     protected DiagnosticCollector<JavaFileObject> getDiagnostics() throws Exception {
 
-        return TestCompiler.getInstance().compileFor(getClass()).diagnostics();
+        return testCompiler.compileFor(getClass()).diagnostics();
     }
 
     protected void assertCompilationError(Class<?> aClass,String signature, String message) throws Exception {

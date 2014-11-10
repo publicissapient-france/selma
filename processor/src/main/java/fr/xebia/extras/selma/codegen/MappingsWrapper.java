@@ -16,7 +16,7 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import fr.xebia.extras.selma.Mappings;
+import fr.xebia.extras.selma.Maps;
 
 import javax.lang.model.type.DeclaredType;
 
@@ -37,7 +37,7 @@ public class MappingsWrapper {
 
         this.registry = new MappingRegistry(mappingRegistry);
 
-        mappings = AnnotationWrapper.buildFor(context, method.element(), Mappings.class);
+        mappings = AnnotationWrapper.buildFor(context, method.element(), Maps.class);
 
         ignoreFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields(), mappings == null ? null :mappings.getAsStrings(WITH_IGNORE_FIELDS));
 

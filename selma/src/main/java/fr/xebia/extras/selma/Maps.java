@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Inherited
-public @interface Mappings {
+public @interface Maps {
 
 
     /**

@@ -17,9 +17,8 @@
 package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.Field;
-import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Mappings;
+import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.SimplePerson;
 import fr.xebia.extras.selma.beans.SimplePersonDto;
 
@@ -33,13 +32,13 @@ public interface CustomFieldMappingsMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in, SimplePersonDto dest);
 
-    @Mappings( withCustomFields = {
+    @Maps( withCustomFields = {
             @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
     })
     SimplePersonDto asPersonDtoReverseName(SimplePerson in);
 
 
-    @Mappings( withCustomFields = {
+    @Maps( withCustomFields = {
             @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
     })
     SimplePersonDto asPersonDtoReverseName(SimplePerson in, SimplePersonDto dest);
