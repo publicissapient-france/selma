@@ -25,7 +25,10 @@ import java.lang.annotation.Target;
  * explicit ignore fields.
  * This annotation can be used at method level to specify specific names to skip only in the scope of the method,
  * or at the interface level to apply ignored names to all mapping methods of the interface
+ *
+ * @deprecated Since 0.10, You should use @Mapper(withIgnoreFields={}) or @Mappings(withIgnoreFields={}).
  */
+@Deprecated()
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
 public @interface IgnoreFields {

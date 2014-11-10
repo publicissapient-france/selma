@@ -40,11 +40,15 @@ public class FieldsWrapper {
         this.fieldsRegistry = new BidiMap<String>();
     }
 
-    public FieldsWrapper(MapperGeneratorContext context, MethodWrapper mapperMethod, FieldsWrapper parent) {
+    public FieldsWrapper(MapperGeneratorContext context, MethodWrapper mapperMethod, FieldsWrapper parent, List<AnnotationWrapper> withCustomFields) {
         this(context, mapperMethod.element());
 
         if (mapperMethod.hasFields()) {
             processFields(context, element);
+        }
+
+        if (withCustomFields != null && withCustomFields.size() > 0){
+            processFieldList(context, withCustomFields);
         }
 
         this.unusedFields = new BidiMap<String>(fieldsRegistry);
@@ -52,25 +56,36 @@ public class FieldsWrapper {
     }
 
 
-    public FieldsWrapper(MapperGeneratorContext context, TypeElement type) {
+    public FieldsWrapper(MapperGeneratorContext context, TypeElement type, AnnotationWrapper mapper) {
         this(context, (Element) type);
 
         processFields(context, type);
+        processFieldsFromMapper(context, mapper);
 
         this.unusedFields = new BidiMap<String>(fieldsRegistry);
         this.parent = null;
     }
 
+    private void processFieldsFromMapper(MapperGeneratorContext context, AnnotationWrapper mapper) {
+        List<AnnotationWrapper> withCustomFields = mapper.getAsAnnotationWrapper("withCustomFields");
+        processFieldList(context, withCustomFields);
+    }
+
     private void processFields(MapperGeneratorContext context, Element type) {
         AnnotationWrapper fields = AnnotationWrapper.buildFor(context, type, Fields.class);
         if (fields != null) {
-            for (AnnotationWrapper field : fields.getAsAnnotationWrapper("value")) {
-                List<String> fieldPair = field.getAsStrings("value");
-                if (fieldPair.size() != 2) {
-                    context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
-                } else {
-                    fieldsRegistry.push(fieldPair.get(0).toLowerCase(), fieldPair.get(1).toLowerCase());
-                }
+            processFieldList(context, fields.getAsAnnotationWrapper("value"));
+        }
+
+    }
+
+    private void processFieldList(MapperGeneratorContext context,  List<AnnotationWrapper> fields) {
+        for (AnnotationWrapper field : fields) {
+            List<String> fieldPair = field.getAsStrings("value");
+            if (fieldPair.size() != 2) {
+                context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
+            } else {
+                fieldsRegistry.push(fieldPair.get(0).toLowerCase(), fieldPair.get(1).toLowerCase());
             }
         }
     }

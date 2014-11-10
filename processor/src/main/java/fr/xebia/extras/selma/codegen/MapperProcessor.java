@@ -67,7 +67,7 @@ public final class MapperProcessor extends AbstractProcessor {
         boolean res = true;
         if (annotations.size() > 0) {
             types = processingEnv.getTypeUtils();
-        populateAllMappers(roundEnv);
+            populateAllMappers(roundEnv);
 
         try {
             generateMappingClassses();

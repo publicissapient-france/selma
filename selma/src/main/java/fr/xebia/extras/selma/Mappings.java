@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Xebia and Séven Le Mesle
+ * Copyright 2013  Séven Le Mesle
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,10 +9,10 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * 
  */
 package fr.xebia.extras.selma;
 
@@ -21,11 +21,12 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 /**
- * Mapper annotation used to denote interfaces that needs mappers implementation to be built.
+ * Mapper annotation used to describe specific mappings for methods inside a mapper interface.
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Inherited
-public @interface Mapper {
+public @interface Mappings {
+
 
     /**
      * Wether compilation should fail when one field from in bean is missing in out bean<br/>
@@ -33,15 +34,6 @@ public @interface Mapper {
      * the missing field NO MAPPING CODE WILL BE GENERATED FOR THE MISSING FIELD.
      */
     boolean ignoreMissingProperties() default false;
-
-    /**
-     * Wether compilation should fail when Selma finds a situation where it can not generate mapping code.<br/>
-     * Reason is not supported in base code for this Type to Type conversion.
-     * By default compilation should fail at code generation time.
-     * If you prefer to generate a method that raises UnsupportedException when trying to map the field set this to true.
-     */
-    boolean ignoreNotSupported() default false;
-
 
     /**
      * Add a list of custom mapper class.
@@ -54,24 +46,9 @@ public @interface Mapper {
     Class<?>[] withCustom() default {};
 
     /**
-     * Add one or more class for which instance should be passed to the out bean constructor.
-     * This aims to replace the use of a Factory, in fact if you need a factory, most of the time it is because beans
-     * have a specific constructor parameter that need to be filled in.
-     *
-     * @return
-     */
-    Class<?>[] withSources() default {};
-
-    /**
      * Add one or more custom configuration for enum to enum mapping with default values.
      */
     EnumMapper[] withEnums() default {};
-
-
-    /**
-     * For test purpose, this allows to disable use of *final* modifier for generated mappers classes
-     */
-    boolean withFinalMappers() default true;
 
     /**
      * This is used to declare custom immutable types. Selma will copy by reference these types, when it meets same
@@ -100,6 +77,7 @@ public @interface Mapper {
      * </code>
      */
     Field[] withCustomFields() default {};
+
 
 
 }

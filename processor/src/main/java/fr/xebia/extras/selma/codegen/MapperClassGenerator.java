@@ -62,10 +62,10 @@ public class MapperClassGenerator {
 
         AnnotationWrapper mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
         ignoreFieldsWrapper = new IgnoreFieldsWrapper(context, element);
-        configuration = SourceConfiguration.buildFrom(mapper, ignoreFieldsWrapper);
-        fields = new FieldsWrapper(context, element);
-        mappingRegistry.fields(fields);
 
+        configuration = SourceConfiguration.buildFrom(mapper, ignoreFieldsWrapper);
+        fields = new FieldsWrapper(context, element, mapper);
+        mappingRegistry.fields(fields);
 
         if (registry.contains(origClasse)) {
             return;

@@ -40,7 +40,8 @@ public class MapperMethodGenerator {
     private final MappingRegistry mappingRegistry;
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoredFields;
-    private final FieldsWrapper customFields;
+   // private final FieldsWrapper customFields;
+    private final MappingsWrapper mappings;
 
     public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
         this.writer = writer;
@@ -48,9 +49,11 @@ public class MapperMethodGenerator {
         this.context = context;
         this.configuration = configuration;
 
+        this.mappings = new MappingsWrapper(context, configuration, method, mappingRegistry);
+
         this.mappingRegistry = new MappingRegistry(mappingRegistry);
         this.ignoredFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields());
-        this.customFields = new FieldsWrapper(context, mapperMethod, mappingRegistry.fields());
+        //this.customFields = new FieldsWrapper(context, mapperMethod, mappingRegistry.fields());
     }
 
     public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
@@ -70,7 +73,7 @@ public class MapperMethodGenerator {
         ignoredFields.reportUnusedFields();
 
         // Report unused custom fields mapping
-        customFields.reportUnused();
+        mappings.reportUnused();
     }
 
     private void buildMappingMethods(JavaWriter writer) throws IOException {
@@ -202,7 +205,7 @@ public class MapperMethodGenerator {
         Set<String> outFields = outBean.getSetterFields();
         for (String field : inBean.getFields()) {
 
-            String outField = customFields.getFieldFor(field);
+            String outField = mappings.getFieldFor(field);
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 

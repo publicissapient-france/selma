@@ -21,7 +21,9 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 /**
- * Define the list of custom field to field mapping at method level
+ * Define the list of custom field to field mapping at method level.
+ *
+ * @deprecated Since 0.10, you should use @Mapper(withCustomFields={@Field({"toto", "tutu"}})
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
