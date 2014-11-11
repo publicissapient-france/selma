@@ -53,7 +53,7 @@ public class MapsWrapper {
 
         this.customFields = new FieldsWrapper(context, method, mapperWrapper.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
 
-        enumMappers = new EnumMappersWrapper(registry.getEnumMappers(),  maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS));
+        enumMappers = new EnumMappersWrapper(registry.getEnumMappers(),  maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS), method.element());
         registry.enumMappers(enumMappers);
 
         if (mapperWrapper.isIgnoreMissingProperties()){

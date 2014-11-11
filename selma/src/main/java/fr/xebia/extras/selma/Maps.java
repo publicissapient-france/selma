@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Maps {
 
-
     /**
      * Wether compilation should fail when one field from in bean is missing in out bean<br/>
      * By default, compilation will fail and report error. Setting this to true will allow Selma to skip
@@ -72,7 +71,5 @@ public @interface Maps {
      * </code>
      */
     Field[] withCustomFields() default {};
-
-
 
 }

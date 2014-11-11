@@ -18,6 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.EnumMapper;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +31,16 @@ public class EnumMappersWrapper {
 
     public static final String DEFAULT_ENUM = "fr.xebia.extras.selma.EnumMapper";
     private final MapperGeneratorContext context;
+    private final Element reportElement;
 
     private final Map<InOutType, MappingBuilder> registryMap;
     private final HashMap<InOutType, AnnotationWrapper> unusedEnumMappers;
     private EnumMappersWrapper parent = null;
 
 
-    public EnumMappersWrapper(List<AnnotationWrapper> annotationWrappers, MapperGeneratorContext context) {
+    public EnumMappersWrapper(List<AnnotationWrapper> annotationWrappers, MapperGeneratorContext context, Element reportElement) {
         this.context = context;
+        this.reportElement = reportElement;
         unusedEnumMappers = new HashMap<InOutType, AnnotationWrapper>();
         registryMap = new HashMap<InOutType, MappingBuilder>();
 
@@ -50,8 +53,8 @@ public class EnumMappersWrapper {
 
     }
 
-    public EnumMappersWrapper(EnumMappersWrapper parent, List<AnnotationWrapper> enums) {
-        this(enums, parent.context);
+    public EnumMappersWrapper(EnumMappersWrapper parent, List<AnnotationWrapper> enums, Element reportElement) {
+        this(enums, parent.context, reportElement);
         this.parent = parent;
     }
 
@@ -65,10 +68,11 @@ public class EnumMappersWrapper {
         String defaultValue = enumMapper.getAsString("defaultValue");
 
         if (!inOutType.areEnums()) {
-            context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
+            context.error(reportElement, "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
         } else if (inOutType.in().toString().contains(DEFAULT_ENUM) || inOutType.out().toString().contains(DEFAULT_ENUM)) {
-
-            context.error(enumMapper.asElement(), "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
+            context.error(reportElement, "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
+        } else if (!MappingBuilder.collectEnumValues(inOutType.outAsTypeElement()).contains(defaultValue)) {
+            context.error(reportElement, "Invalid default value for @EnumMapper(from=%s.class, to=%s.class, default=\"%s\") %s.%s does not exist", inOutType.in(), inOutType.out(), defaultValue, inOutType.out(), defaultValue);
         } else {
 
             MappingBuilder res = MappingBuilder.newCustomEnumMapper(inOutType, defaultValue);

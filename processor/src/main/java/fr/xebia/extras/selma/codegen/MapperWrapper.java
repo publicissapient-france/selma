@@ -61,7 +61,7 @@ public class MapperWrapper {
         customMappers = new CustomMapperWrapper(mapperInterface, context);
         mappingRegistry.customMappers(customMappers);
 
-        enumMappers = new EnumMappersWrapper(withEnums(), context);
+        enumMappers = new EnumMappersWrapper(withEnums(), context, mapperInterface);
         mappingRegistry.enumMappers(enumMappers);
 
         immutablesMapper = new ImmutableTypesWrapper(mapper, context);

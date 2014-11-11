@@ -443,7 +443,7 @@ public abstract class MappingBuilder {
         return res;
     }
 
-    private static List<String> collectEnumValues(TypeElement typeElement) {
+    public static List<String> collectEnumValues(TypeElement typeElement) {
         List<String> res = new ArrayList<String>();
 
         final List<? extends Element> elementInList = typeElement.getEnclosedElements();
