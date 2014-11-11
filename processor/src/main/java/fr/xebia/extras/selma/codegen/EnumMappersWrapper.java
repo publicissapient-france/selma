@@ -68,10 +68,10 @@ public class EnumMappersWrapper {
         String defaultValue = enumMapper.getAsString("defaultValue");
 
         if (!inOutType.areEnums()) {
-            context.error(reportElement, "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
+            context.error(enumMapper.asElement(), "Invalid type given in @EnumMapper one of from=%s and to=%s is not an Enum.\\n You should only use enum types here", inOutType.in(), inOutType.out());
         } else if (inOutType.in().toString().contains(DEFAULT_ENUM) || inOutType.out().toString().contains(DEFAULT_ENUM)) {
-            context.error(reportElement, "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
-        } else if (!MappingBuilder.collectEnumValues(inOutType.outAsTypeElement()).contains(defaultValue)) {
+            context.error(enumMapper.asElement(), "EnumMapper miss use: from and to are mandatory in @EnumMapper when not used on a method that maps enumerations.\\n You should define from and to for this EnumMapper.");
+        } else if (!defaultValue.isEmpty() && !MappingBuilder.collectEnumValues(inOutType.outAsTypeElement()).contains(defaultValue)) {
             context.error(reportElement, "Invalid default value for @EnumMapper(from=%s.class, to=%s.class, default=\"%s\") %s.%s does not exist", inOutType.in(), inOutType.out(), defaultValue, inOutType.out(), defaultValue);
         } else {
 
