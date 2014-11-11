@@ -28,25 +28,42 @@ public class MapsWrapper {
     public static final String WITH_CUSTOM_FIELDS = "withCustomFields";
     public static final String WITH_IGNORE_FIELDS = "withIgnoreFields";
     public static final String WITH_ENUMS = "withEnums";
+    public static final String IGNORE_MISSING_PROPERTIES = "ignoreMissingProperties";
     //private final IgnoreFieldsWrapper ignoreFields;
     private final FieldsWrapper customFields;
     private final AnnotationWrapper maps;
     private final MappingRegistry registry;
     private final IgnoreFieldsWrapper ignoreFields;
     private final EnumMappersWrapper enumMappers;
+    private final MethodWrapper method;
+    private final MapperWrapper mapperWrapper;
+    private final MapperGeneratorContext context;
+    private boolean ignoreMissingProperties;
 
-    public MapsWrapper(MapperGeneratorContext context, SourceConfiguration configuration, MethodWrapper method, MappingRegistry mappingRegistry) {
+    public MapsWrapper(MethodWrapper method, MapperWrapper mapperWrapper) {
 
-        this.registry = new MappingRegistry(mappingRegistry);
+        this.method = method;
+        this.mapperWrapper = mapperWrapper;
+        this.registry = new MappingRegistry(mapperWrapper.registry());
+        this.context = mapperWrapper.context();
 
         maps = AnnotationWrapper.buildFor(context, method.element(), Maps.class);
 
-        ignoreFields = new IgnoreFieldsWrapper(context, method.element(), configuration.ignoredFields(), maps == null ? null : maps.getAsStrings(WITH_IGNORE_FIELDS));
+        ignoreFields = new IgnoreFieldsWrapper(context, method.element(), mapperWrapper.ignoredFields(), maps == null ? null : maps.getAsStrings(WITH_IGNORE_FIELDS));
 
-        this.customFields = new FieldsWrapper(context, method, mappingRegistry.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
+        this.customFields = new FieldsWrapper(context, method, mapperWrapper.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
 
         enumMappers = new EnumMappersWrapper(registry.getEnumMappers(),  maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS));
         registry.enumMappers(enumMappers);
+
+        if (mapperWrapper.isIgnoreMissingProperties()){
+            ignoreMissingProperties = true;
+        } else if (maps != null && maps.getAsBoolean(IGNORE_MISSING_PROPERTIES)) {
+            ignoreMissingProperties = true;
+        } else {
+            ignoreMissingProperties = false;
+        }
+
     }
 
     public void reportUnused() {
@@ -74,5 +91,9 @@ public class MapsWrapper {
 
     public boolean isIgnoredField(String field, DeclaredType declaredType) {
         return ignoreFields.isIgnoredField(field, declaredType);
+    }
+
+    public boolean isIgnoreMissingProperties() {
+        return ignoreMissingProperties;
     }
 }

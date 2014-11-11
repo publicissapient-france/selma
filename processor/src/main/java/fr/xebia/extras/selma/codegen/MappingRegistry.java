@@ -47,6 +47,7 @@ public class MappingRegistry {
         this.customMapers = registry.customMapers;
         this.enumMappers = registry.enumMappers;
         this.immutableTypes = registry.immutableTypes;
+        this.fields = registry.fields;
     }
 
     public MappingBuilder findMappingFor(InOutType inOutType) {

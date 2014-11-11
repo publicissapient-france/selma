@@ -67,6 +67,17 @@ public class IntegrationTestBase {
         return testCompiler.compileFor(getClass()).diagnostics();
     }
 
+    protected int compilationErrorCount() throws Exception {
+        int res = 0;
+        DiagnosticCollector<JavaFileObject> diagnosticCollector = getDiagnostics();
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnosticCollector.getDiagnostics()) {
+            if (diagnostic.getKind() == Diagnostic.Kind.ERROR){
+                res++;
+            }
+        }
+        return res;
+    }
+
     protected void assertCompilationError(Class<?> aClass,String signature, String message) throws Exception {
         assertCompilationKind( Diagnostic.Kind.ERROR, aClass, signature, message);
     }

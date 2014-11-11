@@ -37,24 +37,28 @@ public class MapperWrapper {
     private final ImmutableTypesWrapper immutablesMapper;
     private final AnnotationWrapper mapper;
     private final EnumMappersWrapper enumMappers;
+    private final MapperGeneratorContext context;
+    private final TypeElement mapperInterface;
 
-    public MapperWrapper(MapperGeneratorContext context, TypeElement element) {
+    public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
+        this.context = context;
+        this.mapperInterface = mapperInterface;
 
         mappingRegistry = new MappingRegistry(context);
 
 
-        mapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
+        mapper = AnnotationWrapper.buildFor(context, mapperInterface, Mapper.class);
 
         List<String> ignoreFieldsParam = mapper.getAsStrings(WITH_IGNORE_FIELDS);
 
-        ignoreFieldsWrapper = new IgnoreFieldsWrapper(context, element, ignoreFieldsParam);
+        ignoreFieldsWrapper = new IgnoreFieldsWrapper(context, mapperInterface, ignoreFieldsParam);
         configuration = SourceConfiguration.buildFrom(mapper, ignoreFieldsWrapper);
-        fields = new FieldsWrapper(context, element, mapper);
 
+        fields = new FieldsWrapper(context, mapperInterface, mapper);
         mappingRegistry.fields(fields);
 
         // Here we collect custom mappers
-        customMappers = new CustomMapperWrapper(element, context);
+        customMappers = new CustomMapperWrapper(mapperInterface, context);
         mappingRegistry.customMappers(customMappers);
 
         enumMappers = new EnumMappersWrapper(withEnums(), context);
@@ -105,5 +109,21 @@ public class MapperWrapper {
 
     public void emitCustomMappersFields(JavaWriter writer, boolean assign) throws IOException {
         customMappers.emitCustomMappersFields(writer, assign);
+    }
+
+    public MapperGeneratorContext context() {
+        return context;
+    }
+
+    public IgnoreFieldsWrapper ignoredFields() {
+        return ignoreFieldsWrapper;
+    }
+
+    public FieldsWrapper fields() {
+        return fields;
+    }
+
+    public boolean isIgnoreMissingProperties() {
+        return configuration.isIgnoreMissingProperties();
     }
 }

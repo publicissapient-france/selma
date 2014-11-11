@@ -115,7 +115,7 @@ public class MapperClassGenerator {
                 buildConstructor(writer, adapterName);
             }
             // Write mapping method
-            MapperMethodGenerator.create(writer, mapperMethod, context, mapper.registry(), mapper.configuration()).build();
+            MapperMethodGenerator.create(writer, mapperMethod, mapper).build();
 
             writer.emitEmptyLine();
         }

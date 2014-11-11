@@ -31,7 +31,8 @@ public @interface Maps {
     /**
      * Wether compilation should fail when one field from in bean is missing in out bean<br/>
      * By default, compilation will fail and report error. Setting this to true will allow Selma to skip
-     * the missing field NO MAPPING CODE WILL BE GENERATED FOR THE MISSING FIELD.
+     * the missing field NO MAPPING CODE WILL BE GENERATED FOR THE MISSING FIELD.<br/>
+     * <b>This will be ignored when @Mapper already ignore missing properties !</b>
      */
     boolean ignoreMissingProperties() default false;
 
@@ -49,12 +50,6 @@ public @interface Maps {
      * Add one or more custom configuration for enum to enum mapping with default values.
      */
     EnumMapper[] withEnums() default {};
-
-    /**
-     * This is used to declare custom immutable types. Selma will copy by reference these types, when it meets same
-     * type for matching fields in source and destination bean.
-     */
-    Class<?>[] withImmutables() default {};
 
     /**
      * This is used to describe fields to be ignored in the generated mapping methods. This allows to skip specific properties

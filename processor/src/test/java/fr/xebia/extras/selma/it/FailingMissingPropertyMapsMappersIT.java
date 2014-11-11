@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.it;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
 import fr.xebia.extras.selma.it.mappers.MissingPropertyMapper;
+import fr.xebia.extras.selma.it.mappers.MissingPropertyMapsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
@@ -27,8 +28,8 @@ import org.junit.Test;
 /**
  *
  */
-@Compile(withClasses = MissingPropertyMapper.class, shouldFail = true)
-public class FailingMappersIT extends IntegrationTestBase {
+@Compile(withClasses = MissingPropertyMapsMapper.class, shouldFail = true)
+public class FailingMissingPropertyMapsMappersIT extends IntegrationTestBase {
 
 
 
@@ -44,6 +45,7 @@ public class FailingMappersIT extends IntegrationTestBase {
 
         assertCompilationError(PersonOut.class, "public void setBiography(String biography) {", String.format("setter for field biography from destination bean %s has no getter in source bean %s", PersonOut.class.getName(), PersonIn.class.getName()));
         Assert.assertEquals(2, compilationErrorCount());
+
     }
 
 }

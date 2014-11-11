@@ -38,20 +38,20 @@ public class MapperMethodGenerator {
     private final MethodWrapper mapperMethod;
     private final MapperGeneratorContext context;
     private final SourceConfiguration configuration;
-    private final MapsWrapper mappings;
+    private final MapsWrapper maps;
 
-    public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
+    public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperWrapper mapperWrapper) {
         this.writer = writer;
         this.mapperMethod = method;
-        this.context = context;
-        this.configuration = configuration;
+        this.context = mapperWrapper.context();
+        this.configuration = mapperWrapper.configuration();
 
-        this.mappings = new MapsWrapper(context, configuration, method, mappingRegistry);
+        this.maps = new MapsWrapper(method, mapperWrapper);
 
     }
 
-    public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperGeneratorContext context, MappingRegistry mappingRegistry, SourceConfiguration configuration) {
-        return new MapperMethodGenerator(writer, mapperMethod, context, mappingRegistry, configuration);
+    public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperWrapper mapperWrapper) {
+        return new MapperMethodGenerator(writer, mapperMethod, mapperWrapper);
     }
 
     public void build() throws IOException {
@@ -65,7 +65,7 @@ public class MapperMethodGenerator {
 
 
         // Report unused custom fields mapping
-        mappings.reportUnused();
+        maps.reportUnused();
     }
 
     private void buildMappingMethods(JavaWriter writer) throws IOException {
@@ -119,7 +119,7 @@ public class MapperMethodGenerator {
         }
 
         // Call the interceptor if it exist
-        MappingBuilder interceptor = mappings.mappingInterceptor(inOutType);
+        MappingBuilder interceptor = maps.mappingInterceptor(inOutType);
         if (interceptor != null) {
             methodNode.child(interceptor.build(context, new SourceNodeVars()));
         }
@@ -179,7 +179,7 @@ public class MapperMethodGenerator {
     }
 
     MappingBuilder findBuilderFor(InOutType inOutType) {
-        return mappings.findMappingFor(inOutType);
+        return maps.findMappingFor(inOutType);
     }
 
     private MappingSourceNode generate(InOutType inOutType) throws IOException {
@@ -197,15 +197,15 @@ public class MapperMethodGenerator {
         Set<String> outFields = outBean.getSetterFields();
         for (String field : inBean.getFields()) {
 
-            String outField = mappings.getFieldFor(field);
+            String outField = maps.getFieldFor(field);
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 
-            if (mappings.isIgnoredField(field, inOutType.inAsDeclaredType())) {
+            if (maps.isIgnoredField(field, inOutType.inAsDeclaredType())) {
                 continue; // Skip ignored in field
             }
 
-            if (isMissingInDestination && configuration.isIgnoreMissingProperties()) {
+            if (isMissingInDestination && maps.isIgnoreMissingProperties()) {
                 continue;  // Skip ignored missing properties in destination bean
             } else {
 
@@ -237,10 +237,10 @@ public class MapperMethodGenerator {
             outFields.remove(outField);
         }
 
-        if (!configuration.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
+        if (!maps.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
             for (String outField : outFields) {
 
-                if (!mappings.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
+                if (!maps.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
                     context.error(outBean.getSetterElement(outField), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
                             "-->  Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing setter", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField);
                 } else {
