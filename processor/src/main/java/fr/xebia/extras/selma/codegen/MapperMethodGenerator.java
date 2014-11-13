@@ -195,7 +195,7 @@ public class MapperMethodGenerator {
         BeanWrapper inBean = new BeanWrapper(context, (TypeElement) context.type.asElement(inOutType.in()));
 
         Set<String> outFields = outBean.getSetterFields();
-        for (String field : inBean.getFields()) {
+        for (String field : inBean.getGetterFields()) {
 
             String outField = maps.getFieldFor(field);
 

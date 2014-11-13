@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.it;
 
+import fr.xebia.extras.selma.beans.NoGetterBean;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
 import fr.xebia.extras.selma.it.mappers.MissingPropertyMapper;
@@ -37,14 +38,23 @@ public class FailingMissingPropertyMapsMappersIT extends IntegrationTestBase {
     public void compilation_should_fail_on_missing_out_property_without_ignore() throws Exception {
 
         assertCompilationError(PersonIn.class, "public boolean isMale() {", String.format("setter for field male from source bean %s is missing in destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
-        Assert.assertEquals(2, compilationErrorCount());
+        Assert.assertEquals(3, compilationErrorCount());
     }
 
     @Test
     public void compilation_should_fail_on_missing_in_property_without_ignore() throws Exception {
 
         assertCompilationError(PersonOut.class, "public void setBiography(String biography) {", String.format("setter for field biography from destination bean %s has no getter in source bean %s", PersonOut.class.getName(), PersonIn.class.getName()));
-        Assert.assertEquals(2, compilationErrorCount());
+        Assert.assertEquals(3, compilationErrorCount());
+
+    }
+
+
+    @Test
+    public void compilation_should_fail_on_missing_getter_in_source_property_without_ignore() throws Exception {
+
+        assertCompilationError(NoGetterBean.class, "public void setField(String field) {", String.format("setter for field field from destination bean %s has no getter in source bean %s", NoGetterBean.class.getName(), NoGetterBean.class.getName()));
+        Assert.assertEquals(3, compilationErrorCount());
 
     }
 

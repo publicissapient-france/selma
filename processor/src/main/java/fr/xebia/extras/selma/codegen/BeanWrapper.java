@@ -171,6 +171,16 @@ public class BeanWrapper {
         return res;
     }
 
+    public Set<String> getGetterFields() {
+        Set<String> res = new TreeSet<String>();
+        for (String s : fieldsGraph.keySet()) {
+            if (fieldsGraph.get(s).getter != null) {
+                res.add(s);
+            }
+        }
+        return res;
+    }
+
     public Element getSetterElement(String field) {
 
         return fieldsGraph.get(field).setter.element();
