@@ -498,7 +498,11 @@ public abstract class MappingBuilder {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
-                root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
+                if (inOutType.isOutPutAsParam()){
+                    root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
+                } else {
+                    root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
+                }
                 return root.body;
             }
         };

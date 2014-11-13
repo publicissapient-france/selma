@@ -40,11 +40,13 @@ public class MethodWrapper {
     private static final String SETTER_FORMAT = "set(.*)";
     private static final Pattern SETTER_PATTERN = Pattern.compile(SETTER_FORMAT);
     private final ExecutableElement method;
+    private final MapperGeneratorContext context;
     boolean ignoreMissingProperties = false;
     private String fieldName;
 
     public MethodWrapper(ExecutableElement method, MapperGeneratorContext context) {
         this.method = method;
+        this.context = context;
 
         AnnotationWrapper annotationWrapper = AnnotationWrapper.buildFor(context, method, Mapper.class);
         if (annotationWrapper != null) {
@@ -170,7 +172,16 @@ public class MethodWrapper {
      * @return
      */
     public boolean isCustomMapper() {
-        return hasReturnType() && hasOneParameter();
+        return (hasReturnType() && hasOneParameter()) || (hasReturnType() && hasTwoParameter() && secondParamIsReturnType());
+    }
+
+    private boolean secondParamIsReturnType() {
+        boolean res = false;
+
+        TypeMirror secondParameterType = secondParameterType();
+        TypeMirror returnType = returnType();
+        res = context.type.isSameType(secondParameterType, returnType);
+        return res;
     }
 
     /**

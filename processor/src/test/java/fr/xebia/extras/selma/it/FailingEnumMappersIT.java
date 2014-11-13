@@ -36,7 +36,10 @@ public class FailingEnumMappersIT extends IntegrationTestBase {
 
         assertCompilationError(FailingEnumMapper.class,
                 "public interface FailingEnumMapper {",
-                String.format("Invalid default value for @EnumMapper(from=fr.xebia.extras.selma.beans.EnumA.class, to=fr.xebia.extras.selma.beans.EnumB.class, default=\"c\") fr.xebia.extras.selma.beans.EnumB.c does not exist", PersonIn.class.getName(), PersonOut.class.getName()));
+                String.format("Invalid default value for @EnumMapper(from=fr.xebia.extras.selma.beans.EnumA.class," +
+                        " to=fr.xebia.extras.selma.beans.EnumB.class, default=\"c\")" +
+                        " fr.xebia.extras.selma.beans.EnumB.c does not exist",
+                        PersonIn.class.getName(), PersonOut.class.getName()));
         Assert.assertEquals(1, compilationErrorCount());
     }
 

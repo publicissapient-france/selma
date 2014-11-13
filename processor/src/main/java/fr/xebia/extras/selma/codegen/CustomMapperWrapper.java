@@ -97,7 +97,6 @@ public class CustomMapperWrapper {
         MappingBuilder res = MappingBuilder.newCustomMapper(inOutType, methodCall);
 
         registryMap.put(inOutType, res);
-        registryMap.put(new InOutType(inOutType.in(), inOutType.out(), true), res);
         unusedCustomMappers.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
     }
 
@@ -189,7 +188,7 @@ public class CustomMapperWrapper {
         }
 
         if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor()) {
-            context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one parameter and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());
+            context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one or two parameters and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());
             res = false;
         }
 
