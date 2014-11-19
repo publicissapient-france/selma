@@ -17,11 +17,13 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.xebia.extras.selma.Mapper;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.io.IOException;
 import java.util.*;
@@ -87,14 +89,24 @@ public class CustomMapperWrapper {
      * Adds a custom mapping method to the registry for later use at codegen.
      *
      * @param method
+     * @param immutable
      */
-    private void pushCustomMapper(final TypeElement element, final MethodWrapper method) {
-
+    private void pushCustomMapper(final TypeElement element, final MethodWrapper method, Boolean immutable) {
+        MappingBuilder res = null;
         String customMapperFieldName = buildMapperFieldName(element);
 
         InOutType inOutType = method.inOutType();
         String methodCall = String.format("%s.%s", customMapperFieldName, method.getSimpleName());
-        MappingBuilder res = MappingBuilder.newCustomMapper(inOutType, methodCall);
+
+        if (immutable == null){
+            res = MappingBuilder.newCustomMapper(inOutType, methodCall);
+        } else if (immutable) {
+            res = MappingBuilder.newCustomMapper(inOutType, methodCall);
+            inOutType = new InOutType(inOutType, true);
+        } else if (!immutable) {
+            res = MappingBuilder.newCustomMapperImmutableForUpdateGraph(inOutType, methodCall);
+            inOutType = new InOutType(inOutType, false);
+        }
 
         registryMap.put(inOutType, res);
         unusedCustomMappers.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
@@ -123,19 +135,23 @@ public class CustomMapperWrapper {
                 final TypeElement element = context.elements.getTypeElement(customMapper.replace(".class", ""));
 
                 final List<ExecutableElement> methods = ElementFilter.methodsIn(element.getEnclosedElements());
-
+                final HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes = new HashMap<CustomMapperKey, CustomMapperEntry>();
                 for (ExecutableElement method : methods) {
                     MethodWrapper methodWrapper = new MethodWrapper(method, context);
                     if (isValidCustomMapping(methodWrapper)) {
 
                         if (methodWrapper.isCustomMapper()) {
-                            pushCustomMapper(element, methodWrapper);
+                            pushCustomMapper(element, methodWrapper, null);
+                            addCustomInOutType(customInOutTypes, methodWrapper);
                         } else {
                             pushMappingInterceptor(element, methodWrapper);
                         }
                         mappingMethodCount++;
                     }
                 }
+
+                addMissingMappings(customInOutTypes, element);
+
 
                 if (mappingMethodCount == 0) {
                     context.error(element, "No valid mapping method found in custom selma class %s\\n A custom mapping method is public and returns a type not void, it takes one parameter or more if you specified datasource.", customMapper);
@@ -155,9 +171,33 @@ public class CustomMapperWrapper {
                     // Here we collect the name of the field to create in the Mapper generated class
                     customMaperFields.add(element);
                 }
+
+
             }
         }
 
+    }
+
+    private void addMissingMappings(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, TypeElement element) {
+        for (Map.Entry<CustomMapperKey, CustomMapperEntry> entry : customInOutTypes.entrySet()) {
+            if (entry.getValue().updateGraphMethod == null) {
+                pushCustomMapper(element, entry.getValue().immutableMethod, Boolean.TRUE);
+            } else if (entry.getValue().immutableMethod == null) {
+                pushCustomMapper(element, entry.getValue().updateGraphMethod, Boolean.FALSE);
+            }
+        }
+    }
+
+    private void addCustomInOutType(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, MethodWrapper methodWrapper) {
+        CustomMapperKey key = new CustomMapperKey(methodWrapper.inOutType());
+        CustomMapperEntry entry1 = customInOutTypes.get(key);
+        if (entry1 == null){
+            CustomMapperEntry entry = new CustomMapperEntry(methodWrapper.inOutType(), methodWrapper);
+            customInOutTypes.put(key, entry);
+        }else {
+            CustomMapperEntry entry = new CustomMapperEntry(entry1, methodWrapper);
+            customInOutTypes.put(key, entry);
+        }
     }
 
     private String buildMapperFieldName(TypeElement element) {
@@ -216,6 +256,63 @@ public class CustomMapperWrapper {
         for (String field : unusedCustomMappers.values()) {
             context.warn(element, "Custom mapping method \"%s\" is never used", field);
         }
+    }
 
+    class CustomMapperKey {
+        final TypeMirror in;
+        final TypeMirror out;
+
+        public CustomMapperKey(InOutType inOutType){
+            in = inOutType.in();
+            out = inOutType.out();
+        }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            CustomMapperKey key = (CustomMapperKey) o;
+
+            if (!MapperProcessor.types.isSameType(in, key.in)) return false;
+            if (!MapperProcessor.types.isSameType(out, key.out)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = in != null ? in.hashCode() : 0;
+            result = 31 * result + (out != null ? out.hashCode() : 0);
+            return result;
+        }
+
+    }
+
+    class CustomMapperEntry {
+         final MethodWrapper updateGraphMethod;
+         final MethodWrapper immutableMethod;
+
+        public CustomMapperEntry(InOutType inOutType, MethodWrapper customMethod) {
+            if (inOutType.isOutPutAsParam()){
+                this.updateGraphMethod = customMethod;
+                this.immutableMethod = null;
+            }else {
+                this.immutableMethod = customMethod;
+                this.updateGraphMethod = null;
+            }
+        }
+
+
+        public CustomMapperEntry(CustomMapperEntry entry1, MethodWrapper methodWrapper) {
+            if (entry1.immutableMethod != null){
+                immutableMethod = entry1.immutableMethod;
+                updateGraphMethod = methodWrapper;
+            }else {
+                updateGraphMethod = entry1.updateGraphMethod;
+                immutableMethod = methodWrapper;
+            }
+        }
     }
 }

@@ -493,6 +493,17 @@ public abstract class MappingBuilder {
         return controlNull(vars.inGetter(), false);
     }
 
+    public static MappingBuilder newCustomMapperImmutableForUpdateGraph(final InOutType inOutType, final String name) {
+        return new MappingBuilder() {
+            @Override
+            MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                context.mappingMethod(inOutType, name);
+                root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
+                return root.body;
+            }
+        };
+    }
+
     public static MappingBuilder newCustomMapper(final InOutType inOutType, final String name) {
         return new MappingBuilder() {
             @Override
@@ -607,6 +618,7 @@ public abstract class MappingBuilder {
             }
         };
     }
+
 
     static abstract class MappingSpecification {
 
