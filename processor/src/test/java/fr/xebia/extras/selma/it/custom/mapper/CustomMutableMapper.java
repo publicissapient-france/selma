@@ -25,8 +25,8 @@ import fr.xebia.extras.selma.beans.CityOut;
 public class CustomMutableMapper {
 
 
-    public static final String IMMUTABLY_MAPPED = " immutably mapped";
-    public static final int POPULATION_INC = 10000;
+    public static final String IMMUTABLY_MAPPED = " mutably mapped";
+    public static final int POPULATION_INC = 100000;
 
     public CityOut mapCity(CityIn cityIn, CityOut out){
         CityOut cityOut = new CityOut();

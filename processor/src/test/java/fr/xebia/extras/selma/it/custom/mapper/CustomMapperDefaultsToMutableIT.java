@@ -21,6 +21,7 @@ import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
+import fr.xebia.extras.selma.it.mappers.CustomMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import junit.framework.Assert;
@@ -55,8 +56,8 @@ public class CustomMapperDefaultsToMutableIT extends IntegrationTestBase {
         Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
         Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
 
-        Assert.assertEquals(personIn.getAddress().getCity().getName() + CustomImmutableMapper.IMMUTABLY_MAPPED, res.getAddress().getCity().getName());
-        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + CustomImmutableMapper.POPULATION_INC, res.getAddress().getCity().getPopulation());
+        Assert.assertEquals(personIn.getAddress().getCity().getName() + CustomMutableMapper.IMMUTABLY_MAPPED, res.getAddress().getCity().getName());
+        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + CustomMutableMapper.POPULATION_INC, res.getAddress().getCity().getPopulation());
         Assert.assertEquals(personIn.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
     }
 
@@ -84,8 +85,8 @@ public class CustomMapperDefaultsToMutableIT extends IntegrationTestBase {
         Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
         Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
 
-        Assert.assertEquals(personIn.getAddress().getCity().getName() + CustomImmutableMapper.IMMUTABLY_MAPPED, res.getAddress().getCity().getName());
-        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + CustomImmutableMapper.POPULATION_INC, res.getAddress().getCity().getPopulation());
+        Assert.assertEquals(personIn.getAddress().getCity().getName() + CustomMutableMapper.IMMUTABLY_MAPPED, res.getAddress().getCity().getName());
+        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + CustomMutableMapper.POPULATION_INC, res.getAddress().getCity().getPopulation());
         Assert.assertEquals(personIn.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
     }
 }
