@@ -120,13 +120,23 @@ public class MapperGeneratorContext {
     }
 
     private MappingMethod getMappingMethod(InOutType inOutType, MappingMethod mappingMethod) {
-
-        if (mappingRegistry.containsKey(inOutType.toString())) {
-            return mappingRegistry.get(inOutType.toString());
+        InOutType key = inOutType;
+        MappingMethod method = mappingMethod;
+        if (mappingRegistry.containsKey(key.toString())) {
+            return mappingRegistry.get(key.toString());
         }
+        // Default enum mapper should always be considered immutable
+        if (inOutType.areEnums() && inOutType.isOutPutAsParam()){
+            key = new InOutType(inOutType, false);
+            if (mappingRegistry.containsKey(key.toString())){
+                return mappingRegistry.get(key.toString());
+            }
+            mappingMethod = new MappingMethod(mappingMethod, key);
+        }
+
         // This is a new mapping method we should ensure it will be built and present in registry for later use
         methodStack.push(mappingMethod);
-        mappingRegistry.put(inOutType.toString(), mappingMethod);
+        mappingRegistry.put(key.toString(), mappingMethod);
 
         return mappingMethod;
     }
@@ -220,7 +230,6 @@ public class MapperGeneratorContext {
         private boolean built;
 
         public MappingMethod(InOutType inOutType) {
-            //To change body of created methods use File | Settings | File Templates.
             this.inOutType = inOutType;
 
             this.name = String.format("as%s", inOutType.outAsTypeElement().getSimpleName());
@@ -231,6 +240,12 @@ public class MapperGeneratorContext {
             this.inOutType = inOutType;
             this.name = name;
             built = true;
+        }
+
+        public MappingMethod(MappingMethod mappingMethod, InOutType key) {
+            this.name = mappingMethod.name();
+            this.built = mappingMethod.built;
+            this.inOutType = key;
         }
 
         public String name() {

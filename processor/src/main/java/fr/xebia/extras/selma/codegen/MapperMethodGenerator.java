@@ -63,7 +63,6 @@ public class MapperMethodGenerator {
             buildMappingMethods(writer);
         }
 
-
         // Report unused custom fields mapping
         maps.reportUnused();
     }
