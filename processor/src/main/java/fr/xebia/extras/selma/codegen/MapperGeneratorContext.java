@@ -126,7 +126,7 @@ public class MapperGeneratorContext {
             return mappingRegistry.get(key.toString());
         }
         // Default enum mapper should always be considered immutable
-        if (inOutType.areEnums() && inOutType.isOutPutAsParam()){
+        if (inOutType.areDeclared() && inOutType.areEnums() && inOutType.isOutPutAsParam()){
             key = new InOutType(inOutType, false);
             if (mappingRegistry.containsKey(key.toString())){
                 return mappingRegistry.get(key.toString());
