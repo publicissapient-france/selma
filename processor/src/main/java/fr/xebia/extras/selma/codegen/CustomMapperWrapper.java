@@ -127,10 +127,11 @@ public class CustomMapperWrapper {
 
     private void collectCustomMappers() {
 
-        if (annotationWrapper.getAsStrings("withCustom").size() > 0) {
+        List<String> customClasses = annotationWrapper.getAsStrings("withCustom");
+        if (customClasses.size() > 0) {
             int mappingMethodCount = 0;
 
-            for (String customMapper : annotationWrapper.getAsStrings("withCustom")) {
+            for (String customMapper : customClasses) {
 
                 final TypeElement element = context.elements.getTypeElement(customMapper.replace(".class", ""));
 
@@ -150,6 +151,7 @@ public class CustomMapperWrapper {
                     }
                 }
 
+                // Create defaults custom mappers if immutable or mutable is missing
                 addMissingMappings(customInOutTypes, element);
 
 
