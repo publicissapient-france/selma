@@ -47,7 +47,7 @@ public class MapperClassGenerator {
         this.origClasse = classe;
         this.mapperMethods = executableElements;
         this.processingEnv = processingEnvironment;
-        context = new MapperGeneratorContext(processingEnv, null);
+        context = new MapperGeneratorContext(processingEnv);
 
         element = context.getTypeElement(classe);
 

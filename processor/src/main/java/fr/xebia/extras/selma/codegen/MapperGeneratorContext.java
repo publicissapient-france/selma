@@ -36,7 +36,6 @@ public class MapperGeneratorContext {
 
 
     private final ProcessingEnvironment processingEnv;
-    private final SourceConfiguration configuration;
     int depth = 0;
 
     Elements elements;
@@ -54,7 +53,7 @@ public class MapperGeneratorContext {
     private String newParams;
     private int sourcesCount;
 
-    public MapperGeneratorContext(ProcessingEnvironment processingEnvironment, SourceConfiguration configuration) {
+    public MapperGeneratorContext(ProcessingEnvironment processingEnvironment) {
         this.elements = processingEnvironment.getElementUtils();
         this.type = processingEnvironment.getTypeUtils();
         this.stack = new LinkedList<StackElem>();
@@ -62,7 +61,6 @@ public class MapperGeneratorContext {
         mappingRegistry = new HashMap<String, MappingMethod>();
         methodStack = new LinkedList<MappingMethod>();
 
-        this.configuration = configuration;
     }
 
 
