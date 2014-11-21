@@ -39,6 +39,7 @@ public class MapperWrapper {
     private final EnumMappersWrapper enumMappers;
     private final MapperGeneratorContext context;
     private final TypeElement mapperInterface;
+    private final SourceWrapper source;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -58,7 +59,7 @@ public class MapperWrapper {
         mappingRegistry.fields(fields);
 
         // Here we collect custom mappers
-        customMappers = new CustomMapperWrapper(mapperInterface, context);
+        customMappers = new CustomMapperWrapper(mapper, context);
         mappingRegistry.customMappers(customMappers);
 
         enumMappers = new EnumMappersWrapper(withEnums(), context, mapperInterface);
@@ -66,6 +67,8 @@ public class MapperWrapper {
 
         immutablesMapper = new ImmutableTypesWrapper(mapper, context);
         mappingRegistry.immutableTypes(immutablesMapper);
+
+        source = new SourceWrapper(mapper, context);
 
     }
 
@@ -125,5 +128,30 @@ public class MapperWrapper {
 
     public boolean isIgnoreMissingProperties() {
         return configuration.isIgnoreMissingProperties();
+    }
+
+    public CustomMapperWrapper customMappers() {
+        return customMappers;
+    }
+
+    /**
+     * Method used to collect dependencies from mapping methods that need fields and constructor init
+     * @param maps
+     */
+    public void collectMaps(MapsWrapper maps) {
+        customMappers.addFields(maps.customMapperFields());
+
+    }
+
+    public void emitSourceFields(JavaWriter writer) throws IOException {
+        source.emitFields(writer);
+    }
+
+    public String[] sourceConstructorArgs() {
+        return source.sourceConstructorArgs();
+    }
+
+    public void emitSourceAssigns(JavaWriter writer) throws IOException {
+        source.emitAssigns(writer);
     }
 }

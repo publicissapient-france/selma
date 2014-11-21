@@ -47,11 +47,6 @@ public class MapperMethodGenerator {
         this.configuration = mapperWrapper.configuration();
 
         this.maps = new MapsWrapper(method, mapperWrapper);
-
-    }
-
-    public static MapperMethodGenerator create(JavaWriter writer, MethodWrapper mapperMethod, MapperWrapper mapperWrapper) {
-        return new MapperMethodGenerator(writer, mapperMethod, mapperWrapper);
     }
 
     public void build() throws IOException {
@@ -242,8 +237,6 @@ public class MapperMethodGenerator {
                 if (!maps.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
                     context.error(outBean.getSetterElement(outField), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
                             "-->  Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing setter", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField);
-                } else {
-                    context.warn(outBean.getSetterElement(outField), "Field %s not populated in destination bean will be ignored as @IgnoredFields require", outField);
                 }
             }
         }
@@ -257,4 +250,7 @@ public class MapperMethodGenerator {
         return ptr;
     }
 
+    public MapsWrapper maps() {
+        return maps;
+    }
 }

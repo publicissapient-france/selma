@@ -78,6 +78,22 @@ public class IntegrationTestBase {
         return res;
     }
 
+    /**
+     * Count warnings by ignoring -source 6 compiler warning
+     * @return
+     * @throws Exception
+     */
+    protected int compilationWarningCount() throws Exception {
+        int res = 0;
+        DiagnosticCollector<JavaFileObject> diagnosticCollector = getDiagnostics();
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnosticCollector.getDiagnostics()) {
+            if (diagnostic.getKind() == Diagnostic.Kind.WARNING && !diagnostic.toString().endsWith("with -source 1.6")){
+                res++;
+            }
+        }
+        return res;
+    }
+
     protected void assertCompilationError(Class<?> aClass,String signature, String message) throws Exception {
         assertCompilationKind( Diagnostic.Kind.ERROR, aClass, signature, message);
     }

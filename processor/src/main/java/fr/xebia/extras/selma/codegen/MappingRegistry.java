@@ -28,7 +28,7 @@ public class MappingRegistry {
     final Map<InOutType, MappingBuilder> interceptorMap;
     final MapperGeneratorContext context;
     private FieldsWrapper fields;
-    private CustomMapperWrapper customMapers;
+    private CustomMapperWrapper customMappers;
     private EnumMappersWrapper enumMappers;
     private ImmutableTypesWrapper immutableTypes;
 
@@ -44,7 +44,7 @@ public class MappingRegistry {
         this.registryMap = new HashMap<InOutType, MappingBuilder>(registry.registryMap);
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>(registry.interceptorMap);
         this.context = registry.context;
-        this.customMapers = registry.customMapers;
+        this.customMappers = registry.customMappers;
         this.enumMappers = registry.enumMappers;
         this.immutableTypes = registry.immutableTypes;
         this.fields = registry.fields;
@@ -52,7 +52,7 @@ public class MappingRegistry {
 
     public MappingBuilder findMappingFor(InOutType inOutType) {
 
-        MappingBuilder res = customMapers.getMapper(inOutType);
+        MappingBuilder res = customMappers.getMapper(inOutType);
         // First look in registry
 
         if (res == null) {
@@ -78,7 +78,7 @@ public class MappingRegistry {
     }
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {
-        return customMapers.getMappingInterceptor(inOutType);
+        return customMappers.getMappingInterceptor(inOutType);
     }
 
     public void fields(FieldsWrapper fields) {
@@ -92,7 +92,7 @@ public class MappingRegistry {
 
     public void customMappers(CustomMapperWrapper customMapers) {
 
-        this.customMapers = customMapers;
+        this.customMappers = customMapers;
     }
 
     public void enumMappers(EnumMappersWrapper enumMappers) {

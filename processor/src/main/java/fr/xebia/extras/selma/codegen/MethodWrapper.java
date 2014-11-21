@@ -201,4 +201,6 @@ public class MethodWrapper {
     public boolean hasFields() {
         return hasAnnotation(Fields.class.getCanonicalName());
     }
+
+
 }

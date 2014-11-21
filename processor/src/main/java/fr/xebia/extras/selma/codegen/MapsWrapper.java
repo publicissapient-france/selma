@@ -18,7 +18,9 @@ package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.Maps;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import java.util.List;
 
 /**
  * Created by slemesle on 10/11/14.
@@ -38,6 +40,7 @@ public class MapsWrapper {
     private final MethodWrapper method;
     private final MapperWrapper mapperWrapper;
     private final MapperGeneratorContext context;
+    private final CustomMapperWrapper customMapper;
     private boolean ignoreMissingProperties;
 
     public MapsWrapper(MethodWrapper method, MapperWrapper mapperWrapper) {
@@ -51,10 +54,13 @@ public class MapsWrapper {
 
         ignoreFields = new IgnoreFieldsWrapper(context, method.element(), mapperWrapper.ignoredFields(), maps == null ? null : maps.getAsStrings(WITH_IGNORE_FIELDS));
 
-        this.customFields = new FieldsWrapper(context, method, mapperWrapper.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
+        customFields = new FieldsWrapper(context, method, mapperWrapper.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
 
         enumMappers = new EnumMappersWrapper(registry.getEnumMappers(),  maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS), method.element());
         registry.enumMappers(enumMappers);
+
+        customMapper = new CustomMapperWrapper(mapperWrapper.customMappers(), maps, context);
+        registry.customMappers(customMapper);
 
         if (mapperWrapper.isIgnoreMissingProperties()){
             ignoreMissingProperties = true;
@@ -75,6 +81,9 @@ public class MapsWrapper {
 
         // Report unused custom enum mappers
         enumMappers.reportUnused();
+
+        // Report unused custom mappers
+        customMapper.reportUnused();
     }
 
     public String getFieldFor(String field) {
@@ -95,5 +104,9 @@ public class MapsWrapper {
 
     public boolean isIgnoreMissingProperties() {
         return ignoreMissingProperties;
+    }
+
+    public List<TypeElement> customMapperFields() {
+        return customMapper.mapperFields();
     }
 }

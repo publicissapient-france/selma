@@ -17,9 +17,9 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.xebia.extras.selma.Mapper;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -36,7 +36,9 @@ import static javax.lang.model.element.Modifier.*;
 public class CustomMapperWrapper {
 
     public static final String CUSTOM_MAPPER_FIELD_TPL = "customMapper%s";
+    public static final String WITH_CUSTOM = "withCustom";
 
+    private CustomMapperWrapper parent;
     private final AnnotationWrapper annotationWrapper;
     private final MapperGeneratorContext context;
     private final HashMap<InOutType, String> unusedCustomMappers;
@@ -46,12 +48,12 @@ public class CustomMapperWrapper {
 
     private final List<TypeElement> customMaperFields;
     private final HashSet<InOutType> unusedInterceptor;
-    private final TypeElement element;
+    private final Element annotatedElement;
 
-    public CustomMapperWrapper(TypeElement element, MapperGeneratorContext context) {
-        this.element = element;
+    public CustomMapperWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context) {
+        this.annotatedElement = mapperAnnotation.getAnnotatedElement();
 
-        this.annotationWrapper = AnnotationWrapper.buildFor(context, element, Mapper.class);
+        this.annotationWrapper = mapperAnnotation;
         this.context = context;
         this.customMaperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
@@ -60,6 +62,25 @@ public class CustomMapperWrapper {
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
 
         collectCustomMappers();
+    }
+
+    public CustomMapperWrapper(CustomMapperWrapper parent, AnnotationWrapper annotationWrapper, MapperGeneratorContext context) {
+        this.parent = parent;
+        this.annotationWrapper = annotationWrapper;
+        this.customMaperFields = new LinkedList<TypeElement>();
+        this.unusedCustomMappers = new HashMap();
+        this.unusedInterceptor = new HashSet<InOutType>();
+        this.registryMap = new HashMap<InOutType, MappingBuilder>();
+        this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
+
+        this.context = context;
+
+        if(annotationWrapper != null) {
+            this.annotatedElement = annotationWrapper.getAnnotatedElement();
+            collectCustomMappers();
+        } else {
+            annotatedElement = null;
+        }
     }
 
 
@@ -100,6 +121,7 @@ public class CustomMapperWrapper {
 
         if (immutable == null){
             res = MappingBuilder.newCustomMapper(inOutType, methodCall);
+            unusedCustomMappers.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
         } else if (immutable) {
             res = MappingBuilder.newCustomMapper(inOutType, methodCall);
             inOutType = new InOutType(inOutType, true);
@@ -109,7 +131,6 @@ public class CustomMapperWrapper {
         }
 
         registryMap.put(inOutType, res);
-        unusedCustomMappers.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
     }
 
 
@@ -127,7 +148,7 @@ public class CustomMapperWrapper {
 
     private void collectCustomMappers() {
 
-        List<String> customClasses = annotationWrapper.getAsStrings("withCustom");
+        List<String> customClasses = annotationWrapper.getAsStrings(WITH_CUSTOM);
         if (customClasses.size() > 0) {
             int mappingMethodCount = 0;
 
@@ -242,7 +263,10 @@ public class CustomMapperWrapper {
         MappingBuilder res = registryMap.get(inOutType);
         if (res != null) {
             unusedCustomMappers.remove(inOutType);
+        } else if (parent != null) {
+            res = parent.getMapper(inOutType);
         }
+
         return res;
     }
 
@@ -250,13 +274,36 @@ public class CustomMapperWrapper {
         MappingBuilder res = interceptorMap.get(inOutType);
         if (res != null) {
             unusedInterceptor.remove(inOutType);
+        } else if (parent != null){
+            res = parent.getMappingInterceptor(inOutType);
         }
         return res;
     }
 
     public void reportUnused() {
         for (String field : unusedCustomMappers.values()) {
-            context.warn(element, "Custom mapping method \"%s\" is never used", field);
+            context.warn(annotatedElement, "Custom mapping method \"%s\" is never used", field);
+        }
+    }
+
+    public List<TypeElement> mapperFields() {
+        return customMaperFields;
+    }
+
+    public void addFields(List<TypeElement> childFields) {
+
+        for (TypeElement childField : childFields) {
+            boolean found = false;
+            for (TypeElement maperField : customMaperFields) {
+
+                if (childField.equals(maperField)){
+                    found = true; break;
+                }
+
+            }
+            if (!found){
+                customMaperFields.add(childField);
+            }
         }
     }
 

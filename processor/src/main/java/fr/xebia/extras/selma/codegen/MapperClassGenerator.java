@@ -90,13 +90,14 @@ public class MapperClassGenerator {
         JavaWriter writer = null;
         JavaFileObject sourceFile = null;
 
+        final TypeElement type = processingEnv.getElementUtils().getTypeElement(origClasse);
+        final String adapterName = new StringBuilder(type.toString()).append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();
+
         for (MethodWrapper mapperMethod : methodWrappers) {
 
             if (firstMethod) {
                 String packageName = getPackage(mapperMethod.element()).getQualifiedName().toString();
-                TypeElement type = processingEnv.getElementUtils().getTypeElement(origClasse);
                 String strippedTypeName = strippedTypeName(type.getQualifiedName().toString(), packageName);
-                String adapterName = new StringBuilder(type.toString()).append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();
 
                 sourceFile = processingEnv.getFiler().createSourceFile(adapterName, type);
                 writer = new JavaWriter(sourceFile.openWriter());
@@ -111,14 +112,18 @@ public class MapperClassGenerator {
                 }
                 writer.emitEmptyLine();
                 firstMethod = false;
-
-                buildConstructor(writer, adapterName);
             }
             // Write mapping method
-            MapperMethodGenerator.create(writer, mapperMethod, mapper).build();
+            MapperMethodGenerator mapperMethodGenerator = new MapperMethodGenerator(writer, mapperMethod, mapper);
+            mapperMethodGenerator.build();
+
+            mapper.collectMaps(mapperMethodGenerator.maps());
 
             writer.emitEmptyLine();
         }
+
+        buildConstructor(writer, adapterName);
+
         writer.endType();
         writer.close();
 
@@ -126,45 +131,17 @@ public class MapperClassGenerator {
     }
 
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {
-
-
-        int i = 0, iArg = 0;
-        String[] args = new String[mapper.configuration().getSourceClass().size() * 2];
-        List<String> assigns = new ArrayList<String>();
-        StringBuilder builder = new StringBuilder();
-        for (String classe : mapper.configuration().getSourceClass()) {
-
-            builder.append(',');
-            writer.emitEmptyLine();
-            writer.emitJavadoc("This field is used as source akka given as parameter to the Pojos constructors");
-            writer.emitField(classe.replace(".class", ""), "source" + i, EnumSet.of(PRIVATE, FINAL));
-            args[iArg] = classe.replace(".class", "");
-            iArg++;
-            args[iArg] = "_source" + i;
-            iArg++;
-            assigns.add(String.format("this.source%s = _source%s", i, i));
-            builder.append("this.source").append(i);
-        }
-
+        mapper.emitSourceFields(writer);
         mapper.emitCustomMappersFields(writer, false);
-
-        if (mapper.configuration().getSourceClass().size() > 0) {
-            builder.deleteCharAt(0);
-        }
-
-        // newParams hold the parameters we pass to Pojo constructor
-        context.setNewParams(builder.toString());
-        context.setSourcesCount(mapper.configuration().getSourceClass().size());
 
         // First build default constructor
         writer.emitEmptyLine();
         writer.emitJavadoc("Single constructor");
-        writer.beginMethod(null, adapterName, EnumSet.of(PUBLIC), args);
+        writer.beginMethod(null, adapterName, EnumSet.of(PUBLIC), mapper.sourceConstructorArgs());
 
         // assign source in parameters to instance fields
-        for (String assign : assigns) {
-            writer.emitStatement(assign);
-        }
+        mapper.emitSourceAssigns(writer);
+
         // Add customMapper instantiation
         mapper.emitCustomMappersFields(writer, true);
 
