@@ -273,7 +273,7 @@ public class CustomMapperWrapper {
     public MappingBuilder getMappingInterceptor(InOutType inOutType) {
         MappingBuilder res = interceptorMap.get(inOutType);
         if (res != null) {
-            unusedInterceptor.remove(inOutType);
+            unusedInterceptor.remove(new InOutType(inOutType, true));
         } else if (parent != null){
             res = parent.getMappingInterceptor(inOutType);
         }
