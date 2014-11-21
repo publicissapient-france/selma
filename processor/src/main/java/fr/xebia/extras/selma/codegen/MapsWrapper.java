@@ -84,6 +84,8 @@ public class MapsWrapper {
 
         // Report unused custom mappers
         customMapper.reportUnused();
+
+        // Report unused interceptors
     }
 
     public String getFieldFor(String field) {

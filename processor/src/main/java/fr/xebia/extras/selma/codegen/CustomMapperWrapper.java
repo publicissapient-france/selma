@@ -47,7 +47,7 @@ public class CustomMapperWrapper {
 
 
     private final List<TypeElement> customMaperFields;
-    private final HashSet<InOutType> unusedInterceptor;
+    private final HashMap<InOutType, String> unusedInterceptor;
     private final Element annotatedElement;
 
     public CustomMapperWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context) {
@@ -57,7 +57,7 @@ public class CustomMapperWrapper {
         this.context = context;
         this.customMaperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
-        this.unusedInterceptor = new HashSet<InOutType>();
+        this.unusedInterceptor = new HashMap<InOutType, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
 
@@ -69,7 +69,7 @@ public class CustomMapperWrapper {
         this.annotationWrapper = annotationWrapper;
         this.customMaperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
-        this.unusedInterceptor = new HashSet<InOutType>();
+        this.unusedInterceptor = new HashMap<InOutType, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
 
@@ -143,7 +143,7 @@ public class CustomMapperWrapper {
         // Push IOType for both mutable and immutable mapping
         interceptorMap.put(inOutType, res);
         interceptorMap.put(new InOutType(inOutType.in(), inOutType.out(), false), res);
-        unusedInterceptor.add(inOutType);
+        unusedInterceptor.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
     }
 
     private void collectCustomMappers() {
@@ -283,6 +283,9 @@ public class CustomMapperWrapper {
     public void reportUnused() {
         for (String field : unusedCustomMappers.values()) {
             context.warn(annotatedElement, "Custom mapping method \"%s\" is never used", field);
+        }
+        for (String field : unusedInterceptor.values()) {
+            context.warn(annotatedElement, "Custom interceptor method \"%s\" is never used", field);
         }
     }
 
