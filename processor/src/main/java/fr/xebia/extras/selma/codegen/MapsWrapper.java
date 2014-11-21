@@ -88,8 +88,8 @@ public class MapsWrapper {
         // Report unused interceptors
     }
 
-    public String getFieldFor(String field) {
-        return customFields.getFieldFor(field);
+    public String getFieldFor(String field, DeclaredType type) {
+        return customFields.getFieldFor(field, type);
     }
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {

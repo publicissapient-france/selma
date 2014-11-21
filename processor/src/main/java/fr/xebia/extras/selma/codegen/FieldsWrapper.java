@@ -20,6 +20,8 @@ import fr.xebia.extras.selma.Fields;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import java.util.List;
 import java.util.Map;
 
@@ -91,24 +93,40 @@ public class FieldsWrapper {
     }
 
 
-    public String getFieldFor(String field) {
+    public String getFieldFor(String field, DeclaredType type) {
 
-        String res = null;
-        String outField = fieldsRegistry.get(field);
+        final String fqcn = type.toString().toLowerCase();
+        final String simpleName = type.asElement().getSimpleName().toString().toLowerCase();
+        boolean foundHere = true;
 
-        if (outField == null) {
-            res = field; // By default return the given field name
+        String res = fieldsRegistry.get(field);
 
-            if (parent != null) { // If we have a parent pass the call to it since we did not find anything here
-                res = parent.getFieldFor(field);
+        if (res == null) {
+
+            // Look if we have simple name or fqcn field
+            res = fieldsRegistry.get(fqcn + "." + field);
+            if (res == null){
+                res = fieldsRegistry.get(simpleName + "." + field);
+                if (res == null){
+                    if (parent != null) { // If we have a parent pass the call to it since we did not find anything here
+                        res = parent.getFieldFor(field, type);
+                        foundHere = false;
+                    }
+
+                }
             }
 
-        } else {  // This field mapping is now considered as used
-            unusedFields.remove(field);
-            res = outField;
         }
 
-        return res;
+        if (foundHere ) {  // This field mapping is now considered as used
+            unusedFields.remove(res);
+        }
+
+        if (res != null){
+            res = res.replaceAll("^([a-z0-9]+\\.)+", "");
+        }
+
+        return res == null ? field : res;
     }
 
 

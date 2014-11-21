@@ -46,6 +46,7 @@ public class IntegrationTestBase {
 
     @BeforeClass
     public static final void beforeClass(){
+
         testCompiler = new TestCompiler();
     }
 

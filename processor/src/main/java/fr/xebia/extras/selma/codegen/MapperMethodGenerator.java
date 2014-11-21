@@ -191,7 +191,7 @@ public class MapperMethodGenerator {
         Set<String> outFields = outBean.getSetterFields();
         for (String field : inBean.getGetterFields()) {
 
-            String outField = maps.getFieldFor(field);
+            String outField = maps.getFieldFor(field, inOutType.inAsDeclaredType());
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
 
