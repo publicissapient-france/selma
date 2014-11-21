@@ -21,8 +21,6 @@ import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
-import fr.xebia.extras.selma.it.mappers.MappingInterceptor;
-import fr.xebia.extras.selma.it.mappers.MappingInterceptorSupport;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import junit.framework.Assert;
@@ -32,8 +30,11 @@ import org.junit.Test;
  *
  */
 @Compile(
-        withClasses = { MappingInterceptorForImmutable.class, MappingInterceptorForMutable.class,
-                        NeverUsedMappingInterceptor.class, MappingInterceptorInMaps.class }
+        withClasses = {
+                MappingInterceptorForImmutable.class, MappingInterceptorForMutable.class,
+                NeverUsedMappingInterceptorInMapper.class, MappingInterceptorInMaps.class,
+                NeverUsedMappingInterceptorInMaps.class
+        }
 )
 public class MappingInterceptorInMapsIT extends IntegrationTestBase {
 
@@ -105,8 +106,16 @@ public class MappingInterceptorInMapsIT extends IntegrationTestBase {
 
     @Test
     public void given_mapping_interceptor_in_mapper_overriden_in_maps_then_it_should_be_reported_unused_in_warnings() throws Exception {
-        assertCompilationWarning(MappingInterceptorInMaps.class,"public interface MappingInterceptorInMaps {", "Custom interceptor method \"fr.xebia.extras.selma.it.custom.interceptor.NeverUsedMappingInterceptor.intercept\" is never used");
-        Assert.assertEquals(1, compilationWarningCount());
+        assertCompilationWarning(MappingInterceptorInMaps.class,"public interface MappingInterceptorInMaps {",
+                "Custom interceptor method \"fr.xebia.extras.selma.it.custom.interceptor.NeverUsedMappingInterceptorInMapper.intercept\" is never used");
+        Assert.assertEquals(2, compilationWarningCount());
+    }
+
+    @Test
+    public void given_mapping_interceptor_in_maps_never_used_then_it_should_be_reported_unused_in_warnings() throws Exception {
+        assertCompilationWarning(MappingInterceptorInMaps.class,"PersonOut mapWithInterceptor(PersonIn in);",
+                "Custom interceptor method \"fr.xebia.extras.selma.it.custom.interceptor.NeverUsedMappingInterceptorInMaps.intercept\" is never used");
+        Assert.assertEquals(2, compilationWarningCount());
     }
 
 }
