@@ -21,7 +21,8 @@ import fr.xebia.extras.selma.Fields;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -32,14 +33,14 @@ public class FieldsWrapper {
 
     private MapperGeneratorContext context;
     private Element element;
-    private BidiMap<String> fieldsRegistry;
-    private BidiMap<String> unusedFields;
+    private FieldMap fieldsRegistry;
+    private FieldMap unusedFields;
     private FieldsWrapper parent = null;
 
     private FieldsWrapper(MapperGeneratorContext context, Element element) {
         this.context = context;
         this.element = element;
-        this.fieldsRegistry = new BidiMap<String>();
+        this.fieldsRegistry = new FieldMap();
     }
 
     public FieldsWrapper(MapperGeneratorContext context, MethodWrapper mapperMethod, FieldsWrapper parent, List<AnnotationWrapper> withCustomFields) {
@@ -53,18 +54,18 @@ public class FieldsWrapper {
             processFieldList(context, withCustomFields);
         }
 
-        this.unusedFields = new BidiMap<String>(fieldsRegistry);
+        this.unusedFields = new FieldMap(fieldsRegistry);
         this.parent = parent;
     }
 
 
     public FieldsWrapper(MapperGeneratorContext context, TypeElement type, AnnotationWrapper mapper) {
-        this(context, (Element) type);
+        this(context, type);
 
         processFields(context, type);
         processFieldsFromMapper(context, mapper);
 
-        this.unusedFields = new BidiMap<String>(fieldsRegistry);
+        this.unusedFields = new FieldMap(fieldsRegistry);
         this.parent = null;
     }
 
@@ -93,23 +94,25 @@ public class FieldsWrapper {
     }
 
 
-    public String getFieldFor(String field, DeclaredType type) {
+    public List<Field> getFieldFor(String field, DeclaredType sourceType, DeclaredType destinationType) {
 
-        final String fqcn = type.toString().toLowerCase();
-        final String simpleName = type.asElement().getSimpleName().toString().toLowerCase();
+        final String sourceFqcn = sourceType.toString().toLowerCase();
+        final String sourceSimpleName = sourceType.asElement().getSimpleName().toString().toLowerCase();
+        final String destinationFqcn = destinationType.toString().toLowerCase();
+        final String destinationSimpleName = destinationType.asElement().getSimpleName().toString().toLowerCase();
         boolean foundHere = true;
 
-        String res = fieldsRegistry.get(field);
+        List<Field> res = fieldsRegistry.getStartingWith(field);
 
-        if (res == null) {
+        if (res.isEmpty()) {
 
             // Look if we have simple name or fqcn field
-            res = fieldsRegistry.get(fqcn + "." + field);
-            if (res == null){
-                res = fieldsRegistry.get(simpleName + "." + field);
-                if (res == null){
+            res = fieldsRegistry.getStartingWith(sourceFqcn + "." + field);
+            if (res.isEmpty()){
+                res = fieldsRegistry.getStartingWith(sourceSimpleName + "." + field);
+                if (res.isEmpty()){
                     if (parent != null) { // If we have a parent pass the call to it since we did not find anything here
-                        res = parent.getFieldFor(field, type);
+                        res = parent.getFieldFor(field, sourceType, destinationType);
                         foundHere = false;
                     }
 
@@ -118,15 +121,20 @@ public class FieldsWrapper {
 
         }
 
-        if (foundHere ) {  // This field mapping is now considered as used
-            unusedFields.remove(res);
+        if (foundHere && res != null) {  // This field mapping is now considered as used
+            for (Field f : res) {
+                unusedFields.remove(f.to);
+            }
         }
 
-        if (res != null){
-            res = res.replaceAll("^([a-z0-9]+\\.)+", "");
+        if (res != null){ // Remove fqcn or simple name from field
+            for (Field re : res) {
+                re.removeDestinationPrefix(destinationFqcn, destinationSimpleName);
+                re.removeSourcePrefix(sourceFqcn, sourceSimpleName);
+            }
         }
 
-        return res == null ? field : res;
+        return res;
     }
 
 

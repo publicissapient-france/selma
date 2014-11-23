@@ -21,6 +21,8 @@ import com.squareup.javawriter.JavaWriter;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -189,11 +191,28 @@ public class MapperMethodGenerator {
         BeanWrapper inBean = new BeanWrapper(context, (TypeElement) context.type.asElement(inOutType.in()));
 
         Set<String> outFields = outBean.getSetterFields();
+        List<Field> customFields = new ArrayList<Field>();
         for (String field : inBean.getGetterFields()) {
 
-            String outField = maps.getFieldFor(field, inOutType.inAsDeclaredType());
+            String outFieldName = field;
+            List<Field> customFieldsFor = maps.getFieldsFor(field, inOutType.inAsDeclaredType(), inOutType.outAsDeclaredType());
+            if (!customFieldsFor.isEmpty()) {
+                boolean hasEmbedded = false;
+                for (Field customField : customFieldsFor) {
+                    if (customField.hasEmbeddedSource()) { // We are trying to map an embedded field let's map it with if
+                        customFields.addAll(customFieldsFor);
+                        outFields.remove(customField.to);
+                        hasEmbedded = true;
+                    }
+                }
+                if (hasEmbedded){
+                    continue;
+                }else {
+                    outFieldName = customFieldsFor.get(0).to;
+                }
+            }
 
-            boolean isMissingInDestination = !outBean.hasFieldAndSetter(outField);
+            boolean isMissingInDestination = !outBean.hasFieldAndSetter(outFieldName);
 
             if (maps.isIgnoredField(field, inOutType.inAsDeclaredType())) {
                 continue; // Skip ignored in field
@@ -206,15 +225,15 @@ public class MapperMethodGenerator {
 
                 if (isMissingInDestination) {
                     context.error(inBean.getFieldElement(field), String.format("setter for field %s from source bean %s is missing in destination bean %s using field %s !\n" +
-                            " --> Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), outField, inOutType.in(), field));
+                            " --> Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), customFieldsFor, inOutType.in(), field));
                     continue;
                 }
 
                 try {
-                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField), inOutType.isOutPutAsParam()));
+                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam()));
                     if (mappingBuilder != null) {
-                        ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outField, inBean, outBean)
-                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outField), inOutType.isOutPutAsParam())).withAssign(false)));
+                        ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
+                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam())).withAssign(false)));
 
                         generateStack(context);
                     } else {
@@ -228,7 +247,12 @@ public class MapperMethodGenerator {
 
                 ptr = lastChild(ptr);
             }
-            outFields.remove(outField);
+            outFields.remove(outFieldName);
+        }
+
+        // Build custom embedded field to field
+        for (Field customField : customFields) {
+            ptr = buildmapping(customField, inBean, outBean, ptr);
         }
 
         if (!maps.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
@@ -241,6 +265,48 @@ public class MapperMethodGenerator {
             }
         }
         return root.child;
+    }
+
+    /**
+     * Build mapping source node tree for custom field to field with embedded property
+     * @param customField
+     * @param inBean
+     * @param outBean
+     * @param ptr
+     * @return
+     */
+    private MappingSourceNode buildmapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root) {
+        MappingSourceNode ptr = blank();
+        MappingSourceNode ptrRoot = ptr;
+        BeanWrapper inBeanPtr = inBean;
+        StringBuilder field = new StringBuilder("in");
+        String lastFromField = null;
+        String[] fromFields = customField.fromFields();
+        for (int id = 0; id <  fromFields.length -1; id++) {
+            lastFromField = fromFields[id];
+            field.append('.').append(inBeanPtr.getGetterFor(lastFromField)).append("()");
+            ptr = ptr.body(controlNull(field.toString(), false));
+            inBeanPtr = new BeanWrapper(context, (TypeElement) context.type.asElement(inBeanPtr.getTypeFor(lastFromField)));
+        }
+        field.append('.').append(inBeanPtr.getGetterFor(fromFields[fromFields.length-1])).append("()");
+
+        InOutType inOutType = new InOutType(inBeanPtr.getTypeFor(fromFields[fromFields.length - 1]), outBean.getTypeFor(customField.to), false);
+        try {
+            MappingBuilder mappingBuilder = findBuilderFor(inOutType);
+            if (mappingBuilder != null) {
+                ptr = ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean)
+                        .withInOutType(inOutType).withAssign(false)));
+
+                generateStack(context);
+            } else {
+                handleNotSupported(inOutType, ptr);
+            }
+        } catch (Exception e) {
+            System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
+            e.printStackTrace();
+        }
+
+        return root.child(ptrRoot.body);
     }
 
     private MappingSourceNode lastChild(MappingSourceNode ptr) {
