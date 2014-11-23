@@ -40,7 +40,7 @@ public class FieldsWrapper {
     private FieldsWrapper(MapperGeneratorContext context, Element element) {
         this.context = context;
         this.element = element;
-        this.fieldsRegistry = new FieldMap();
+        this.fieldsRegistry = new FieldMap(element);
     }
 
     public FieldsWrapper(MapperGeneratorContext context, MethodWrapper mapperMethod, FieldsWrapper parent, List<AnnotationWrapper> withCustomFields) {

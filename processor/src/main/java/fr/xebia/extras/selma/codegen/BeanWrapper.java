@@ -110,6 +110,17 @@ public class BeanWrapper {
         return res;
     }
 
+    public boolean hasFieldAndGetter(String field) {
+        boolean res = false;
+        FieldItem item = fieldsGraph.get(field);
+
+        if (item != null && item.getter != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
     public String getSetterFor(String field) {
         String res = null;
         FieldItem item = fieldsGraph.get(field);
@@ -200,6 +211,8 @@ public class BeanWrapper {
         }
         return res;
     }
+
+
 
     class FieldItem {
 

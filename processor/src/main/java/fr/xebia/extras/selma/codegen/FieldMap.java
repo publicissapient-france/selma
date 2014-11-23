@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import javax.lang.model.element.Element;
 import java.util.*;
 
 /**
@@ -25,26 +26,24 @@ public class FieldMap {
 
     private final Map<String, String> from;
     private final Map<String, String> to;
+    private Element element;
 
-    public FieldMap() {
-        from = new HashMap<String, String>();
-        to = new HashMap<String, String>();
-    }
 
     public FieldMap(FieldMap clone) {
         from = new HashMap<String, String>(clone.from);
         to = new HashMap<String, String>(clone.to);
+        element = clone.element;
     }
 
-    public FieldMap(Map<String, String> from, Map<String, String> to) {
-        this.from = from;
-        this.to = to;
+    public FieldMap(Element element) {
+        this.element = element;
+        from = new HashMap<String, String>();
+        to = new HashMap<String, String>();
     }
 
     public void push(String _from, String _to) {
         from.put(_from, _to);
         to.put(_to, _from);
-
     }
 
     public String get(String key) {
@@ -86,7 +85,7 @@ public class FieldMap {
         List<Field> res = new ArrayList<Field>();
         for (String key : from.keySet()) {
             if (key.startsWith(fieldName)){
-                res.add(new Field(key, from.get(key)));
+                res.add(new Field(key, from.get(key), element));
             }
         }
         return res;
@@ -94,13 +93,19 @@ public class FieldMap {
 }
 
 class Field {
+    public final String originalTo;
+    public final String originalFrom;
     public  String from;
     public  String to;
+    public Element element;
 
-    public Field(String from, String to) {
+    public Field(String from, String to, Element element) {
         this.from = from;
         this.to = to;
+        this.originalFrom = from;
+        this.originalTo = to;
 
+        this.element = element;
     }
 
     public void removeDestinationPrefix(String simpleName, String fqcn) {
@@ -125,4 +130,7 @@ class Field {
         return from.split("\\.");
     }
 
+    public boolean hasEmbeddedSourceAndDestination() {
+        return from.contains(".") && to.contains(".");
+    }
 }

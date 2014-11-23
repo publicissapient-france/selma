@@ -200,12 +200,12 @@ public class MapperMethodGenerator {
                 boolean hasEmbedded = false;
                 for (Field customField : customFieldsFor) {
                     if (customField.hasEmbeddedSource()) { // We are trying to map an embedded field let's map it with if
-                        customFields.addAll(customFieldsFor);
                         outFields.remove(customField.to);
                         hasEmbedded = true;
                     }
                 }
                 if (hasEmbedded){
+                    customFields.addAll(customFieldsFor);
                     continue;
                 }else {
                     outFieldName = customFieldsFor.get(0).to;
@@ -252,7 +252,7 @@ public class MapperMethodGenerator {
 
         // Build custom embedded field to field
         for (Field customField : customFields) {
-            ptr = buildmapping(customField, inBean, outBean, ptr);
+            ptr = buildMapping(customField, inBean, outBean, ptr);
         }
 
         if (!maps.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
@@ -275,22 +275,47 @@ public class MapperMethodGenerator {
      * @param ptr
      * @return
      */
-    private MappingSourceNode buildmapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root) {
+    private MappingSourceNode buildMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root) {
         MappingSourceNode ptr = blank();
         MappingSourceNode ptrRoot = ptr;
         BeanWrapper inBeanPtr = inBean;
         StringBuilder field = new StringBuilder("in");
         String lastFromField = null;
+
+        if(customField.hasEmbeddedSourceAndDestination()){
+            context.error(customField.element, "Bad custom field to field mapping: both source and destination can not be embedded !\n"+
+                    "-->  Fix @Field({\"%s\",\"%s\"})", customField.originalFrom, customField.originalTo);
+            return root;
+        }
+
+        if (!outBean.hasFieldAndSetter(customField.to)) {
+            context.error(customField.element, "Bad custom field to field mapping: setter for field %s is missing in destination bean %s !\n" +
+                    " --> Fix @Field({\"%s\",\"%s\"})", customField.to, outBean.typeElement, customField.originalFrom, customField.originalTo);
+            return root;
+        }
         String[] fromFields = customField.fromFields();
         for (int id = 0; id <  fromFields.length -1; id++) {
             lastFromField = fromFields[id];
+
+            if (!inBeanPtr.hasFieldAndGetter(lastFromField)){
+                context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
+                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastFromField,inBean.typeElement, customField.originalFrom, customField.originalTo);
+                return root;
+            }
             field.append('.').append(inBeanPtr.getGetterFor(lastFromField)).append("()");
             ptr = ptr.body(controlNull(field.toString(), false));
             inBeanPtr = new BeanWrapper(context, (TypeElement) context.type.asElement(inBeanPtr.getTypeFor(lastFromField)));
         }
-        field.append('.').append(inBeanPtr.getGetterFor(fromFields[fromFields.length-1])).append("()");
+        lastFromField = fromFields[fromFields.length-1];
+        if (!inBeanPtr.hasFieldAndGetter(lastFromField)){
+            context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
+                    "-->  Fix @Field({\"%s\",\"%s\"})", field, lastFromField, inBean.typeElement, customField.originalFrom, customField.originalTo);
+            return root;
+        }
 
-        InOutType inOutType = new InOutType(inBeanPtr.getTypeFor(fromFields[fromFields.length - 1]), outBean.getTypeFor(customField.to), false);
+        field.append('.').append(inBeanPtr.getGetterFor(lastFromField)).append("()");
+
+        InOutType inOutType = new InOutType(inBeanPtr.getTypeFor(lastFromField), outBean.getTypeFor(customField.to), false);
         try {
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
             if (mappingBuilder != null) {
