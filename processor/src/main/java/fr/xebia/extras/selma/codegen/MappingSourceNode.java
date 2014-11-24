@@ -149,7 +149,7 @@ public abstract class MappingSourceNode {
     }
 
 
-    public static MappingSourceNode controlNull(final String field, final boolean outPutAsParam) {
+    public static MappingSourceNode controlNotNull(final String field, final boolean outPutAsParam) {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
@@ -160,6 +160,18 @@ public abstract class MappingSourceNode {
                     writer.nextControlFlow("else");
                     writer.emitStatement("out = null");
                 }
+                writer.endControlFlow();
+            }
+        };
+    }
+
+    public static MappingSourceNode controlNull(final String field) {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                writer.beginControlFlow(String.format("if (%s == null)", field));
+                // body is Mandatory here
+                writeBody(writer);
                 writer.endControlFlow();
             }
         };
@@ -351,6 +363,7 @@ public abstract class MappingSourceNode {
             }
         };
     }
+
 
     public static MappingSourceNode put(final String outCollection, final String itemVar) {
         return new MappingSourceNode() {

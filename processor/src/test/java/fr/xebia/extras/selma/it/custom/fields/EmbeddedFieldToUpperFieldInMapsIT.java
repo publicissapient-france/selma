@@ -58,4 +58,27 @@ public class EmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBase {
         Assert.assertEquals("YOUNG", proposalDto.getPassengerCard());
     }
 
+
+    @Test
+    public void given_a_mapper_with_custom_upper_field_to_embedded_field_mapping_should_use_described_name_to_name_for_mapping() throws Exception {
+        // Given
+        EmbeddedFieldToUpperFieldMapper mapper = Selma.mapper(EmbeddedFieldToUpperFieldMapper.class);
+
+        ProposalDto proposal = new ProposalDto();
+        proposal.setArrivalDate(new Date());
+        proposal.setDepartureDate(new Date());
+        proposal.setOrigin("Paris");
+        proposal.setDestination("Lyon");
+        proposal.setPrice(1000);
+        proposal.setPassengerAge(26);
+        proposal.setPassengerCard("YOUNG");
+
+        // When
+        Proposal resProposal = mapper.asProposal(proposal);
+
+        // Then
+        Assert.assertEquals(26, resProposal.getPassenger().getAge());
+        Assert.assertEquals("YOUNG", resProposal.getPassenger().getCard());
+    }
+
 }

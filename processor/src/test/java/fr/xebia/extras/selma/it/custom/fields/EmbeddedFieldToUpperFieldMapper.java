@@ -32,4 +32,9 @@ public interface EmbeddedFieldToUpperFieldMapper {
             @Field({"passenger.age", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
     })
     ProposalDto asProposalDto(Proposal proposal);
+
+    @Maps(withCustomFields ={
+            @Field({"passenger.age", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
+    })
+    Proposal asProposal(ProposalDto proposal);
 }

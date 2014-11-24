@@ -108,7 +108,7 @@ public class MapperMethodGenerator {
 
         isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
         if (!isPrimitiveOrImmutable) {
-            methodNode = methodNode.child(controlNull("in", inOutType.isOutPutAsParam()));
+            methodNode = methodNode.child(controlNotNull("in", inOutType.isOutPutAsParam()));
             methodNode.body(blankRoot.body);
         } else {
             methodNode.child(blankRoot.body);
@@ -154,6 +154,12 @@ public class MapperMethodGenerator {
         }
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     * @throws IOException
+     */
     private MappingSourceNode generateStack(MapperGeneratorContext context) throws IOException {
 
         MappingSourceNode root = blank();
@@ -199,7 +205,7 @@ public class MapperMethodGenerator {
             if (!customFieldsFor.isEmpty()) {
                 boolean hasEmbedded = false;
                 for (Field customField : customFieldsFor) {
-                    if (customField.hasEmbeddedSource()) { // We are trying to map an embedded field let's map it with if
+                    if (customField.hasEmbedded()) { // We are trying to map an embedded field let's map it with if
                         outFields.remove(customField.to);
                         hasEmbedded = true;
                     }
@@ -252,7 +258,8 @@ public class MapperMethodGenerator {
 
         // Build custom embedded field to field
         for (Field customField : customFields) {
-            ptr = buildMapping(customField, inBean, outBean, ptr);
+            ptr = buildMapping(customField, inBean, outBean, ptr, outFields);
+            ptr = lastChild(ptr);
         }
 
         if (!maps.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
@@ -269,58 +276,81 @@ public class MapperMethodGenerator {
 
     /**
      * Build mapping source node tree for custom field to field with embedded property
+     * @param ptr
      * @param customField
      * @param inBean
      * @param outBean
-     * @param ptr
+     * @param outFields
      * @return
      */
-    private MappingSourceNode buildMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root) {
+    private MappingSourceNode buildMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root, Set<String> outFields) {
         MappingSourceNode ptr = blank();
         MappingSourceNode ptrRoot = ptr;
-        BeanWrapper inBeanPtr = inBean;
-        StringBuilder field = new StringBuilder("in");
-        String lastFromField = null;
+        String lastVisitedField = null;
 
         if(customField.hasEmbeddedSourceAndDestination()){
             context.error(customField.element, "Bad custom field to field mapping: both source and destination can not be embedded !\n"+
                     "-->  Fix @Field({\"%s\",\"%s\"})", customField.originalFrom, customField.originalTo);
             return root;
         }
+        final boolean sourceEmbedded = customField.sourceEmbedded();
+        BeanWrapper beanPtr = sourceEmbedded ? inBean : outBean;
 
-        if (!outBean.hasFieldAndSetter(customField.to)) {
+        if (sourceEmbedded && !outBean.hasFieldAndSetter(customField.to)) {
             context.error(customField.element, "Bad custom field to field mapping: setter for field %s is missing in destination bean %s !\n" +
                     " --> Fix @Field({\"%s\",\"%s\"})", customField.to, outBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
         }
-        String[] fromFields = customField.fromFields();
-        for (int id = 0; id <  fromFields.length -1; id++) {
-            lastFromField = fromFields[id];
+        String[] fields = sourceEmbedded ? customField.fromFields() : customField.toFields();
+        String previousFieldPath = sourceEmbedded ? "in" : "out";
+        StringBuilder field = new StringBuilder(previousFieldPath);
+        for (int id = 0; id <  fields.length -1; id++) {
+            lastVisitedField = fields[id];
+            if (id == 0 && !sourceEmbedded){
+                outFields.remove(lastVisitedField);
+            }
 
-            if (!inBeanPtr.hasFieldAndGetter(lastFromField)){
+            if (!beanPtr.hasFieldAndGetter(lastVisitedField)){
                 context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
-                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastFromField,inBean.typeElement, customField.originalFrom, customField.originalTo);
+                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField,inBean.typeElement, customField.originalFrom, customField.originalTo);
                 return root;
             }
-            field.append('.').append(inBeanPtr.getGetterFor(lastFromField)).append("()");
-            ptr = ptr.body(controlNull(field.toString(), false));
-            inBeanPtr = new BeanWrapper(context, (TypeElement) context.type.asElement(inBeanPtr.getTypeFor(lastFromField)));
+            field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");
+
+            if(sourceEmbedded) {
+                ptr = ptr.body(controlNotNull(field.toString(), false));
+            } else {
+                ptr = ptr.child(controlNull(field.toString()));
+                ptr.body(set(previousFieldPath+'.'+beanPtr.getSetterFor(lastVisitedField), "new "+ beanPtr.getTypeFor(lastVisitedField) +"("+context.newParams()+")"));
+            }
+            beanPtr = new BeanWrapper(context, (TypeElement) context.type.asElement(beanPtr.getTypeFor(lastVisitedField)));
+            previousFieldPath = field.toString();
         }
-        lastFromField = fromFields[fromFields.length-1];
-        if (!inBeanPtr.hasFieldAndGetter(lastFromField)){
+        lastVisitedField = fields[fields.length-1];
+
+        if (sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)){
             context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
-                    "-->  Fix @Field({\"%s\",\"%s\"})", field, lastFromField, inBean.typeElement, customField.originalFrom, customField.originalTo);
+                    "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, inBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
         }
-
-        field.append('.').append(inBeanPtr.getGetterFor(lastFromField)).append("()");
-
-        InOutType inOutType = new InOutType(inBeanPtr.getTypeFor(lastFromField), outBean.getTypeFor(customField.to), false);
+        if (sourceEmbedded) {
+            field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");
+        } else {
+            field.append('.').append(beanPtr.getSetterFor(lastVisitedField));
+        }
+        InOutType inOutType;
+        if (sourceEmbedded) {
+            inOutType = new InOutType(beanPtr.getTypeFor(lastVisitedField), outBean.getTypeFor(customField.to), false);
+        } else {
+            inOutType = new InOutType(inBean.getTypeFor(customField.from), beanPtr.getTypeFor(lastVisitedField), false);
+        }
         try {
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
             if (mappingBuilder != null) {
-                ptr = ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean)
-                        .withInOutType(inOutType).withAssign(false)));
+
+                ptr =  sourceEmbedded ?
+                        ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean).withInOutType(inOutType).withAssign(false))) :
+                        ptr.child(mappingBuilder.build(context, new SourceNodeVars("in."+ inBean.getGetterFor(customField.from)+"()", field.toString() ).withInOutType(inOutType).withAssign(false)));
 
                 generateStack(context);
             } else {
@@ -331,7 +361,7 @@ public class MapperMethodGenerator {
             e.printStackTrace();
         }
 
-        return root.child(ptrRoot.body);
+        return root.child(sourceEmbedded ? ptrRoot.body : ptrRoot.child);
     }
 
     private MappingSourceNode lastChild(MappingSourceNode ptr) {

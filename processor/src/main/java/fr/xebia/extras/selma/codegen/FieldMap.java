@@ -122,7 +122,10 @@ class Field {
         return key.replace(fqcn + ".", "");
     }
 
-    public boolean hasEmbeddedSource() {
+    public boolean hasEmbedded() {
+        return from.contains(".") || to.contains(".");
+    }
+    public boolean sourceEmbedded() {
         return from.contains(".");
     }
 
@@ -132,5 +135,18 @@ class Field {
 
     public boolean hasEmbeddedSourceAndDestination() {
         return from.contains(".") && to.contains(".");
+    }
+
+
+    @Override public String toString() {
+        final StringBuilder sb = new StringBuilder("@Field{ \"");
+        sb.append(originalTo).append("\"");
+        sb.append(", \"").append(originalFrom).append("\"");
+        sb.append('}');
+        return sb.toString();
+    }
+
+    public String[] toFields() {
+        return to.split("\\.");
     }
 }

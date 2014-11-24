@@ -490,7 +490,7 @@ public abstract class MappingBuilder {
     }
 
     private static MappingSourceNode notNullInField(final SourceNodeVars vars) {
-        return controlNull(vars.inGetter(), false);
+        return controlNotNull(vars.inGetter(), false);
     }
 
     public static MappingBuilder newCustomMapperImmutableForUpdateGraph(final InOutType inOutType, final String name) {

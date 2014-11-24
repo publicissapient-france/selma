@@ -62,6 +62,17 @@ public class SourceNodeVars {
     }
 
 
+    public SourceNodeVars(String inF, String outF) {
+        this.field = inF;
+        this.inBean = null;
+        this.outBean = null;
+        inField = inF;
+        outField = outF;
+        outFieldGetter =  "out" ;
+        inFieldPrefix = "";
+    }
+
+
     public SourceNodeVars() {
         this.field = null;
         this.inBean = null;
