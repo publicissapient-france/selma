@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.codegen;
 import com.squareup.javawriter.JavaWriter;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -360,6 +361,13 @@ public class MapperMethodGenerator {
             System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
             e.printStackTrace();
         }
+
+        if (!sourceEmbedded  && inBean.getTypeFor(customField.from).getKind() == TypeKind.DECLARED){ // Ensure we do not map if source is null
+            MappingSourceNode ifNode = controlNotNull("in." + inBean.getGetterFor(customField.from) + "()", false);
+            ifNode.body(ptrRoot.child);
+            ptrRoot.child = ifNode;
+        }
+
 
         return root.child(sourceEmbedded ? ptrRoot.body : ptrRoot.child);
     }

@@ -419,7 +419,6 @@ public abstract class MappingBuilder {
     public static MappingBuilder getBuilderFor(final MapperGeneratorContext context, final InOutType inOutType) {
 
         MappingBuilder res = null;
-
         for (MappingSpecification specification : mappingSpecificationList) {
             if (specification.match(context, inOutType)) {
                 res = specification.getBuilder(context, inOutType);
@@ -435,8 +434,6 @@ public abstract class MappingBuilder {
                     setOrAssignNestedBean(context, vars, inOutType);
                     return root.body;
                 }
-
-
             };
         }
 
