@@ -146,7 +146,7 @@ public class MapperMethodGenerator {
 
     private void handleNotSupported(InOutType inOutType, MappingSourceNode ptr) {
         final String message = String.format("Failed to generate mapping method for type %s to %s not supported on %s.%s !\n" +
-                "--> Add a custom mapper or @IgnoreFields to fix this ! If you think this a Bug in Selma please report issue here [https://github.com/xebia-france/selma/issues].", inOutType.in(), inOutType.out(), mapperMethod.element().getEnclosingElement(), mapperMethod.element().toString());
+                "--> Add a custom mapper or 'withIgnoreFields' on @Mapper or @Maps to fix this ! If you think this a Bug in Selma please report issue here [https://github.com/xebia-france/selma/issues].", inOutType.in(), inOutType.out(), mapperMethod.element().getEnclosingElement(), mapperMethod.element().toString());
         ptr.body(notSupported(message));
         if (configuration.isIgnoreNotSupported()) {
             context.warn(message, mapperMethod.element());
@@ -232,7 +232,7 @@ public class MapperMethodGenerator {
 
                 if (isMissingInDestination) {
                     context.error(inBean.getFieldElement(field), String.format("setter for field %s from source bean %s is missing in destination bean %s using field %s !\n" +
-                            " --> Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing getter", field, inOutType.in(), inOutType.out(), customFieldsFor, inOutType.in(), field));
+                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing getter or specify corresponding @Field to customize field to field mapping", field, inOutType.in(), inOutType.out(), customFieldsFor, inOutType.in(), field, inOutType.in(), field));
                     continue;
                 }
 
@@ -268,7 +268,7 @@ public class MapperMethodGenerator {
 
                 if (!maps.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
                     context.error(outBean.getSetterElement(outField), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
-                            "-->  Add @IgnoreFields(\"%s.%s\") to mapper interface / method or add missing setter", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField);
+                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing setter or specify corresponding @Field to customize field to field mapping", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField, inOutType.out(), outField);
                 }
             }
         }
