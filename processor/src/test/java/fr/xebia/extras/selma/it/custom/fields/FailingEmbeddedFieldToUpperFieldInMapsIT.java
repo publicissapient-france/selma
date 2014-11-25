@@ -31,7 +31,7 @@ import org.junit.Test;
 public class FailingEmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBase {
 
 
-    public static final int EXPECTED_ERROR_COUNT = 6;
+    public static final int EXPECTED_ERROR_COUNT = 7;
 
     @Test
     public void given_a_mapper_with_custom_embeded_field_to_upper_bad_field_compilation_should_fail() throws Exception {
@@ -54,6 +54,12 @@ public class FailingEmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBas
     @Test
     public void given_a_mapper_with_custom_embeded_bad_middle_field_to_upper_field_compilation_should_fail() throws Exception {
         assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "ProposalDto asProposalDto4(Proposal proposal);", "Bad custom field to field mapping: field in.getPassenger().ager from source bean fr.xebia.extras.selma.beans.Proposal has no getter !");
+        Assert.assertEquals(EXPECTED_ERROR_COUNT, compilationErrorCount());
+    }
+
+    @Test
+    public void given_a_mapper_with_custom_upper_field_to_bad_embedded_field_compilation_should_fail() throws Exception {
+        assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "Proposal asProposal(ProposalDto proposal);", "Bad custom field to field mapping: field out.getPassenger().ager from destination bean fr.xebia.extras.selma.beans.Proposal has no setter !");
         Assert.assertEquals(EXPECTED_ERROR_COUNT, compilationErrorCount());
     }
 
