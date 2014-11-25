@@ -259,7 +259,7 @@ public class MapperMethodGenerator {
 
         // Build custom embedded field to field
         for (Field customField : customFields) {
-            ptr = buildMapping(customField, inBean, outBean, ptr, outFields);
+            ptr = buildMapping(customField, inBean, outBean, ptr, outFields, inOutType.isOutPutAsParam());
             ptr = lastChild(ptr);
         }
 
@@ -282,9 +282,10 @@ public class MapperMethodGenerator {
      * @param inBean
      * @param outBean
      * @param outFields
+     * @param outPutAsParam
      * @return
      */
-    private MappingSourceNode buildMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root, Set<String> outFields) {
+    private MappingSourceNode buildMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root, Set<String> outFields, boolean outPutAsParam) {
         MappingSourceNode ptr = blank();
         MappingSourceNode ptrRoot = ptr;
         String lastVisitedField = null;
@@ -356,9 +357,9 @@ public class MapperMethodGenerator {
         }
         InOutType inOutType;
         if (sourceEmbedded) {
-            inOutType = new InOutType(beanPtr.getTypeFor(lastVisitedField), outBean.getTypeFor(customField.to), false);
+            inOutType = new InOutType(beanPtr.getTypeFor(lastVisitedField), outBean.getTypeFor(customField.to), outPutAsParam);
         } else {
-            inOutType = new InOutType(inBean.getTypeFor(customField.from), beanPtr.getTypeFor(lastVisitedField), false);
+            inOutType = new InOutType(inBean.getTypeFor(customField.from), beanPtr.getTypeFor(lastVisitedField), outPutAsParam);
         }
         try {
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
