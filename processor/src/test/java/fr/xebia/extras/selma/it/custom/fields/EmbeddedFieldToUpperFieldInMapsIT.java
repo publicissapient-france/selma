@@ -49,6 +49,8 @@ public class EmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBase {
         proposal.setPassenger(new Passenger());
         proposal.getPassenger().setAge(26);
         proposal.getPassenger().setCard("YOUNG");
+        Date passengerDate = new Date();
+        proposal.getPassenger().setDate(passengerDate);
 
         // When
         ProposalDto proposalDto = mapper.asProposalDto(proposal);
@@ -56,6 +58,7 @@ public class EmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBase {
         // Then
         Assert.assertEquals(26, proposalDto.getPassengerAge());
         Assert.assertEquals("YOUNG", proposalDto.getPassengerCard());
+        Assert.assertEquals(passengerDate, proposalDto.getPassengerDate());
     }
 
 
@@ -72,13 +75,17 @@ public class EmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBase {
         proposal.setPrice(1000);
         proposal.setPassengerAge(26);
         proposal.setPassengerCard("YOUNG");
+        Date passengerDate = new Date();
+        proposal.setPassengerDate(passengerDate);
 
         // When
         Proposal resProposal = mapper.asProposal(proposal);
 
         // Then
+        Assert.assertNotNull(resProposal.getPassenger());
         Assert.assertEquals(26, resProposal.getPassenger().getAge());
         Assert.assertEquals("YOUNG", resProposal.getPassenger().getCard());
+        Assert.assertEquals(passengerDate, resProposal.getPassenger().getDate());
     }
 
 }

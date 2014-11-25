@@ -25,7 +25,7 @@ import fr.xebia.extras.selma.beans.ProposalDto;
 /**
  * Created by slemesle on 23/11/14.
  */
-@Mapper
+@Mapper(withCustomFields = @Field({"passenger.date","passengerDate"}))
 public interface EmbeddedFieldToUpperFieldMapper {
 
     @Maps(withCustomFields ={

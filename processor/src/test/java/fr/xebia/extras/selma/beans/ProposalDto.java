@@ -30,6 +30,15 @@ public class ProposalDto {
     private String destination;
     private int passengerAge;
     private String passengerCard;
+    private Date passengerDate;
+
+    public Date getPassengerDate() {
+        return passengerDate;
+    }
+
+    public void setPassengerDate(Date passengerDate) {
+        this.passengerDate = passengerDate;
+    }
 
     public int getPassengerAge() {
         return passengerAge;

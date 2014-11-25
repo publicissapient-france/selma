@@ -149,4 +149,28 @@ class Field {
     public String[] toFields() {
         return to.split("\\.");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Field field = (Field) o;
+
+        if (originalFrom != null ? !originalFrom.equals(field.originalFrom) : field.originalFrom != null) return false;
+        if (originalTo != null ? !originalTo.equals(field.originalTo) : field.originalTo != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = originalTo != null ? originalTo.hashCode() : 0;
+        result = 31 * result + (originalFrom != null ? originalFrom.hashCode() : 0);
+        return result;
+    }
+
+    public boolean hasOneFieldMatching(Field field) {
+        return to.equals(field.to) || to.equals(field.from) || from.equals(field.from);
+    }
 }

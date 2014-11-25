@@ -21,10 +21,7 @@ import fr.xebia.extras.selma.Fields;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by slemesle on 23/06/2014.
@@ -87,6 +84,9 @@ public class FieldsWrapper {
             List<String> fieldPair = field.getAsStrings("value");
             if (fieldPair.size() != 2) {
                 context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
+            } else if (fieldPair.get(0).isEmpty() || fieldPair.get(1).isEmpty()){
+                context.error(element, "Invalid @Field use, @Field can not have empty string \n"+
+                        "--> Fix @Field({\"%s\",\"%s\"})", fieldPair.get(0), fieldPair.get(1));
             } else {
                 fieldsRegistry.push(fieldPair.get(0).toLowerCase(), fieldPair.get(1).toLowerCase());
             }
@@ -100,40 +100,29 @@ public class FieldsWrapper {
         final String sourceSimpleName = sourceType.asElement().getSimpleName().toString().toLowerCase();
         final String destinationFqcn = destinationType.toString().toLowerCase();
         final String destinationSimpleName = destinationType.asElement().getSimpleName().toString().toLowerCase();
-        boolean foundHere = true;
+        final List<Field> resParent = new ArrayList<Field>();
+        final List<Field> res = new ArrayList<Field>();
 
-        List<Field> res = fieldsRegistry.getStartingWith(field);
+        if (parent != null) {
+            resParent.addAll(parent.getFieldFor(field, sourceType, destinationType));
+        }
+        res.addAll(fieldsRegistry.getStartingWith(field));
+        res.addAll(fieldsRegistry.getStartingWith(sourceFqcn + "." + field));
+        res.addAll(fieldsRegistry.getStartingWith(sourceSimpleName + "." + field));
 
-        if (res.isEmpty()) {
-
-            // Look if we have simple name or fqcn field
-            res = fieldsRegistry.getStartingWith(sourceFqcn + "." + field);
-            if (res.isEmpty()){
-                res = fieldsRegistry.getStartingWith(sourceSimpleName + "." + field);
-                if (res.isEmpty()){
-                    if (parent != null) { // If we have a parent pass the call to it since we did not find anything here
-                        res = parent.getFieldFor(field, sourceType, destinationType);
-                        foundHere = false;
-                    }
-
+        for (Field re : res) {
+            unusedFields.remove(re.to);
+            re.removeDestinationPrefix(destinationFqcn, destinationSimpleName);
+            re.removeSourcePrefix(sourceFqcn, sourceSimpleName);
+            Iterator<Field> parentIterator = resParent.iterator();
+            while (parentIterator.hasNext()){
+                Field parentField = parentIterator.next();
+                if (parentField.hasOneFieldMatching(re)){
+                    parentIterator.remove();
                 }
             }
-
         }
-
-        if (foundHere && res != null) {  // This field mapping is now considered as used
-            for (Field f : res) {
-                unusedFields.remove(f.to);
-            }
-        }
-
-        if (res != null){ // Remove fqcn or simple name from field
-            for (Field re : res) {
-                re.removeDestinationPrefix(destinationFqcn, destinationSimpleName);
-                re.removeSourcePrefix(sourceFqcn, sourceSimpleName);
-            }
-        }
-
+        res.addAll(resParent);
         return res;
     }
 

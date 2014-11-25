@@ -16,6 +16,8 @@
  */
 package fr.xebia.extras.selma.beans;
 
+import java.util.Date;
+
 /**
  * Created by slemesle on 23/11/14.
  */
@@ -23,6 +25,15 @@ public class Passenger {
 
     private int age;
     private String card;
+    private Date date;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public int getAge() {
         return age;
