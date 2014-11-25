@@ -302,6 +302,11 @@ public class MapperMethodGenerator {
                     " --> Fix @Field({\"%s\",\"%s\"})", customField.to, outBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
         }
+        if (!sourceEmbedded && !inBean.hasFieldAndGetter(customField.from)) {
+            context.error(customField.element, "Bad custom field to field mapping: getter for field %s is missing in source bean %s !\n" +
+                    " --> Fix @Field({\"%s\",\"%s\"})", customField.from, inBean.typeElement, customField.originalFrom, customField.originalTo);
+            return root;
+        }
         String[] fields = sourceEmbedded ? customField.fromFields() : customField.toFields();
         String previousFieldPath = sourceEmbedded ? "in" : "out";
         StringBuilder field = new StringBuilder(previousFieldPath);
@@ -311,9 +316,14 @@ public class MapperMethodGenerator {
                 outFields.remove(lastVisitedField);
             }
 
-            if (!beanPtr.hasFieldAndGetter(lastVisitedField)){
+            if (sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)){
                 context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
                         "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField,inBean.typeElement, customField.originalFrom, customField.originalTo);
+                return root;
+            }
+            if (!sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)){
+                context.error(customField.element, "Bad custom field to field mapping: field %s.%s from destination bean %s has no getter !\n" +
+                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, outBean.typeElement, customField.originalFrom, customField.originalTo);
                 return root;
             }
             field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");

@@ -53,5 +53,10 @@ public interface FailingEmbeddedFieldToUpperFieldMapper {
     @Maps(withCustomFields ={
             @Field({"passenger.ager", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
     })
-    Proposal asProposa(ProposalDto proposal);
+    Proposal asProposalBadDestination(ProposalDto proposal);
+
+    @Maps(withCustomFields ={
+            @Field({"passenger.age", "passengerAger"}), @Field({"passenger.card", "passengercard"})
+    })
+    Proposal asProposalBadSource(ProposalDto proposal);
 }
