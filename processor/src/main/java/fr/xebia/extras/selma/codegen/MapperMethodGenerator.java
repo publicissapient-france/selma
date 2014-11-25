@@ -334,6 +334,11 @@ public class MapperMethodGenerator {
                     "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, inBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
         }
+        if (!sourceEmbedded && !beanPtr.hasFieldAndSetter(lastVisitedField)){
+            context.error(customField.element, "Bad custom field to field mapping: field %s.%s from destination bean %s has no setter !\n" +
+                    "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, outBean.typeElement, customField.originalFrom, customField.originalTo);
+            return root;
+        }
         if (sourceEmbedded) {
             field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");
         } else {
