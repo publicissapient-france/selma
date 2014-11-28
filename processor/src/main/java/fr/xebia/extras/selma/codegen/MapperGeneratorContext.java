@@ -17,6 +17,8 @@
 package fr.xebia.extras.selma.codegen;
 
 
+import fr.xebia.extras.selma.codegen.compiler.CompilerMessageRegistry;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -36,6 +38,7 @@ public class MapperGeneratorContext {
 
 
     private final ProcessingEnvironment processingEnv;
+    private final CompilerMessageRegistry messageRegistry;
     int depth = 0;
 
     Elements elements;
@@ -60,12 +63,14 @@ public class MapperGeneratorContext {
         this.processingEnv = processingEnvironment;
         mappingRegistry = new HashMap<String, MappingMethod>();
         methodStack = new LinkedList<MappingMethod>();
+        messageRegistry = new CompilerMessageRegistry();
 
     }
 
 
     public void error(Element element, String message, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(message, args), element);
+
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(message, args), messageRegistry.hasMessageFor(Diagnostic.Kind.ERROR, element) ? null : element);
     }
 
     public void pushStackForBody(MappingSourceNode node, SourceNodeVars vars) {
@@ -84,7 +89,7 @@ public class MapperGeneratorContext {
     }
 
     public void warn(String s, ExecutableElement element) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, s, element);
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, s, messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
     }
 
     /**
@@ -111,10 +116,6 @@ public class MapperGeneratorContext {
         method = getMappingMethod(inOutType, new MappingMethod(inOutType));
 
         return method.name();
-    }
-
-    public Collection<MappingMethod> mappingMethods() {
-        return mappingRegistry.values();
     }
 
     private MappingMethod getMappingMethod(InOutType inOutType, MappingMethod mappingMethod) {
@@ -159,25 +160,12 @@ public class MapperGeneratorContext {
         return mappingMethod;
     }
 
-    public ProcessingEnvironment processingEnv() {
-        return processingEnv;
-    }
-
     public Elements elements() {
         return elements;
     }
 
-    public void info(Element typeElement, String templateMessage, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format(templateMessage, args), typeElement);
-    }
-
     public void warn(Element element, String templateMessage, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(templateMessage, args), element);
-    }
-
-
-    public void notice(Element element, String templateMessage, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format(templateMessage, args), element);
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(templateMessage, args), messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
     }
 
     public void setNewParams(String newParams) {

@@ -31,7 +31,7 @@ import org.junit.Test;
 public class FailingEmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBase {
 
 
-    public static final int EXPECTED_ERROR_COUNT = 8;
+    public static final int EXPECTED_ERROR_COUNT = 7;
 
     @Test
     public void given_a_mapper_with_custom_embeded_field_to_upper_bad_field_compilation_should_fail() throws Exception {

@@ -16,11 +16,14 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Maps;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import java.util.List;
+
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
 
 /**
  * Created by slemesle on 10/11/14.
@@ -30,8 +33,9 @@ public class MapsWrapper {
     public static final String WITH_CUSTOM_FIELDS = "withCustomFields";
     public static final String WITH_IGNORE_FIELDS = "withIgnoreFields";
     public static final String WITH_ENUMS = "withEnums";
-    public static final String IGNORE_MISSING_PROPERTIES = "ignoreMissingProperties";
-    //private final IgnoreFieldsWrapper ignoreFields;
+    public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
+
+
     private final FieldsWrapper customFields;
     private final AnnotationWrapper maps;
     private final MappingRegistry registry;
@@ -41,6 +45,7 @@ public class MapsWrapper {
     private final MapperWrapper mapperWrapper;
     private final MapperGeneratorContext context;
     private final CustomMapperWrapper customMapper;
+    private final IgnoreMissing ignoreMissing;
     private boolean ignoreMissingProperties;
 
     public MapsWrapper(MethodWrapper method, MapperWrapper mapperWrapper) {
@@ -62,12 +67,14 @@ public class MapsWrapper {
         customMapper = new CustomMapperWrapper(mapperWrapper.customMappers(), maps, context);
         registry.customMappers(customMapper);
 
-        if (mapperWrapper.isIgnoreMissingProperties()){
-            ignoreMissingProperties = true;
-        } else if (maps != null && maps.getAsBoolean(IGNORE_MISSING_PROPERTIES)) {
-            ignoreMissingProperties = true;
+        //TODO remove this code in 0.11
+        ignoreMissingProperties = mapperWrapper.isIgnoreMissingProperties();
+
+        IgnoreMissing missing = (maps == null ? DEFAULT : IgnoreMissing.valueOf(maps.getAsString(WITH_IGNORE_MISSING)));
+        if (missing == DEFAULT){
+            ignoreMissing = mapperWrapper.ignoreMissing();
         } else {
-            ignoreMissingProperties = false;
+            ignoreMissing = missing;
         }
 
     }
@@ -110,5 +117,9 @@ public class MapsWrapper {
 
     public List<TypeElement> customMapperFields() {
         return customMapper.mapperFields();
+    }
+
+    public IgnoreMissing ignoreMissing(){
+        return ignoreMissing;
     }
 }

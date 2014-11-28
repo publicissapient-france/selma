@@ -116,7 +116,11 @@ public class AnnotationWrapper {
     }
 
     public String getAsString(String parameter) {
-        return (String) map.get(parameter).getValue();
+        return  map.get(parameter).getValue().toString();
+    }
+
+    public <T> T getAs(String parameter) {
+        return (T) map.get(parameter).getValue();
     }
 
     public Element asElement() {

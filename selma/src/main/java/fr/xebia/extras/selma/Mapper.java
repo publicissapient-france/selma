@@ -20,6 +20,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IgnoreMissing.NONE;
+
 /**
  * Mapper annotation used to denote interfaces that needs mappers implementation to be built.
  */
@@ -31,8 +34,24 @@ public @interface Mapper {
      * Wether compilation should fail when one field from in bean is missing in out bean<br/>
      * By default, compilation will fail and report error. Setting this to true will allow Selma to skip
      * the missing field NO MAPPING CODE WILL BE GENERATED FOR THE MISSING FIELD.
+     *
+     * @deprecated since 0.10, please use withIgnoreMissing instead.
      */
-    boolean ignoreMissingProperties() default false;
+   @Deprecated boolean ignoreMissingProperties() default false;
+
+    /**
+     * How should selma processor handle properties not referenced in both bean.
+     * Set this to :
+     * IgnoreMissing.NONE if you want to selma to report compiler error for fields in source and destination
+     * that can not be mapped (this is the default value).
+     * IgnoreMissing.SOURCE if you want selma to report compiler error only for fields from destination bean that are missing
+     * in source.
+     * IgnoreMissing.DESTINATION if you want selma to report compiler error for fields from source bean that are
+     * missing in destination bean.
+     * IgnoreMising.ALL If you want selma to report compiler error for any missing fields from source bean and destination
+     *
+     */
+    IgnoreMissing withIgnoreMissing() default DEFAULT;
 
     /**
      * Wether compilation should fail when Selma finds a situation where it can not generate mapping code.<br/>
@@ -69,7 +88,7 @@ public @interface Mapper {
 
 
     /**
-     * For test purpose, this allows to disable use of *final* modifier for generated mappers classes
+     * This allows to disable use of *final* modifier for generated mappers classes
      */
     boolean withFinalMappers() default true;
 

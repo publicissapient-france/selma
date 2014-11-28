@@ -20,6 +20,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IgnoreMissing.NONE;
+
 /**
  * Mapper annotation used to describe specific mappings for methods inside a mapper interface.
  */
@@ -28,12 +31,17 @@ import java.lang.annotation.Target;
 public @interface Maps {
 
     /**
-     * Wether compilation should fail when one field from in bean is missing in out bean<br/>
-     * By default, compilation will fail and report error. Setting this to true will allow Selma to skip
-     * the missing field NO MAPPING CODE WILL BE GENERATED FOR THE MISSING FIELD.<br/>
-     * <b>This will be ignored when @Mapper already ignore missing properties !</b>
+     * How should selma processor handle properties not referenced in both bean.
+     * Set this to :
+     * {@code IgnoreMissing.NONE} if you want to selma to report compiler error for fields in source and destination
+     * that can not be mapped (this is the default value).
+     * {@code IgnoreMissing.SOURCE} if you want selma to report compiler error only for fields from destination bean that are missing
+     * in source.
+     * {@code IgnoreMissing.DESTINATION} if you want selma to report compiler error for fields from source bean that are
+     * missing in destination bean.
+     * {@code IgnoreMising.ALL} If you want selma to report compiler error for any missing fields from source bean and destination
      */
-    boolean ignoreMissingProperties() default false;
+    IgnoreMissing withIgnoreMissing() default DEFAULT;
 
     /**
      * Add a list of custom mapper class.

@@ -46,12 +46,12 @@ public class IntegrationTestBase {
 
     @BeforeClass
     public static final void beforeClass(){
-
         testCompiler = new TestCompiler();
     }
 
     @Before
     public void setup() throws Exception {
+
         testCompiler.compileFor(getClass());
         testCompiler.compileFor(getClass()).assertCompilation();
     }

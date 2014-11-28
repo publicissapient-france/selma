@@ -17,11 +17,16 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Mapper;
 
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.util.List;
+
+import static fr.xebia.extras.selma.IgnoreMissing.ALL;
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IgnoreMissing.NONE;
 
 /**
  * Class used to wrap the Mapper Annotation
@@ -29,6 +34,7 @@ import java.util.List;
 public class MapperWrapper {
     public static final String WITH_IGNORE_FIELDS = "withIgnoreFields";
     public static final String WITH_ENUMS = "withEnums";
+    public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
@@ -40,6 +46,7 @@ public class MapperWrapper {
     private final MapperGeneratorContext context;
     private final TypeElement mapperInterface;
     private final SourceWrapper source;
+    private final IgnoreMissing ignoreMissing;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -54,6 +61,18 @@ public class MapperWrapper {
 
         ignoreFieldsWrapper = new IgnoreFieldsWrapper(context, mapperInterface, ignoreFieldsParam);
         configuration = SourceConfiguration.buildFrom(mapper, ignoreFieldsWrapper);
+
+
+        IgnoreMissing missing = IgnoreMissing.valueOf(mapper.getAsString(WITH_IGNORE_MISSING));
+        if (missing == DEFAULT) {
+            if (configuration.isIgnoreMissingProperties()){
+                ignoreMissing = ALL;
+            } else {
+                ignoreMissing = NONE;
+            }
+        } else {
+            ignoreMissing = missing;
+        }
 
         fields = new FieldsWrapper(context, mapperInterface, mapper);
         mappingRegistry.fields(fields);
@@ -136,7 +155,7 @@ public class MapperWrapper {
 
     /**
      * Method used to collect dependencies from mapping methods that need fields and constructor init
-     * @param maps
+     * @param maps maps annotation we want to collect
      */
     public void collectMaps(MapsWrapper maps) {
         customMappers.addFields(maps.customMapperFields());
@@ -153,5 +172,9 @@ public class MapperWrapper {
 
     public void emitSourceAssigns(JavaWriter writer) throws IOException {
         source.emitAssigns(writer);
+    }
+
+    public IgnoreMissing ignoreMissing(){
+        return ignoreMissing;
     }
 }

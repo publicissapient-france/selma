@@ -225,35 +225,35 @@ public class MapperMethodGenerator {
                 continue; // Skip ignored in field
             }
 
-            if (isMissingInDestination && maps.isIgnoreMissingProperties()) {
+            if (isMissingInDestination && maps.ignoreMissing().isIgnoreDestination()) {
                 continue;  // Skip ignored missing properties in destination bean
-            } else {
-
-
-                if (isMissingInDestination) {
-                    context.error(inBean.getFieldElement(field), String.format("setter for field %s from source bean %s is missing in destination bean %s using field %s !\n" +
-                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing getter or specify corresponding @Field to customize field to field mapping", field, inOutType.in(), inOutType.out(), customFieldsFor, inOutType.in(), field, inOutType.in(), field));
-                    continue;
-                }
-
-                try {
-                    MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam()));
-                    if (mappingBuilder != null) {
-                        ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
-                                .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam())).withAssign(false)));
-
-                        generateStack(context);
-                    } else {
-                        handleNotSupported(inOutType, ptr);
-                    }
-                } catch (Exception e) {
-                    System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
-                    e.printStackTrace();
-                }
-
-
-                ptr = lastChild(ptr);
             }
+
+
+            if (isMissingInDestination) {
+                context.error(mapperMethod.element(), String.format("setter for field %s from source bean %s is missing in destination bean %s !\n" +
+                        " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing getter or specify corresponding @Field to customize field to field mapping", field, inOutType.in(), inOutType.out(), inOutType.in(), field, inOutType.in(), field));
+                continue;
+            }
+
+            try {
+                MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam()));
+                if (mappingBuilder != null) {
+                    ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
+                            .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam())).withAssign(false)));
+
+                    generateStack(context);
+                } else {
+                    handleNotSupported(inOutType, ptr);
+                }
+            } catch (Exception e) {
+                System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
+                e.printStackTrace();
+            }
+
+
+            ptr = lastChild(ptr);
+
             outFields.remove(outFieldName);
         }
 
@@ -263,11 +263,11 @@ public class MapperMethodGenerator {
             ptr = lastChild(ptr);
         }
 
-        if (!maps.isIgnoreMissingProperties()) { // Report destination bean fields not mapped
+        if (!maps.ignoreMissing().isIgnoreSource()) { // Report destination bean fields not mapped
             for (String outField : outFields) {
 
                 if (!maps.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
-                    context.error(outBean.getSetterElement(outField), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
+                    context.error(mapperMethod.element(), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
                             " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing setter or specify corresponding @Field to customize field to field mapping", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField, inOutType.out(), outField);
                 }
             }
