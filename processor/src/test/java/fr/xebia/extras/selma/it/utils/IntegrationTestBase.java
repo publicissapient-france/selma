@@ -112,19 +112,15 @@ public class IntegrationTestBase {
         for (Diagnostic<? extends JavaFileObject> diagnostic : dc.getDiagnostics()) {
 
             if (diagnostic.getKind() == kind){
-                if (diagnostic.getSource() != null && diagnostic.getSource().getName().contains(aClass.getSimpleName())){
-
-
                     String srcLine = diagnostic.toString();
-
-
+                if (diagnostic.getSource() != null && diagnostic.getSource().getName().contains(aClass.getSimpleName())){
                     if (srcLine.contains(signature) && srcLine.contains(message)){
                             res = diagnostic;
                     } else if (srcLine.contains(message)){
                             res = diagnostic;
                     }
-
-
+                } else if (diagnostic.getSource() == null && srcLine.contains(message)){
+                    res = diagnostic;
                 }
             }
         }
