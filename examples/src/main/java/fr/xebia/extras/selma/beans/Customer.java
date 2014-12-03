@@ -25,6 +25,15 @@ public class Customer {
     private Address address;
     private String phoneNumber;
     private String email;
+    private String date;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public String getEmail() {
         return email;
