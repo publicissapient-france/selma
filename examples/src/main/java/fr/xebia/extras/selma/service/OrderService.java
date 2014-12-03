@@ -33,7 +33,10 @@ public class OrderService {
     }
 
     public OrderDto process(Order order){
-        return orderMapper.to(order);
+        return orderMapper.asDto(order);
+    }
+    public Order update(OrderDto dto){
+        return orderMapper.asOrder(dto);
     }
 
 }

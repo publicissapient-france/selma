@@ -29,6 +29,15 @@ public class CustomerDto {
     private AddressDto address;
     private String phoneNumber;
     private String email;
+    private DateBO date;
+
+    public DateBO getDate() {
+        return date;
+    }
+
+    public void setDate(DateBO date) {
+        this.date = date;
+    }
 
     public String getEmail() {
         return email;

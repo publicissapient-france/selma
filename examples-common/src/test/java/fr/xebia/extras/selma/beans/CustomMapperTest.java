@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Xebia and Séven Le Mesle
+ * Copyright 2013  Séven Le Mesle
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,23 @@
  */
 package fr.xebia.extras.selma.beans;
 
+import fr.xebia.extras.selma.Selma;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- *
- * Custom Mapping show case
+ * Created by slemesle on 02/12/14.
  */
-public class CustomMappings {
+public class CustomMapperTest {
 
+    @Test
+    public void given_custom_mapper_selma_should_use_it_for_IOTypes(){
+        DateBOMapper mapper = Selma.mapper(DateBOMapper.class);
+        TypeIn in = new TypeIn("1245432");
+        TypeOut out = mapper.asTypeOut(in);
 
-    public String productTypeToString(ProductType in){
+        Assert.assertEquals(out.getDate(), new DateBO(in.getDate()));
 
-        return in.toString();
     }
-    public ProductType productTypeToString(String in){
 
-        return ProductType.valueOf(in);
-    }
 }

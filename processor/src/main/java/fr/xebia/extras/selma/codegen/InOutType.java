@@ -57,10 +57,7 @@ public class InOutType {
 
     @Override
     public int hashCode() {
-        int result = in != null ? in.hashCode() : 0;
-        result = 31 * result + (out != null ? out.hashCode() : 0);
-        result = 31 * result + (outPutAsParam ? 1 : 0);
-        return result;
+        return toString().hashCode();
     }
 
     @Override

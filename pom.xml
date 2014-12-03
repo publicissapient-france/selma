@@ -52,6 +52,7 @@
         <module>processor</module>
         <module>selma</module>
         <module>examples</module>
+        <module>examples-common</module>
     </modules>
 
     <dependencyManagement>
