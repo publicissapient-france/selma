@@ -16,13 +16,13 @@
 
 [![Build Status](https://travis-ci.org/xebia-france/selma.png?branch=master)](https://travis-ci.org/xebia-france/selma)
 
-[![S3lm4 logo](https://raw.github.com/xebia-france/selma/master/resources/logo-v6.png)](http://xebia-france.github.io/selma/)
+[![Selma logo](https://raw.github.com/xebia-france/selma/master/resources/logo-v6.png)](http://selma-java.org/)
 
 ## Selma Java bean mapping at compile time !
 
 # What is S3lm4 ?
 
-S3lm4 say Selma, stands for ***Stupid Simple Staticaly Linked Mapper***.
+S3lm4 say Selma, stands for ***Stupid Simple Statically Linked Mapper***.
 In fact it is on one side an Annotation Processor that generate Java code to handle the mapping from field to field at compile time. On the other side, it is a Runtime library to instantiate and invoke the generated Mapper.
 
 
@@ -68,15 +68,16 @@ Visit our site: (http://selma-java.org)
 * Generate code for mapping bean to bean matching fields to fields
 ** Support for nested bean
 ** Bean should respect Java property convention
-* Custom field name to field name mapping
+* Custom field to (embedded)field name mapping
 * Maps Enum using identical values with default value
 * Maps Collection any to any
 * Maps Map any to any
-* Use strict memory duplication for all fields
+* Use strict memory duplication for all fields except immutables
 * Support for SourcedBeans to instantiate beans is out of the box
 * Support Type to Type custom mapping using custom mapping methods
 * Gives full feedback at compilation time
 * Break build when mapping does not work Say good bye to mapping errors in production
+*
 
 ## Usage
 

@@ -1,5 +1,20 @@
 0.10 -
+This release deprecates @IgnoreFields and @Fields. The new @Maps annotation should now be used instead.
+It supports all the parameters available in @Mapper at the method scope.
 
+* #35: Deploy snapshots to sonatype snapshot repository
+* #36: Deprecate @IgnoreFields and @Fields in favor of a new annotation
+* #37: Add support for update graph in custom mappers
+* #38: Add support for scoped custom mappers
+* #40: Add compilation error when default enum value does not exist
+* #41: Compilation error when fields have no getter
+* #42: Support scoped mapping interceptor
+* #43: Remove deprecated @IgnoreFields from warning messages
+* #44: Add support for qualified class name in custom fields mapping
+* #45: Add support for custom embedded field to root level field
+* #46: Add support for ignore missing fields in source bean, destination bean or both
+* #47: Fix missing custom mapper in type mapping registry
+*
 
 0.9 - 11/4/2014
 * Upgrade JavaWriter to 2.5.0
