@@ -20,7 +20,7 @@
 
 ## Selma Java bean mapping at compile time !
 
-# What is S3lm4 ?
+# What is Selma ?
 
 S3lm4 say Selma, stands for ***Stupid Simple Statically Linked Mapper***.
 In fact it is on one side an Annotation Processor that generate Java code to handle the mapping from field to field at compile time. On the other side, it is a Runtime library to instantiate and invoke the generated Mapper.
@@ -77,7 +77,6 @@ Visit our site: (http://selma-java.org)
 * Support Type to Type custom mapping using custom mapping methods
 * Gives full feedback at compilation time
 * Break build when mapping does not work Say good bye to mapping errors in production
-*
 
 ## Usage
 
@@ -87,7 +86,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.9</version>
+            <version>0.10</version>
             <scope>provided</scope>
         </dependency>
 
@@ -95,7 +94,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.9</version>
+            <version>0.10</version>
         </dependency>
 ```
 

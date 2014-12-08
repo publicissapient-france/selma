@@ -14,7 +14,6 @@ It supports all the parameters available in @Mapper at the method scope.
 * #45: Add support for custom embedded field to root level field
 * #46: Add support for ignore missing fields in source bean, destination bean or both
 * #47: Fix missing custom mapper in type mapping registry
-*
 
 0.9 - 11/4/2014
 * Upgrade JavaWriter to 2.5.0
