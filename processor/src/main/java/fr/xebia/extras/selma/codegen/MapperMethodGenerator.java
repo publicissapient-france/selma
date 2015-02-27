@@ -42,13 +42,14 @@ public class MapperMethodGenerator {
     private final MapperGeneratorContext context;
     private final SourceConfiguration configuration;
     private final MapsWrapper maps;
+    private final BeanWrapperFactory beanWrapperFactory;
 
     public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperWrapper mapperWrapper) {
         this.writer = writer;
         this.mapperMethod = method;
         this.context = mapperWrapper.context();
         this.configuration = mapperWrapper.configuration();
-
+        this.beanWrapperFactory = new BeanWrapperFactory();
         this.maps = new MapsWrapper(method, mapperWrapper);
     }
 
@@ -99,7 +100,10 @@ public class MapperMethodGenerator {
 
         } else if (inOutType.areDeclared() && isSupported(inOutType.out())) {
 
-            ptr = ptr.body(instantiateOut(inOutType, context.newParams()));
+            final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.outAsTypeElement());
+
+            ptr = ptr.body(instantiateOut(inOutType,
+                    (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : "")));
             context.depth++;
             ptr.child(generate(inOutType));
             context.depth--;
@@ -125,6 +129,10 @@ public class MapperMethodGenerator {
         methodRoot.write(writer);
     }
 
+    private BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeElement typeElement) {
+        return beanWrapperFactory.getBeanWrapperOrNew(context, typeElement);
+    }
+
     /**
      * Method called when encountered a bean not known in registry so considered as
      * custom bean to map.
@@ -137,7 +145,7 @@ public class MapperMethodGenerator {
         Matcher matcher = STANDARD_JAVA_PACKAGE.matcher(out.toString());
         if (!matcher.matches()) {
             TypeElement outTypeElement = (TypeElement) context.type.asElement(out);
-            BeanWrapper outBean = new BeanWrapper(context, outTypeElement);
+            BeanWrapper outBean = getBeanWrapperOrNew(context, outTypeElement);
             res = outBean.hasCallableConstructor();
         }
 
@@ -156,7 +164,6 @@ public class MapperMethodGenerator {
     }
 
     /**
-     *
      * @param context
      * @return
      * @throws IOException
@@ -194,8 +201,8 @@ public class MapperMethodGenerator {
         TypeElement outTypeElement = (TypeElement) context.type.asElement(inOutType.out());
 
 
-        BeanWrapper outBean = new BeanWrapper(context, outTypeElement);
-        BeanWrapper inBean = new BeanWrapper(context, (TypeElement) context.type.asElement(inOutType.in()));
+        BeanWrapper outBean = getBeanWrapperOrNew(context, outTypeElement);
+        BeanWrapper inBean = getBeanWrapperOrNew(context, (TypeElement) context.type.asElement(inOutType.in()));
 
         Set<String> outFields = outBean.getSetterFields();
         List<Field> customFields = new ArrayList<Field>();
@@ -211,10 +218,10 @@ public class MapperMethodGenerator {
                         hasEmbedded = true;
                     }
                 }
-                if (hasEmbedded){
+                if (hasEmbedded) {
                     customFields.addAll(customFieldsFor);
                     continue;
-                }else {
+                } else {
                     outFieldName = customFieldsFor.get(0).to;
                 }
             }
@@ -277,6 +284,7 @@ public class MapperMethodGenerator {
 
     /**
      * Build mapping source node tree for custom field to field with embedded property
+     *
      * @param ptr
      * @param customField
      * @param inBean
@@ -290,8 +298,8 @@ public class MapperMethodGenerator {
         MappingSourceNode ptrRoot = ptr;
         String lastVisitedField = null;
 
-        if(customField.hasEmbeddedSourceAndDestination()){
-            context.error(customField.element, "Bad custom field to field mapping: both source and destination can not be embedded !\n"+
+        if (customField.hasEmbeddedSourceAndDestination()) {
+            context.error(customField.element, "Bad custom field to field mapping: both source and destination can not be embedded !\n" +
                     "-->  Fix @Field({\"%s\",\"%s\"})", customField.originalFrom, customField.originalTo);
             return root;
         }
@@ -311,41 +319,41 @@ public class MapperMethodGenerator {
         String[] fields = sourceEmbedded ? customField.fromFields() : customField.toFields();
         String previousFieldPath = sourceEmbedded ? "in" : "out";
         StringBuilder field = new StringBuilder(previousFieldPath);
-        for (int id = 0; id <  fields.length -1; id++) {
+        for (int id = 0; id < fields.length - 1; id++) {
             lastVisitedField = fields[id];
-            if (id == 0 && !sourceEmbedded){
+            if (id == 0 && !sourceEmbedded) {
                 outFields.remove(lastVisitedField);
             }
 
-            if (sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)){
+            if (sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)) {
                 context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
-                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField,inBean.typeElement, customField.originalFrom, customField.originalTo);
+                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, inBean.typeElement, customField.originalFrom, customField.originalTo);
                 return root;
             }
-            if (!sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)){
+            if (!sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)) {
                 context.error(customField.element, "Bad custom field to field mapping: field %s.%s from destination bean %s has no getter !\n" +
                         "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, outBean.typeElement, customField.originalFrom, customField.originalTo);
                 return root;
             }
             field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");
 
-            if(sourceEmbedded) {
+            if (sourceEmbedded) {
                 ptr = ptr.body(controlNotNull(field.toString(), false));
             } else {
                 ptr = ptr.child(controlNull(field.toString()));
-                ptr.body(set(previousFieldPath+'.'+beanPtr.getSetterFor(lastVisitedField), "new "+ beanPtr.getTypeFor(lastVisitedField) +"("+context.newParams()+")"));
+                ptr.body(set(previousFieldPath + '.' + beanPtr.getSetterFor(lastVisitedField), "new " + beanPtr.getTypeFor(lastVisitedField) + "(" + context.newParams() + ")"));
             }
-            beanPtr = new BeanWrapper(context, (TypeElement) context.type.asElement(beanPtr.getTypeFor(lastVisitedField)));
+            beanPtr = getBeanWrapperOrNew(context, (TypeElement) context.type.asElement(beanPtr.getTypeFor(lastVisitedField)));
             previousFieldPath = field.toString();
         }
-        lastVisitedField = fields[fields.length-1];
+        lastVisitedField = fields[fields.length - 1];
 
-        if (sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)){
+        if (sourceEmbedded && !beanPtr.hasFieldAndGetter(lastVisitedField)) {
             context.error(customField.element, "Bad custom field to field mapping: field %s.%s from source bean %s has no getter !\n" +
                     "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, inBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
         }
-        if (!sourceEmbedded && !beanPtr.hasFieldAndSetter(lastVisitedField)){
+        if (!sourceEmbedded && !beanPtr.hasFieldAndSetter(lastVisitedField)) {
             context.error(customField.element, "Bad custom field to field mapping: field %s.%s from destination bean %s has no setter !\n" +
                     "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, outBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
@@ -365,9 +373,9 @@ public class MapperMethodGenerator {
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
             if (mappingBuilder != null) {
 
-                ptr =  sourceEmbedded ?
+                ptr = sourceEmbedded ?
                         ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean).withInOutType(inOutType).withAssign(false))) :
-                        ptr.child(mappingBuilder.build(context, new SourceNodeVars("in."+ inBean.getGetterFor(customField.from)+"()", field.toString() ).withInOutType(inOutType).withAssign(false)));
+                        ptr.child(mappingBuilder.build(context, new SourceNodeVars("in." + inBean.getGetterFor(customField.from) + "()", field.toString()).withInOutType(inOutType).withAssign(false)));
 
                 generateStack(context);
             } else {
@@ -378,7 +386,7 @@ public class MapperMethodGenerator {
             e.printStackTrace();
         }
 
-        if (!sourceEmbedded  && inBean.getTypeFor(customField.from).getKind() == TypeKind.DECLARED){ // Ensure we do not map if source is null
+        if (!sourceEmbedded && inBean.getTypeFor(customField.from).getKind() == TypeKind.DECLARED) { // Ensure we do not map if source is null
             MappingSourceNode ifNode = controlNotNull("in." + inBean.getGetterFor(customField.from) + "()", false);
             ifNode.body(ptrRoot.child);
             ptrRoot.child = ifNode;

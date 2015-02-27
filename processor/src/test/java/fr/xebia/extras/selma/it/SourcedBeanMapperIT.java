@@ -34,7 +34,7 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void should_use_source_for_bean_instantiation(){
+    public void should_use_source_for_bean_instantiation_with_matching_constructor() {
 
         AddressIn in = new AddressIn();
 
@@ -50,7 +50,7 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
 
         SourcedBeanMapper mapper = Selma.mapper(SourcedBeanMapper.class, dataSource);
 
-        AddressOutWithDataSource res = mapper.asAddressOut(in);
+        AddressOutWithDataSource res = mapper.asAddressOutWithDataSource(in);
 
         Assert.assertNotNull(res);
         Assert.assertNotNull(res.dataSource);
@@ -60,7 +60,31 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void should_use_source_for_bean_instantiation_with_custom(){
+    public void should_use_source_for_bean_instantiation_with_default_constructor() {
+
+        AddressIn in = new AddressIn();
+
+        in.setCity(new CityIn());
+        in.setExtras(Arrays.asList("one", "two", null, "three"));
+        in.setNumber(1337);
+        in.setStreet("HtwoGTwo");
+        in.setPrincipal(false);
+        in.getCity().setCapital(true);
+        in.getCity().setName("Paris");
+        in.getCity().setPopulation(13371337);
+        DataSource dataSource = new DataSource();
+
+        SourcedBeanMapper mapper = Selma.mapper(SourcedBeanMapper.class, dataSource);
+
+        AddressOut res = mapper.asAddressOut(in);
+
+        Assert.assertNotNull(res);
+        Assert.assertNotNull(res.getCity());
+    }
+
+
+    @Test
+    public void should_use_source_for_bean_instantiation_with_custom() {
 
         AddressIn in = new AddressIn();
 

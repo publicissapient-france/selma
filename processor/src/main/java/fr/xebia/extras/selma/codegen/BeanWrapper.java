@@ -36,12 +36,16 @@ public class BeanWrapper {
     final MapperGeneratorContext context;
     final TypeElement typeElement;
     final Map<String, FieldItem> fieldsGraph;
+    private boolean hasMatchingSourcesConstructor = false;
+    private boolean hasDefaultConstructor = false;
+
 
     public BeanWrapper(MapperGeneratorContext context, TypeElement typeElement) {
         this.context = context;
         this.typeElement = typeElement;
 
         fieldsGraph = buildFieldGraph();
+        findMatchingConstructors();
     }
 
     private Map<String, FieldItem> buildFieldGraph() {
@@ -168,9 +172,6 @@ public class BeanWrapper {
         return String.format("in.%s()", getGetterFor(field));
     }
 
-    public Element getFieldElement(String field) {
-        return fieldsGraph.get(field).getter.element();
-    }
 
     public Set<String> getSetterFields() {
         Set<String> res = new TreeSet<String>();
@@ -192,27 +193,33 @@ public class BeanWrapper {
         return res;
     }
 
-    public Element getSetterElement(String field) {
-
-        return fieldsGraph.get(field).setter.element();
-    }
-
-    public boolean hasCallableConstructor() {
-        boolean res = false;
+    private void findMatchingConstructors() {
         List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
         for (ExecutableElement constructor : constructors) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC) && !constructor.getModifiers().contains(Modifier.ABSTRACT)) {
 
-                if (constructor.getParameters().size() == context.getSourcesCount()) {
-                    res = true;
-                    break;
+                int paramsCount = constructor.getParameters().size();
+                if (paramsCount == 0) {
+                    hasDefaultConstructor = true;
+                }
+                if (paramsCount == context.getSourcesCount()) {
+                    hasMatchingSourcesConstructor = true;
                 }
             }
         }
-        return res;
     }
 
+    public boolean hasMatchingSourcesConstructor() {
+        return hasMatchingSourcesConstructor;
+    }
 
+    public boolean hasDefaultConstructor() {
+        return hasDefaultConstructor;
+    }
+
+    public boolean hasCallableConstructor() {
+        return hasDefaultConstructor || hasMatchingSourcesConstructor;
+    }
 
     class FieldItem {
 
