@@ -17,7 +17,6 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.Mapper;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -46,7 +45,7 @@ public class CustomMapperWrapper {
     private final Map<InOutType, MappingBuilder> interceptorMap;
 
 
-    private final List<TypeElement> customMaperFields;
+    private final List<TypeElement> customMapperFields;
     private final HashMap<InOutType, String> unusedInterceptor;
     private final Element annotatedElement;
 
@@ -55,7 +54,7 @@ public class CustomMapperWrapper {
 
         this.annotationWrapper = mapperAnnotation;
         this.context = context;
-        this.customMaperFields = new LinkedList<TypeElement>();
+        this.customMapperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
         this.unusedInterceptor = new HashMap<InOutType, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
@@ -67,7 +66,7 @@ public class CustomMapperWrapper {
     public CustomMapperWrapper(CustomMapperWrapper parent, AnnotationWrapper annotationWrapper, MapperGeneratorContext context) {
         this.parent = parent;
         this.annotationWrapper = annotationWrapper;
-        this.customMaperFields = new LinkedList<TypeElement>();
+        this.customMapperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
         this.unusedInterceptor = new HashMap<InOutType, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
@@ -85,19 +84,21 @@ public class CustomMapperWrapper {
 
 
     void emitCustomMappersFields(JavaWriter writer, boolean assign) throws IOException {
-        for (TypeElement customMaperField : customMaperFields) {
-            final String field = String.format(CUSTOM_MAPPER_FIELD_TPL, customMaperField.getSimpleName().toString());
+        for (TypeElement customMapperField : customMapperFields) {
+            final String field = String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString());
             if (assign) {
+                TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, customMapperField);
                 // assign the customMapper field to a newly created instance passing to it the declared source params
-                writer.emitStatement("this.%s = new %s(%s)", field, customMaperField.getQualifiedName().toString(), context.newParams());
+                writer.emitStatement("this.%s = new %s(%s)", field, customMapperField.getQualifiedName().toString(),
+                        constructorWrapper.hasMatchingSourcesConstructor ? context.newParams() : "");
             } else {
                 writer.emitEmptyLine();
                 writer.emitJavadoc("This field is used for custom Mapping");
-                writer.emitField(customMaperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMaperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
+                writer.emitField(customMapperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
 
                 writer.emitEmptyLine();
                 writer.emitJavadoc("Custom Mapper setter for " + field);
-                writer.beginMethod("void", "setCustomMapper" + customMaperField.getSimpleName(), EnumSet.of(PUBLIC, FINAL), customMaperField.asType().toString(), "mapper");
+                writer.beginMethod("void", "setCustomMapper" + customMapperField.getSimpleName(), EnumSet.of(PUBLIC, FINAL), customMapperField.asType().toString(), "mapper");
                 writer.emitStatement("this.%s = mapper", field);
                 writer.endMethod();
                 writer.emitEmptyLine();
@@ -180,19 +181,20 @@ public class CustomMapperWrapper {
                     context.error(element, "No valid mapping method found in custom selma class %s\\n A custom mapping method is public and returns a type not void, it takes one parameter or more if you specified datasource.", customMapper);
                 } else {
 
-                    List<ExecutableElement> constructors = ElementFilter.constructorsIn(element.getEnclosedElements());
+                    TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, element);
+             /*       List<ExecutableElement> constructors = ElementFilter.constructorsIn(element.getEnclosedElements());
                     int defaultConstructorCount = 0;
                     for (ExecutableElement constructor : constructors) {
                         if (constructor.getParameters().size() == 0 && constructor.getModifiers().contains(PUBLIC)) {
                             defaultConstructorCount++;
                         }
                     }
-                    if (defaultConstructorCount <= 0) {
+*/                  if (!constructorWrapper.hasDefaultConstructor) {
                         context.error(element, "No default public constructor found in custom mapping class %s\\n Please add one", customMapper);
                     }
 
                     // Here we collect the name of the field to create in the Mapper generated class
-                    customMaperFields.add(element);
+                    customMapperFields.add(element);
                 }
 
 
@@ -290,14 +292,14 @@ public class CustomMapperWrapper {
     }
 
     public List<TypeElement> mapperFields() {
-        return customMaperFields;
+        return customMapperFields;
     }
 
     public void addFields(List<TypeElement> childFields) {
 
         for (TypeElement childField : childFields) {
             boolean found = false;
-            for (TypeElement maperField : customMaperFields) {
+            for (TypeElement maperField : customMapperFields) {
 
                 if (childField.equals(maperField)){
                     found = true; break;
@@ -305,7 +307,7 @@ public class CustomMapperWrapper {
 
             }
             if (!found){
-                customMaperFields.add(childField);
+                customMapperFields.add(childField);
             }
         }
     }

@@ -18,7 +18,6 @@ package fr.xebia.extras.selma.codegen;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -36,8 +35,7 @@ public class BeanWrapper {
     final MapperGeneratorContext context;
     final TypeElement typeElement;
     final Map<String, FieldItem> fieldsGraph;
-    private boolean hasMatchingSourcesConstructor = false;
-    private boolean hasDefaultConstructor = false;
+    private final TypeConstructorWrapper constructors;
 
 
     public BeanWrapper(MapperGeneratorContext context, TypeElement typeElement) {
@@ -45,7 +43,7 @@ public class BeanWrapper {
         this.typeElement = typeElement;
 
         fieldsGraph = buildFieldGraph();
-        findMatchingConstructors();
+        constructors = new TypeConstructorWrapper(context, typeElement);
     }
 
     private Map<String, FieldItem> buildFieldGraph() {
@@ -193,32 +191,18 @@ public class BeanWrapper {
         return res;
     }
 
-    private void findMatchingConstructors() {
-        List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
-        for (ExecutableElement constructor : constructors) {
-            if (constructor.getModifiers().contains(Modifier.PUBLIC) && !constructor.getModifiers().contains(Modifier.ABSTRACT)) {
 
-                int paramsCount = constructor.getParameters().size();
-                if (paramsCount == 0) {
-                    hasDefaultConstructor = true;
-                }
-                if (paramsCount == context.getSourcesCount()) {
-                    hasMatchingSourcesConstructor = true;
-                }
-            }
-        }
-    }
 
     public boolean hasMatchingSourcesConstructor() {
-        return hasMatchingSourcesConstructor;
+        return constructors.hasMatchingSourcesConstructor;
     }
 
     public boolean hasDefaultConstructor() {
-        return hasDefaultConstructor;
+        return constructors.hasDefaultConstructor;
     }
 
     public boolean hasCallableConstructor() {
-        return hasDefaultConstructor || hasMatchingSourcesConstructor;
+        return constructors.hasCallableConstructor();
     }
 
     class FieldItem {

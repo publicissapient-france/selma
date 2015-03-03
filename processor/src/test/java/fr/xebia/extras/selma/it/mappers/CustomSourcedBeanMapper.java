@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOutWithDataSource;
 import fr.xebia.extras.selma.beans.DataSource;
@@ -28,5 +29,8 @@ import fr.xebia.extras.selma.beans.DataSource;
 public interface CustomSourcedBeanMapper {
 
     AddressOutWithDataSource asAddressOut(AddressIn in);
+
+    @Maps(withCustom = CustomMapperWithoutSource.class)
+    AddressOutWithDataSource asAddressOutWithoutDataSource(AddressIn in);
 
 }

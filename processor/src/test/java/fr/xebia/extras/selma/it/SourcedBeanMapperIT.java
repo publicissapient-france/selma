@@ -29,7 +29,8 @@ import java.util.Arrays;
 /**
  * Test selma uses the factory
  */
-@Compile(withClasses = {BeanMapper.class, CustomMapperSupport.class, CustomMapper.class, SourcedBeanMapper.class, CustomSourcedBeanMapper.class})
+@Compile(withClasses = {BeanMapper.class, CustomMapperSupport.class, CustomMapper.class,
+        CustomMapperWithoutSource.class, SourcedBeanMapper.class, CustomSourcedBeanMapper.class})
 public class SourcedBeanMapperIT extends IntegrationTestBase {
 
 
@@ -84,7 +85,7 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void should_use_source_for_bean_instantiation_with_custom() {
+    public void should_use_source_for_custom_mapper_instantiation_with_matching_constructor() {
 
         AddressIn in = new AddressIn();
 
@@ -106,6 +107,34 @@ public class SourcedBeanMapperIT extends IntegrationTestBase {
         Assert.assertNotNull(res.dataSource);
         Assert.assertNotNull(res.getCity());
         Assert.assertNotNull(res.getCity().dataSource);
+        Assert.assertEquals(in.getCity().getName() + " Mapped by CustomMapper", res.getCity().getName());
+        Assert.assertEquals(in.getCity().getPopulation() + 10000, res.getCity().getPopulation());
+        Assert.assertEquals(in.getCity().isCapital(), res.getCity().isCapital());
+
+    }
+
+    @Test
+    public void should_use_source_for_custom_mapper_instantiation_with_default_constructor() {
+
+        AddressIn in = new AddressIn();
+
+        in.setCity(new CityIn());
+        in.setExtras(Arrays.asList("one", "two", null, "three"));
+        in.setNumber(1337);
+        in.setStreet("HtwoGTwo");
+        in.setPrincipal(false);
+        in.getCity().setCapital(true);
+        in.getCity().setName("Paris");
+        in.getCity().setPopulation(13371337);
+        DataSource dataSource = new DataSource();
+
+        CustomSourcedBeanMapper mapper = Selma.mapper(CustomSourcedBeanMapper.class, dataSource);
+
+        AddressOutWithDataSource res = mapper.asAddressOutWithoutDataSource(in);
+
+        Assert.assertNotNull(res);
+        Assert.assertNotNull(res.dataSource);
+        Assert.assertNotNull(res.getCity());
         Assert.assertEquals(in.getCity().getName() + " Mapped by CustomMapper", res.getCity().getName());
         Assert.assertEquals(in.getCity().getPopulation() + 10000, res.getCity().getPopulation());
         Assert.assertEquals(in.getCity().isCapital(), res.getCity().isCapital());
