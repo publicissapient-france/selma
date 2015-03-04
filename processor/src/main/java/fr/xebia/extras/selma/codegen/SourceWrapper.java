@@ -18,6 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
 
+import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -36,11 +37,13 @@ public class SourceWrapper {
     private final List<String> sources;
     private final String[] args;
     private final List<String> assigns;
+    private final ArrayList<TypeElement> sourcesTypes;
 
     public SourceWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context) {
         this.mapperAnnotation = mapperAnnotation;
         this.context = context;
         sources = mapperAnnotation.getAsStrings(WITH_SOURCES);
+        sourcesTypes = new ArrayList<TypeElement>();
 
 
         int i = 0, iArg = 0;
@@ -49,12 +52,14 @@ public class SourceWrapper {
         StringBuilder builder = new StringBuilder();
         for (String classe : sources) {
             builder.append(',');
-            args[iArg] = classe.replace(".class", "");
+            String className = classe.replace(".class", "");
+            args[iArg] = className;
             iArg++;
             args[iArg] = "_source" + i;
             iArg++;
             assigns.add(String.format("this.source%s = _source%s", i, i));
             builder.append("this.source").append(i);
+            sourcesTypes.add(context.elements.getTypeElement(className));
             i++;
         }
 
@@ -65,7 +70,7 @@ public class SourceWrapper {
 
         // newParams hold the parameters we pass to Pojo constructor
         context.setNewParams(builder.toString());
-        context.setSourcesCount(sources.size());
+        context.setSources(sourcesTypes);
     }
 
     public void emitFields(JavaWriter writer) throws IOException {

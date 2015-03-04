@@ -16,10 +16,9 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.util.ElementFilter;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,8 +29,12 @@ public class TypeConstructorWrapper {
 
     public final boolean hasDefaultConstructor;
     public final boolean hasMatchingSourcesConstructor;
+    private final MapperGeneratorContext context;
+    private final TypeElement typeElement;
 
     public TypeConstructorWrapper(MapperGeneratorContext context, TypeElement typeElement) {
+        this.context = context;
+        this.typeElement = typeElement;
 
         boolean defaultConstructor = false;
         boolean matchingSourcesConstructor = false;
@@ -42,13 +45,27 @@ public class TypeConstructorWrapper {
                 if (paramsCount == 0) {
                     defaultConstructor = true;
                 }
-                if (paramsCount == context.getSourcesCount()) {
-                    matchingSourcesConstructor = true;
+                if (!matchingSourcesConstructor && paramsCount == context.getSourcesCount()) {
+                    matchingSourcesConstructor = validateParametersTypes(constructor);
                 }
             }
         }
         hasMatchingSourcesConstructor = matchingSourcesConstructor;
         hasDefaultConstructor = defaultConstructor;
+    }
+
+    private boolean validateParametersTypes(ExecutableElement constructor) {
+        boolean res = true;
+        List<? extends VariableElement> parameters = constructor.getParameters();
+        Iterator<TypeElement> sources = context.sources().iterator();
+        for (VariableElement parameter : parameters) {
+            TypeElement sourceType = sources.next();
+            if (!parameter.asType().equals(sourceType.asType())){
+                res = false;
+                break;
+            }
+        }
+        return res;
     }
 
 

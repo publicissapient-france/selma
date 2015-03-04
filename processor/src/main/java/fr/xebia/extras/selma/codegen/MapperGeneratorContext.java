@@ -27,9 +27,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Source code generation context
@@ -54,7 +52,7 @@ public class MapperGeneratorContext {
     // Handle method stack to build all mapping method not already built
     LinkedList<MappingMethod> methodStack;
     private String newParams;
-    private int sourcesCount;
+    public final List<TypeElement> sources;
 
     public MapperGeneratorContext(ProcessingEnvironment processingEnvironment) {
         this.elements = processingEnvironment.getElementUtils();
@@ -64,7 +62,7 @@ public class MapperGeneratorContext {
         mappingRegistry = new HashMap<String, MappingMethod>();
         methodStack = new LinkedList<MappingMethod>();
         messageRegistry = new CompilerMessageRegistry();
-
+        sources = new ArrayList<TypeElement>();
     }
 
 
@@ -176,16 +174,20 @@ public class MapperGeneratorContext {
         return newParams;
     }
 
-    public void setSourcesCount(int sourcesCount) {
-        this.sourcesCount = sourcesCount;
-    }
-
     public int getSourcesCount() {
-        return sourcesCount;
+        return sources.size();
     }
 
     public TypeElement getTypeElement(String classe) {
         return elements.getTypeElement(classe);
+    }
+
+    public void setSources(List<TypeElement> _sources) {
+        sources.addAll(_sources);
+    }
+
+    public List<TypeElement> sources() {
+        return sources;
     }
 
     class StackElem {

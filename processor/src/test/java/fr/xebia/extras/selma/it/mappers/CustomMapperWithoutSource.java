@@ -32,6 +32,10 @@ public class CustomMapperWithoutSource {
     public CustomMapperWithoutSource() {
     }
 
+    public CustomMapperWithoutSource(String message){
+        this.message = message;
+    }
+
     public CityOut mapCity(CityIn cityIn){
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + message);
