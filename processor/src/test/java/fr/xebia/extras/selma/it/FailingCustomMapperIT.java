@@ -67,12 +67,6 @@ public class FailingCustomMapperIT extends IntegrationTestBase {
         assertCompilationWarning(BadCustomMapper.class, "public static CityOut staticMethod(CityIn in) {", "Custom mapping method can not be *static* (Fix modifiers of the method) on staticMethod");
     }
 
-    @Test
-    public void should_raise_warning_for_abstract_method() throws Exception {
-
-        assertCompilationError(BadCustomMapper.class, "public abstract class BadCustomMapper {", "No valid mapping method found in custom selma class ");
-        assertCompilationWarning(BadCustomMapper.class, "public abstract CityOut abstractMethod(CityIn in);", "Custom mapping method can not be *abstract* (Fix modifiers of the method) on abstractMethod");
-    }
 
     @Test
     public void should_raise_compilation_error_when_no_default_constructor_is_present() throws Exception {

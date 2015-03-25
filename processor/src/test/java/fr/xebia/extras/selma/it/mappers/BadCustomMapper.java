@@ -51,5 +51,4 @@ public abstract class BadCustomMapper {
     }
 
 
-    public abstract CityOut abstractMethod(CityIn in);
 }

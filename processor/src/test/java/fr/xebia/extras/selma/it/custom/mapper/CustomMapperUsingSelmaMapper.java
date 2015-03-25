@@ -16,24 +16,18 @@
  */
 package fr.xebia.extras.selma.it.custom.mapper;
 
-import fr.xebia.extras.selma.beans.CityIn;
-import fr.xebia.extras.selma.beans.CityOut;
+import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.beans.PersonIn;
+import fr.xebia.extras.selma.beans.PersonOut;
 
 /**
  * Created by slemesle on 19/11/14.
  */
-public class CustomImmutableMapperInMapper {
+@Mapper(withCustom = {AddressMapper.class},
+        withIgnoreFields = {"fr.xebia.extras.selma.beans.PersonIn.male", "fr.xebia.extras.selma.beans.PersonOut.biography"})
+public interface CustomMapperUsingSelmaMapper {
 
+    PersonOut mapWithAddressMapper(PersonIn in);
 
-    public static final String IMMUTABLY_MAPPED = " immutably mapped from mapper";
-    public static final int POPULATION_INC = 5;
-
-    public CityOut mapCity(CityIn cityIn){
-        CityOut cityOut = new CityOut();
-        cityOut.setName(cityIn.getName() + IMMUTABLY_MAPPED);
-        cityOut.setCapital(cityIn.isCapital());
-        cityOut.setPopulation(cityIn.getPopulation() + POPULATION_INC);
-        return cityOut;
-    }
-
+    PersonOut mapWithCustom(PersonIn in, PersonOut out);
 }

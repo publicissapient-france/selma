@@ -18,10 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.io.IOException;
@@ -87,10 +84,12 @@ public class CustomMapperWrapper {
         for (TypeElement customMapperField : customMapperFields) {
             final String field = String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString());
             if (assign) {
-                TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, customMapperField);
-                // assign the customMapper field to a newly created instance passing to it the declared source params
-                writer.emitStatement("this.%s = new %s(%s)", field, customMapperField.getQualifiedName().toString(),
-                        constructorWrapper.hasMatchingSourcesConstructor ? context.newParams() : "");
+                if (customMapperField.getKind() != ElementKind.INTERFACE) {
+                    TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, customMapperField);
+                    // assign the customMapper field to a newly created instance passing to it the declared source params
+                    writer.emitStatement("this.%s = new %s(%s)", field, customMapperField.getQualifiedName().toString(),
+                            constructorWrapper.hasMatchingSourcesConstructor ? context.newParams() : "");
+                }
             } else {
                 writer.emitEmptyLine();
                 writer.emitJavadoc("This field is used for custom Mapping");
@@ -189,7 +188,7 @@ public class CustomMapperWrapper {
                             defaultConstructorCount++;
                         }
                     }
-*/                  if (!constructorWrapper.hasDefaultConstructor) {
+*/                  if (!constructorWrapper.hasDefaultConstructor && element.getKind() != ElementKind.INTERFACE) {
                         context.error(element, "No default public constructor found in custom mapping class %s\\n Please add one", customMapper);
                     }
 
@@ -247,10 +246,12 @@ public class CustomMapperWrapper {
             res = false;
         }
 
+/*
         if (methodWrapper.element().getModifiers().contains(Modifier.ABSTRACT)) {
             context.warn(methodWrapper.element(), "Custom mapping method can not be *abstract* (Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
             res = false;
         }
+*/
 
         if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor()) {
             context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one or two parameters and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());

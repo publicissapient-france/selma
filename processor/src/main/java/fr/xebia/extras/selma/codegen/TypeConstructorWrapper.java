@@ -38,6 +38,7 @@ public class TypeConstructorWrapper {
 
         boolean defaultConstructor = false;
         boolean matchingSourcesConstructor = false;
+
         List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
         for (ExecutableElement constructor : constructors) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC) && !constructor.getModifiers().contains(Modifier.ABSTRACT)) {

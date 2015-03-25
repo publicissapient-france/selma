@@ -16,24 +16,21 @@
  */
 package fr.xebia.extras.selma.it.custom.mapper;
 
-import fr.xebia.extras.selma.beans.CityIn;
-import fr.xebia.extras.selma.beans.CityOut;
+import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.beans.AddressIn;
+import fr.xebia.extras.selma.beans.AddressOut;
 
 /**
- * Created by slemesle on 19/11/14.
+ * Created by slemesle on 25/03/15.
  */
-public class CustomImmutableMapperInMapper {
+@Mapper(withIgnoreFields = "extras", withCustom =  CustomImmutableMapper.class)
+public interface AddressMapper {
 
+    AddressOut asAddressOut(AddressIn in);
 
-    public static final String IMMUTABLY_MAPPED = " immutably mapped from mapper";
-    public static final int POPULATION_INC = 5;
+    AddressOut asAddressOut(AddressIn in, AddressOut out);
 
-    public CityOut mapCity(CityIn cityIn){
-        CityOut cityOut = new CityOut();
-        cityOut.setName(cityIn.getName() + IMMUTABLY_MAPPED);
-        cityOut.setCapital(cityIn.isCapital());
-        cityOut.setPopulation(cityIn.getPopulation() + POPULATION_INC);
-        return cityOut;
-    }
+    AddressIn asAddressIn(AddressOut in);
 
+    AddressIn asAddressIn(AddressOut in, AddressIn out);
 }

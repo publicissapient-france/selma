@@ -56,6 +56,7 @@ public class Selma {
 
 
     private static final Map<String, Object> mappers = new ConcurrentHashMap<String, Object>();
+    public static final String SET_CUSTOM_MAPPER = "setCustomMapper";
 
     /**
      * Return a builder style component to build the Mapper using this builder you can pass the sources, custom mappers and bypass the default cache registry.
@@ -181,27 +182,15 @@ public class Selma {
 
                         Class<?> customMapperClass = customMapper.getClass();
                         Method method = null;
-                        String setter = "setCustomMapper" + customMapperClass.getSimpleName();
-                        try {
-                            method = mapperImpl.getMethod(setter, customMapperClass);
-                        } catch (NoSuchMethodException e) {
-                            //   throw new SelmaException(e, "No setter found for custom mapper %s named %s in %s", customMapperClass, setter, generatedClassName);
-                        } catch (SecurityException e) {
-                            throw new SelmaException(e, "Setter for custom mapper %s named %s not accessible in %s", customMapperClass, setter, generatedClassName);
-                        }
                         Class<?> classe = customMapperClass;
 
                         while (method == null && !Object.class.equals(classe)) { // Iterate over super classes to find the matching custom mapper in case it is a subclass
-                            classe = classe.getSuperclass();
 
-                            setter = "setCustomMapper" + classe.getSimpleName();
-                            try {
-                                method = mapperImpl.getMethod(setter, classe);
-                            } catch (NoSuchMethodException e) {
-                                //    throw new SelmaException(e, "No setter found for custom mapper %s named %s in %s", customMapperClass, setter, generatedClassName);
-                            } catch (SecurityException e) {
-                                throw new SelmaException(e, "Setter for custom mapper %s named %s not accessible in %s", customMapperClass, setter, generatedClassName);
-                            }
+                            Class<?>[] interfaces = classe.getInterfaces();
+                            Class<?>[] classes = Arrays.copyOf(interfaces, interfaces.length + 1);
+                            classes[interfaces.length] = classe;
+                            method = getSetCustomMapperMethodFor(generatedClassName, mapperImpl, customMapperClass, classes);
+                            classe = classe.getSuperclass();
                         }
                         if (method != null) {
                             method.invoke(mapperInstance, customMapper);
@@ -229,6 +218,22 @@ public class Selma {
         }
 
         return (T) mapperInstance;
+    }
+
+    private static <T> Method getSetCustomMapperMethodFor(String generatedClassName, Class<T> mapperImpl, Class<?> customMapperClass, Class<?> ... classes) {
+        Method method = null;
+        for (Class<?> classe : classes) {
+            String setter = SET_CUSTOM_MAPPER + classe.getSimpleName();
+            try {
+                method = mapperImpl.getMethod(setter, classe);
+                break;
+            } catch (NoSuchMethodException e) {
+
+            } catch (SecurityException e) {
+                throw new SelmaException(e, "Setter for custom mapper %s named %s not accessible in %s", customMapperClass, setter, generatedClassName);
+            }
+        }
+        return method;
     }
 
     public static class MapperBuilder<T> {
