@@ -18,6 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
 
 import javax.lang.model.element.TypeElement;
@@ -35,6 +36,7 @@ public class MapperWrapper {
     public static final String WITH_IGNORE_FIELDS = "withIgnoreFields";
     public static final String WITH_ENUMS = "withEnums";
     public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
+    public static final String WITH_IOC = "withIoC";
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
@@ -47,6 +49,7 @@ public class MapperWrapper {
     private final TypeElement mapperInterface;
     private final SourceWrapper source;
     private final IgnoreMissing ignoreMissing;
+    final IoC ioC;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -73,6 +76,8 @@ public class MapperWrapper {
         } else {
             ignoreMissing = missing;
         }
+
+        ioC = IoC.valueOf(mapper.getAsString(WITH_IOC));
 
         fields = new FieldsWrapper(context, mapperInterface, mapper);
         mappingRegistry.fields(fields);

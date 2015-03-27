@@ -17,8 +17,10 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.SelmaConstants;
 
+import javax.annotation.Resource;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
@@ -105,6 +107,9 @@ public class MapperClassGenerator {
                 writer.emitSingleLineComment(GENERATED_BY_SELMA);
                 writer.emitPackage(packageName);
                 writer.emitEmptyLine();
+                if (mapper.ioC == IoC.SPRING){
+                    writer.emitAnnotation("org.springframework.stereotype.Service");
+                }
                 if (mapper.isFinalMappers()) {
                     writer.beginType(adapterName, "class", EnumSet.of(PUBLIC, FINAL), null, strippedTypeName);
                 } else {

@@ -21,7 +21,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.IgnoreMissing.NONE;
+import static fr.xebia.extras.selma.IoC.NO;
 
 /**
  * Mapper annotation used to denote interfaces that needs mappers implementation to be built.
@@ -37,7 +37,7 @@ public @interface Mapper {
      *
      * @deprecated since 0.10, please use withIgnoreMissing instead.
      */
-   @Deprecated boolean ignoreMissingProperties() default false;
+    @Deprecated boolean ignoreMissingProperties() default false;
 
     /**
      * How should selma processor handle properties not referenced in both bean.
@@ -49,7 +49,6 @@ public @interface Mapper {
      * IgnoreMissing.DESTINATION if you want selma to report compiler error for fields from source bean that are
      * missing in destination bean.
      * IgnoreMising.ALL If you want selma to report compiler error for any missing fields from source bean and destination
-     *
      */
     IgnoreMissing withIgnoreMissing() default DEFAULT;
 
@@ -65,9 +64,9 @@ public @interface Mapper {
     /**
      * Add a list of custom mapper class.
      * A custom mapper is a class that gives one or more method :
-     *
+     * <p/>
      * public OutType methodName(InType in)
-     *
+     * <p/>
      * These methods will be called to handle custom mapping of in bean to the OutType
      */
     Class<?>[] withCustom() default {};
@@ -104,9 +103,9 @@ public @interface Mapper {
      * here are ignoring case.
      * This support 3 kinds of notations to describe the property to ignore :
      * <ul>
-     *     <li>Only give the property name ("propertyName")</li>
-     *     <li>Class and property name ("MyClass.propertyName")</li>
-     *     <li>Fully qualified class and property name ("org.mypackage.MyClass.propertyName")</li>
+     * <li>Only give the property name ("propertyName")</li>
+     * <li>Class and property name ("MyClass.propertyName")</li>
+     * <li>Fully qualified class and property name ("org.mypackage.MyClass.propertyName")</li>
      * </ul>
      */
     String[] withIgnoreFields() default {};
@@ -115,10 +114,16 @@ public @interface Mapper {
      * This is used to describe specific field to field mapping. If you need field "toto" to be mapped to "tutu", you should add
      * a @Field annotation here.
      * <code>
-     *    @Mapper(withCustomFields={@Field({"toto", "tutu"})})
+     *
+     * @Mapper(withCustomFields={@Field({"toto", "tutu"})})
      * </code>
      */
     Field[] withCustomFields() default {};
 
-
+    /**
+     * Defines the dependency injection model to be used. Supported models are :<br/>
+     * NO used by default to disable dependency injection.
+     * SPRING will use Spring annotations to expose the implemented mapper in Spring and injects its dependencies.
+     */
+    IoC withIoC() default NO;
 }

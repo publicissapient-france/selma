@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.IoC;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
@@ -45,6 +46,7 @@ public class CustomMapperWrapper {
     private final List<TypeElement> customMapperFields;
     private final HashMap<InOutType, String> unusedInterceptor;
     private final Element annotatedElement;
+    private final IoC ioC;
 
     public CustomMapperWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context) {
         this.annotatedElement = mapperAnnotation.getAnnotatedElement();
@@ -56,6 +58,7 @@ public class CustomMapperWrapper {
         this.unusedInterceptor = new HashMap<InOutType, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
+        ioC = IoC.valueOf(annotationWrapper.getAsString(MapperWrapper.WITH_IOC));
 
         collectCustomMappers();
     }
@@ -70,6 +73,7 @@ public class CustomMapperWrapper {
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
 
         this.context = context;
+        this.ioC = parent.ioC;
 
         if(annotationWrapper != null) {
             this.annotatedElement = annotationWrapper.getAnnotatedElement();
@@ -93,6 +97,7 @@ public class CustomMapperWrapper {
             } else {
                 writer.emitEmptyLine();
                 writer.emitJavadoc("This field is used for custom Mapping");
+                writer.emitAnnotation("org.springframework.beans.factory.annotation.Autowired");
                 writer.emitField(customMapperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
 
                 writer.emitEmptyLine();
