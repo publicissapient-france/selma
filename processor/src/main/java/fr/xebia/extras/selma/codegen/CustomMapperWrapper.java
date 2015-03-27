@@ -97,7 +97,9 @@ public class CustomMapperWrapper {
             } else {
                 writer.emitEmptyLine();
                 writer.emitJavadoc("This field is used for custom Mapping");
-                writer.emitAnnotation("org.springframework.beans.factory.annotation.Autowired");
+                if (ioC == IoC.SPRING) {
+                    writer.emitAnnotation("org.springframework.beans.factory.annotation.Autowired");
+                }
                 writer.emitField(customMapperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
 
                 writer.emitEmptyLine();
