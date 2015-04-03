@@ -151,20 +151,6 @@ public class BeanWrapper {
         return res;
     }
 
-    public TypeMirror getTypeFor(String field) {
-        TypeMirror result = null;
-        FieldItem item = fieldsGraph.get(field);
-
-        if (item != null) {
-            if (item.getter != null) {
-                result = item.getter.returnType();
-            } else {
-                result = item.setter.firstParameterType();
-            }
-        }
-
-        return result;
-    }
 
     public String getInGetterFor(String field) {
         return String.format("in.%s()", getGetterFor(field));
@@ -192,18 +178,36 @@ public class BeanWrapper {
     }
 
 
-
     public boolean hasMatchingSourcesConstructor() {
         return constructors.hasMatchingSourcesConstructor;
-    }
-
-    public boolean hasDefaultConstructor() {
-        return constructors.hasDefaultConstructor;
     }
 
     public boolean hasCallableConstructor() {
         return constructors.hasCallableConstructor();
     }
+
+    public TypeMirror getTypeForGetter(String field) {
+        TypeMirror result = null;
+        FieldItem item = fieldsGraph.get(field);
+
+        if (item != null && item.getter != null) {
+            result = item.getter.returnType();
+        }
+
+        return result;
+    }
+
+    public TypeMirror getTypeForSetter(String field) {
+        TypeMirror result = null;
+        FieldItem item = fieldsGraph.get(field);
+
+        if (item != null && item.setter != null) {
+            result = item.setter.firstParameterType();
+        }
+
+        return result;
+    }
+
 
     class FieldItem {
 

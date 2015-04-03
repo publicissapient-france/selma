@@ -244,14 +244,15 @@ public class MapperMethodGenerator {
             }
 
             try {
-                MappingBuilder mappingBuilder = findBuilderFor(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam()));
+                InOutType inOutTypeForField = new InOutType(inBean.getTypeForGetter(field), outBean.getTypeForSetter(outFieldName), inOutType.isOutPutAsParam());
+                MappingBuilder mappingBuilder = findBuilderFor(inOutTypeForField);
                 if (mappingBuilder != null) {
                     ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
-                            .withInOutType(new InOutType(inBean.getTypeFor(field), outBean.getTypeFor(outFieldName), inOutType.isOutPutAsParam())).withAssign(false)));
+                            .withInOutType(inOutTypeForField).withAssign(false)));
 
                     generateStack(context);
                 } else {
-                    handleNotSupported(inOutType, ptr);
+                    handleNotSupported(inOutTypeForField, ptr);
                 }
             } catch (Exception e) {
                 System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
@@ -341,9 +342,9 @@ public class MapperMethodGenerator {
                 ptr = ptr.body(controlNotNull(field.toString(), false));
             } else {
                 ptr = ptr.child(controlNull(field.toString()));
-                ptr.body(set(previousFieldPath + '.' + beanPtr.getSetterFor(lastVisitedField), "new " + beanPtr.getTypeFor(lastVisitedField) + "(" + context.newParams() + ")"));
+                ptr.body(set(previousFieldPath + '.' + beanPtr.getSetterFor(lastVisitedField), "new " + beanPtr.getTypeForGetter(lastVisitedField) + "(" + context.newParams() + ")"));
             }
-            beanPtr = getBeanWrapperOrNew(context, (TypeElement) context.type.asElement(beanPtr.getTypeFor(lastVisitedField)));
+            beanPtr = getBeanWrapperOrNew(context, (TypeElement) context.type.asElement(beanPtr.getTypeForGetter(lastVisitedField)));
             previousFieldPath = field.toString();
         }
         lastVisitedField = fields[fields.length - 1];
@@ -365,9 +366,9 @@ public class MapperMethodGenerator {
         }
         InOutType inOutType;
         if (sourceEmbedded) {
-            inOutType = new InOutType(beanPtr.getTypeFor(lastVisitedField), outBean.getTypeFor(customField.to), outPutAsParam);
+            inOutType = new InOutType(beanPtr.getTypeForGetter(lastVisitedField), outBean.getTypeForSetter(customField.to), outPutAsParam);
         } else {
-            inOutType = new InOutType(inBean.getTypeFor(customField.from), beanPtr.getTypeFor(lastVisitedField), outPutAsParam);
+            inOutType = new InOutType(inBean.getTypeForGetter(customField.from), beanPtr.getTypeForSetter(lastVisitedField), outPutAsParam);
         }
         try {
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
@@ -386,7 +387,7 @@ public class MapperMethodGenerator {
             e.printStackTrace();
         }
 
-        if (!sourceEmbedded && inBean.getTypeFor(customField.from).getKind() == TypeKind.DECLARED) { // Ensure we do not map if source is null
+        if (!sourceEmbedded && inBean.getTypeForGetter(customField.from).getKind() == TypeKind.DECLARED) { // Ensure we do not map if source is null
             MappingSourceNode ifNode = controlNotNull("in." + inBean.getGetterFor(customField.from) + "()", false);
             ifNode.body(ptrRoot.child);
             ptrRoot.child = ifNode;
