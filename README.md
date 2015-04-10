@@ -86,7 +86,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.10</version>
+            <version>0.11</version>
             <scope>provided</scope>
         </dependency>
 
@@ -94,7 +94,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.10</version>
+            <version>0.11</version>
         </dependency>
 ```
 

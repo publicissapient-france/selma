@@ -1,3 +1,12 @@
+0.11 - 4/10/2015
+This release adds Spring support by annotation. You can now use a Mapper as the custom mapper of another one.
+* #52: Custom mapper are now called even for null values
+* #51: Fix type mapping to identify correctly destination bean type
+* #50: Mapper interface can now be used as a custom mapper for mapper composition
+* #49: Fix Sourced bean handling to be used only when needed
+* #48: Add support for Spring ioc withIoc=SPRING
+
+
 0.10 -
 This release deprecates @IgnoreFields and @Fields. The new @Maps annotation should now be used instead.
 It supports all the parameters available in @Mapper at the method scope.
