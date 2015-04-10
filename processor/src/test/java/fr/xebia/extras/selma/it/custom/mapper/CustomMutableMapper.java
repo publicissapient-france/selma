@@ -19,6 +19,10 @@ package fr.xebia.extras.selma.it.custom.mapper;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.CityOut;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Created by slemesle on 19/11/14.
  */
@@ -28,12 +32,22 @@ public class CustomMutableMapper {
     public static final String IMMUTABLY_MAPPED = " mutably mapped";
     public static final int POPULATION_INC = 100000;
 
-    public CityOut mapCity(CityIn cityIn, CityOut out){
+    public CityOut mapCity(CityIn cityIn, CityOut out) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + IMMUTABLY_MAPPED);
         cityOut.setCapital(cityIn.isCapital());
         cityOut.setPopulation(cityIn.getPopulation() + POPULATION_INC);
         return cityOut;
     }
+
+
+    public Collection<String> mapStringCollection(Collection<String> inCollection, Collection<String> out) {
+        Collection<String> res = Collections.EMPTY_LIST;
+        if (inCollection != null) {
+            res = new ArrayList<String>(inCollection);
+        }
+        return res;
+    }
+
 
 }

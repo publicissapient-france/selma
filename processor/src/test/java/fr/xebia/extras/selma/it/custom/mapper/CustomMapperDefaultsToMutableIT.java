@@ -21,7 +21,6 @@ import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
-import fr.xebia.extras.selma.it.mappers.CustomMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import junit.framework.Assert;
@@ -81,6 +80,67 @@ public class CustomMapperDefaultsToMutableIT extends IntegrationTestBase {
 
         Assert.assertNotNull(res);
         Assert.assertTrue(out == res);
+        Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
+        Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
+        Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
+
+        Assert.assertEquals(personIn.getAddress().getCity().getName() + CustomMutableMapper.IMMUTABLY_MAPPED, res.getAddress().getCity().getName());
+        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + CustomMutableMapper.POPULATION_INC, res.getAddress().getCity().getPopulation());
+        Assert.assertEquals(personIn.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
+    }
+
+    @Test
+    public void should_map_bean_with_custom_mapper_for_null_values() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        CustomMapperDefaultsToMutable mapper = Selma.getMapper(CustomMapperDefaultsToMutable.class);
+
+        PersonIn personIn = new PersonIn();
+        personIn.setAddress(new AddressIn());
+        personIn.getAddress().setCity(new CityIn());
+        personIn.getAddress().getCity().setCapital(true);
+        personIn.getAddress().getCity().setName("Paris");
+        personIn.getAddress().getCity().setPopulation(3 * 1000 * 1000);
+
+        personIn.getAddress().setPrincipal(true);
+        personIn.getAddress().setNumber(55);
+        personIn.getAddress().setStreet("rue de la truanderie");
+
+        PersonOut res = mapper.mapWithCustom(personIn);
+
+        Assert.assertNotNull(res);
+        Assert.assertNotNull(res.getTags());
+        Assert.assertEquals(0, res.getTags().size());
+
+        Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
+        Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
+        Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
+
+        Assert.assertEquals(personIn.getAddress().getCity().getName() + CustomMutableMapper.IMMUTABLY_MAPPED, res.getAddress().getCity().getName());
+        Assert.assertEquals(personIn.getAddress().getCity().getPopulation() + CustomMutableMapper.POPULATION_INC, res.getAddress().getCity().getPopulation());
+        Assert.assertEquals(personIn.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
+    }
+
+    @Test
+    public void should_map_bean_with_custom_mapper_for_null_values_when_update_graph() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        CustomMapperDefaultsToMutable mapper = Selma.getMapper(CustomMapperDefaultsToMutable.class);
+
+        PersonIn personIn = new PersonIn();
+        personIn.setAddress(new AddressIn());
+        personIn.getAddress().setCity(new CityIn());
+        personIn.getAddress().getCity().setCapital(true);
+        personIn.getAddress().getCity().setName("Paris");
+        personIn.getAddress().getCity().setPopulation(3 * 1000 * 1000);
+
+        personIn.getAddress().setPrincipal(true);
+        personIn.getAddress().setNumber(55);
+        personIn.getAddress().setStreet("rue de la truanderie");
+
+        PersonOut out = new PersonOut();
+        PersonOut res = mapper.mapWithCustom(personIn, out);
+
+        Assert.assertNotNull(res);
+        Assert.assertTrue(out == res);
+        Assert.assertNotNull(res.getTags());
+        Assert.assertEquals(0, res.getTags().size());
         Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
         Assert.assertEquals(personIn.getAddress().getNumber(), res.getAddress().getNumber());
         Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());

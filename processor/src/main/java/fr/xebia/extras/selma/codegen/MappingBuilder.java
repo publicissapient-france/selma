@@ -491,7 +491,7 @@ public abstract class MappingBuilder {
     }
 
     public static MappingBuilder newCustomMapperImmutableForUpdateGraph(final InOutType inOutType, final String name) {
-        return new MappingBuilder() {
+        return new MappingBuilder(true) {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
@@ -502,7 +502,7 @@ public abstract class MappingBuilder {
     }
 
     public static MappingBuilder newCustomMapper(final InOutType inOutType, final String name) {
-        return new MappingBuilder() {
+        return new MappingBuilder(true) {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
