@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.codegen;
 import com.squareup.javawriter.JavaWriter;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
@@ -226,7 +227,19 @@ public class MapperMethodGenerator {
                 }
             }
 
+            TypeMirror typeForInField = inBean.getTypeForGetter(field);
+            TypeMirror typeForOutField = outBean.getTypeForSetter(outFieldName);
+
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outFieldName);
+            boolean useGetterForDestination = false;
+            if (isMissingInDestination && outBean.hasFieldAndGetter(outFieldName)){
+                final DeclaredType declaredTypeForGetter = outBean.getDeclaredTypeForGetter(outFieldName);
+                isMissingInDestination = !MappingBuilder.isCollection(declaredTypeForGetter, context);
+                typeForOutField = declaredTypeForGetter;
+                useGetterForDestination =true;
+
+            }
+
 
             if (maps.isIgnoredField(field, inOutType.inAsDeclaredType())) {
                 continue; // Skip ignored in field
@@ -243,12 +256,13 @@ public class MapperMethodGenerator {
                 continue;
             }
 
+
             try {
-                InOutType inOutTypeForField = new InOutType(inBean.getTypeForGetter(field), outBean.getTypeForSetter(outFieldName), inOutType.isOutPutAsParam());
+                InOutType inOutTypeForField = new InOutType(typeForInField, typeForOutField, inOutType.isOutPutAsParam());
                 MappingBuilder mappingBuilder = findBuilderFor(inOutTypeForField);
                 if (mappingBuilder != null) {
                     ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
-                            .withInOutType(inOutTypeForField).withAssign(false)));
+                            .withInOutType(inOutTypeForField).withAssign(false).withUseGetterForDestination(useGetterForDestination)));
 
                     generateStack(context);
                 } else {

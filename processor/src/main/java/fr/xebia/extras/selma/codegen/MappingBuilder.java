@@ -248,11 +248,15 @@ public abstract class MappingBuilder {
                         } else {
                             arg = "";
                         }
-
-                        MappingSourceNode node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))
-                                                     .child(vars.setOrAssign(tmpVar))
-                                                     .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
-
+                        MappingSourceNode node;
+                        if (vars.useGetterForDestination){
+                            node = root.body(assign(String.format("%s %s", inOutType.inAsTypeElement(), tmpVar), String.format("%s()",vars.outFieldGetter)))
+                                    .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                        }else {
+                            node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))
+                                    .child(vars.setOrAssign(tmpVar))
+                                    .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                        }
                         context.pushStackForBody(node,
                                 new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut, vars.inOutType.isOutPutAsParam()))
                                                     .withInField(itemVar)
@@ -460,13 +464,13 @@ public abstract class MappingBuilder {
         return context.type.isAssignable(declaredType, declaredType2);
     }
 
-    private static boolean isCollection(DeclaredType declaredType, MapperGeneratorContext context) {
+    public static boolean isCollection(DeclaredType declaredType, MapperGeneratorContext context) {
 
         TypeElement typeElement1 = context.elements.getTypeElement("java.util.Collection");
 
         DeclaredType declaredType2 = context.type.getDeclaredType(typeElement1, context.type.getWildcardType(null, null));
 
-        return context.type.isAssignable(declaredType, declaredType2);
+        return declaredType!=null && context.type.isAssignable(declaredType, declaredType2);
     }
 
     private static boolean isBoxedPrimitive(DeclaredType declaredType, MapperGeneratorContext context) {
@@ -538,7 +542,7 @@ public abstract class MappingBuilder {
             root.body(ptr);
 
             // Do not set null to primitive type
-            if (!vars.isOutPrimitive()) {
+            if (!vars.isOutPrimitive() && ! vars.useGetterForDestination) {
                 root.child(controlNullElse()).body(vars.setOrAssign("null"));
             }
             return root;

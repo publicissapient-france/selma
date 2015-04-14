@@ -40,6 +40,7 @@ public class SourceNodeVars {
     boolean assign = false;
     private String inFieldPrefix;
     private byte ptr = 'a';
+    boolean useGetterForDestination = false;
 
     public SourceNodeVars(String inF, String outF, BeanWrapper inBean, BeanWrapper outBean) {
         this.field = inF;
@@ -166,6 +167,11 @@ public class SourceNodeVars {
 
     public SourceNodeVars withIndexPtr(char _ptr) {
         this.ptr = (byte) _ptr;
+        return this;
+    }
+
+    public SourceNodeVars withUseGetterForDestination(boolean useGetterForDestination) {
+        this.useGetterForDestination = useGetterForDestination;
         return this;
     }
 }

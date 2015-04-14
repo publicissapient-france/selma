@@ -24,11 +24,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Created with IntelliJ IDEA.
- * User: slemesle
- * Date: 20/11/2013
- * Time: 02:04
- * To change this template use File | Settings | File Templates.
+ *
  */
 public class InOutType {
 
@@ -192,4 +188,5 @@ public class InOutType {
     public boolean isOutPutAsParam() {
         return outPutAsParam;
     }
+
 }
