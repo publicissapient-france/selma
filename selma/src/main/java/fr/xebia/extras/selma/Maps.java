@@ -19,6 +19,7 @@ package fr.xebia.extras.selma;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
+import java.util.Collection;
 
 import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
 import static fr.xebia.extras.selma.IgnoreMissing.NONE;
@@ -79,5 +80,12 @@ public @interface Maps {
      * </code>
      */
     Field[] withCustomFields() default {};
+
+
+    /**
+     * By default Selma uses a setter to provide new mapped collections. Passing this attribute to true will
+     * make Selma use a getter to map collections if the setter does not exist
+     */
+     CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
 
 }

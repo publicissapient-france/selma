@@ -126,4 +126,11 @@ public @interface Mapper {
      * SPRING will use Spring annotations to expose the implemented mapper in Spring and injects its dependencies.
      */
     IoC withIoC() default NO;
+
+    /**
+     * By default Selma uses a setter to provide new mapped collections. Passing this attribute to ALLOW_GETTER will
+     * make Selma use a getter to map collections if the setter does not exist.
+     */
+     CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+
 }

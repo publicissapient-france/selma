@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import fr.xebia.extras.selma.CollectionMappingStrategy;
 import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Maps;
 
@@ -34,6 +35,7 @@ public class MapsWrapper {
     public static final String WITH_IGNORE_FIELDS = "withIgnoreFields";
     public static final String WITH_ENUMS = "withEnums";
     public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
+    public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
 
 
     private final FieldsWrapper customFields;
@@ -47,6 +49,8 @@ public class MapsWrapper {
     private final CustomMapperWrapper customMapper;
     private final IgnoreMissing ignoreMissing;
     private boolean ignoreMissingProperties;
+    private final CollectionMappingStrategy collectionMappingStrategy;
+
 
     public MapsWrapper(MethodWrapper method, MapperWrapper mapperWrapper) {
 
@@ -69,6 +73,9 @@ public class MapsWrapper {
 
         //TODO remove this code in 0.11
         ignoreMissingProperties = mapperWrapper.isIgnoreMissingProperties();
+
+        collectionMappingStrategy = (maps == null ? CollectionMappingStrategy.DEFAULT : CollectionMappingStrategy.valueOf(maps.getAsString(WITH_COLLECTION_STRATEGY)));
+
 
         IgnoreMissing missing = (maps == null ? DEFAULT : IgnoreMissing.valueOf(maps.getAsString(WITH_IGNORE_MISSING)));
         if (missing == DEFAULT){
@@ -121,5 +128,10 @@ public class MapsWrapper {
 
     public IgnoreMissing ignoreMissing(){
         return ignoreMissing;
+    }
+
+    public boolean allowCollectionGetter() {
+
+        return collectionMappingStrategy == CollectionMappingStrategy.DEFAULT ? mapperWrapper.allowCollectionGetter() : collectionMappingStrategy == CollectionMappingStrategy.ALLOW_GETTER;
     }
 }

@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.CollectionMappingStrategy;
 import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
@@ -37,6 +38,8 @@ public class MapperWrapper {
     public static final String WITH_ENUMS = "withEnums";
     public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
     public static final String WITH_IOC = "withIoC";
+    public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
+
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
     private final IgnoreFieldsWrapper ignoreFieldsWrapper;
@@ -50,6 +53,7 @@ public class MapperWrapper {
     private final SourceWrapper source;
     private final IgnoreMissing ignoreMissing;
     final IoC ioC;
+    private final CollectionMappingStrategy collectionMappingStrategy;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -78,6 +82,8 @@ public class MapperWrapper {
         }
 
         ioC = IoC.valueOf(mapper.getAsString(WITH_IOC));
+
+        collectionMappingStrategy = CollectionMappingStrategy.valueOf(mapper.getAsString(WITH_COLLECTION_STRATEGY));
 
         fields = new FieldsWrapper(context, mapperInterface, mapper);
         mappingRegistry.fields(fields);
@@ -181,5 +187,9 @@ public class MapperWrapper {
 
     public IgnoreMissing ignoreMissing(){
         return ignoreMissing;
+    }
+
+    public boolean allowCollectionGetter() {
+        return collectionMappingStrategy == CollectionMappingStrategy.ALLOW_GETTER;
     }
 }

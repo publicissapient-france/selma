@@ -232,11 +232,11 @@ public class MapperMethodGenerator {
 
             boolean isMissingInDestination = !outBean.hasFieldAndSetter(outFieldName);
             boolean useGetterForDestination = false;
-            if (isMissingInDestination && outBean.hasFieldAndGetter(outFieldName)){
+            if (isMissingInDestination && maps.allowCollectionGetter() && outBean.hasFieldAndGetter(outFieldName)) {
                 final DeclaredType declaredTypeForGetter = outBean.getDeclaredTypeForGetter(outFieldName);
                 isMissingInDestination = !MappingBuilder.isCollection(declaredTypeForGetter, context);
                 typeForOutField = declaredTypeForGetter;
-                useGetterForDestination =true;
+                useGetterForDestination = true;
 
             }
 
@@ -321,10 +321,19 @@ public class MapperMethodGenerator {
         final boolean sourceEmbedded = customField.sourceEmbedded();
         BeanWrapper beanPtr = sourceEmbedded ? inBean : outBean;
 
-        if (sourceEmbedded && !outBean.hasFieldAndSetter(customField.to)) {
-            context.error(customField.element, "Bad custom field to field mapping: setter for field %s is missing in destination bean %s !\n" +
-                    " --> Fix @Field({\"%s\",\"%s\"})", customField.to, outBean.typeElement, customField.originalFrom, customField.originalTo);
-            return root;
+        boolean useGetterForDestination = false;
+        if (sourceEmbedded && !outBean.hasFieldAndSetter(customField.to)) { // Break compilation if field has no setter in out bean and no collection getter
+
+            if (maps.allowCollectionGetter() && outBean.hasFieldAndGetter(customField.to)) {
+                final DeclaredType declaredTypeForGetter = outBean.getDeclaredTypeForGetter(customField.to);
+                useGetterForDestination = MappingBuilder.isCollection(declaredTypeForGetter, context);
+            }
+
+            if (!useGetterForDestination) {
+                context.error(customField.element, "Bad custom field to field mapping: setter for field %s is missing in destination bean %s !\n" +
+                        " --> Fix @Field({\"%s\",\"%s\"})", customField.to, outBean.typeElement, customField.originalFrom, customField.originalTo);
+                return root;
+            }
         }
         if (!sourceEmbedded && !inBean.hasFieldAndGetter(customField.from)) {
             context.error(customField.element, "Bad custom field to field mapping: getter for field %s is missing in source bean %s !\n" +
@@ -368,10 +377,17 @@ public class MapperMethodGenerator {
                     "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, inBean.typeElement, customField.originalFrom, customField.originalTo);
             return root;
         }
+
         if (!sourceEmbedded && !beanPtr.hasFieldAndSetter(lastVisitedField)) {
-            context.error(customField.element, "Bad custom field to field mapping: field %s.%s from destination bean %s has no setter !\n" +
-                    "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, outBean.typeElement, customField.originalFrom, customField.originalTo);
-            return root;
+            if (maps.allowCollectionGetter() && beanPtr.hasFieldAndSetter(lastVisitedField)) {
+                final DeclaredType declaredTypeForGetter = beanPtr.getDeclaredTypeForGetter(lastVisitedField);
+                useGetterForDestination = MappingBuilder.isCollection(declaredTypeForGetter, context);
+            }
+            if (!useGetterForDestination) {
+                context.error(customField.element, "Bad custom field to field mapping: field %s.%s from destination bean %s has no setter !\n" +
+                        "-->  Fix @Field({\"%s\",\"%s\"})", field, lastVisitedField, outBean.typeElement, customField.originalFrom, customField.originalTo);
+                return root;
+            }
         }
         if (sourceEmbedded) {
             field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");
@@ -389,8 +405,8 @@ public class MapperMethodGenerator {
             if (mappingBuilder != null) {
 
                 ptr = sourceEmbedded ?
-                        ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean).withInOutType(inOutType).withAssign(false))) :
-                        ptr.child(mappingBuilder.build(context, new SourceNodeVars("in." + inBean.getGetterFor(customField.from) + "()", field.toString()).withInOutType(inOutType).withAssign(false)));
+                        ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean).withInOutType(inOutType).withAssign(false).withUseGetterForDestination(useGetterForDestination))) :
+                        ptr.child(mappingBuilder.build(context, new SourceNodeVars("in." + inBean.getGetterFor(customField.from) + "()", field.toString()).withInOutType(inOutType).withAssign(false).withUseGetterForDestination(useGetterForDestination)));
 
                 generateStack(context);
             } else {

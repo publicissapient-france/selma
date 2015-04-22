@@ -20,10 +20,12 @@ import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.CollectionBeanDestination;
 import fr.xebia.extras.selma.beans.CollectionBeanSource;
 
+import static fr.xebia.extras.selma.CollectionMappingStrategy.ALLOW_GETTER;
+
 /**
  *
  */
-@Mapper
+@Mapper(withCollectionStrategy = ALLOW_GETTER)
 public interface CollectionMapper {
 
     CollectionBeanDestination asCollectionBeanDestination(CollectionBeanSource source);
