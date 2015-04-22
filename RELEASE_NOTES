@@ -1,3 +1,7 @@
+0.12 - 23/10/2015
+This release adds support for collection mapping strategy
+* #55: Use getter to populate collection when available
+
 0.11 - 4/10/2015
 This release adds Spring support by annotation. You can now use a Mapper as the custom mapper of another one.
 * #52: Custom mapper are now called even for null values
