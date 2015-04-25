@@ -249,13 +249,13 @@ public abstract class MappingBuilder {
                             arg = "";
                         }
                         MappingSourceNode node;
-                        if (vars.useGetterForDestination){
-                            node = root.body(assign(String.format("%s %s", inOutType.inAsTypeElement(), tmpVar), String.format("%s()",vars.outFieldGetter)))
-                                    .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
-                        }else {
+                        if (vars.useGetterForDestination) {
+                            node = root.body(assign(String.format("%s %s", inOutType.inAsTypeElement(), tmpVar), String.format("%s()", vars.outFieldGetter)))
+                                       .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                        } else {
                             node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))
-                                    .child(vars.setOrAssign(tmpVar))
-                                    .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                                       .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                            node.child(vars.setOrAssign(tmpVar));
                         }
                         context.pushStackForBody(node,
                                 new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut, vars.inOutType.isOutPutAsParam()))
@@ -470,7 +470,7 @@ public abstract class MappingBuilder {
 
         DeclaredType declaredType2 = context.type.getDeclaredType(typeElement1, context.type.getWildcardType(null, null));
 
-        return declaredType!=null && context.type.isAssignable(declaredType, declaredType2);
+        return declaredType != null && context.type.isAssignable(declaredType, declaredType2);
     }
 
     private static boolean isBoxedPrimitive(DeclaredType declaredType, MapperGeneratorContext context) {
@@ -510,7 +510,7 @@ public abstract class MappingBuilder {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
-                if (inOutType.isOutPutAsParam()){
+                if (inOutType.isOutPutAsParam()) {
                     root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 } else {
                     root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
@@ -542,7 +542,7 @@ public abstract class MappingBuilder {
             root.body(ptr);
 
             // Do not set null to primitive type
-            if (!vars.isOutPrimitive() && ! vars.useGetterForDestination) {
+            if (!vars.isOutPrimitive() && !vars.useGetterForDestination) {
                 root.child(controlNullElse()).body(vars.setOrAssign("null"));
             }
             return root;

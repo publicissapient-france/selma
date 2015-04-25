@@ -14,23 +14,33 @@
  * limitations under the License.
  *
  */
-package fr.xebia.extras.selma.it.collection;
+package fr.xebia.extras.selma.beans;
 
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.CollectionBeanDefensiveDestination;
-import fr.xebia.extras.selma.beans.CollectionBeanDestination;
-import fr.xebia.extras.selma.beans.CollectionBeanSource;
-
-import static fr.xebia.extras.selma.CollectionMappingStrategy.ALLOW_GETTER;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  */
-@Mapper(withCollectionStrategy = ALLOW_GETTER)
-public interface CollectionMapper {
+public class CollectionBeanDefensiveDestination {
 
-    CollectionBeanDestination asCollectionBeanDestination(CollectionBeanSource source);
+    private List<String> strings;
 
-    CollectionBeanDefensiveDestination asCollectionBeanDefensiveDestination(CollectionBeanSource source);
+    public CollectionBeanDefensiveDestination() {}
+
+    public CollectionBeanDefensiveDestination(List<String> strings) {
+        this.strings = strings;
+    }
+
+    public List<String> getStrings() {
+        if(strings == null){
+            strings = new ArrayList<String>();
+        }
+        return strings;
+    }
+
+    public void setStrings(List<String> strings) {
+        this.strings = new ArrayList<String>(strings);
+    }
 
 }

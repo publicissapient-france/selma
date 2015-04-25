@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.it.collection;
 
 import fr.xebia.extras.selma.Selma;
+import fr.xebia.extras.selma.beans.CollectionBeanDefensiveDestination;
 import fr.xebia.extras.selma.beans.CollectionBeanDestination;
 import fr.xebia.extras.selma.beans.CollectionBeanSource;
 import fr.xebia.extras.selma.it.mappers.CollectionsMapper;
@@ -41,13 +42,28 @@ import static org.junit.Assert.assertThat;
 public class CollectionsMapperIT extends IntegrationTestBase {
 
     @Test
-    public void should_create_new_set_given_a_TreeSet() {
+    public void should_populate_collection_from_getter_with_allow_getter() {
         // Given
         final CollectionMapper mapper = Selma.builder(CollectionMapper.class).build();
         final CollectionBeanSource source = new CollectionBeanSource(Arrays.asList("un", "deux", "trois"));
 
         // When
         final CollectionBeanDestination destination = mapper.asCollectionBeanDestination(source);
+
+        // Then
+        assertThat(destination, notNullValue());
+        assertThat(destination.getStrings(), equalTo(source.getStrings()));
+
+    }
+
+    @Test
+    public void should_populate_collection_in_defensive_copy_setter() {
+        // Given
+        final CollectionMapper mapper = Selma.builder(CollectionMapper.class).build();
+        final CollectionBeanSource source = new CollectionBeanSource(Arrays.asList("un", "deux", "trois"));
+
+        // When
+        final CollectionBeanDefensiveDestination destination = mapper.asCollectionBeanDefensiveDestination(source);
 
         // Then
         assertThat(destination, notNullValue());

@@ -188,14 +188,7 @@ public class CustomMapperWrapper {
                 } else {
 
                     TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, element);
-             /*       List<ExecutableElement> constructors = ElementFilter.constructorsIn(element.getEnclosedElements());
-                    int defaultConstructorCount = 0;
-                    for (ExecutableElement constructor : constructors) {
-                        if (constructor.getParameters().size() == 0 && constructor.getModifiers().contains(PUBLIC)) {
-                            defaultConstructorCount++;
-                        }
-                    }
-*/                  if (!constructorWrapper.hasDefaultConstructor && element.getKind() != ElementKind.INTERFACE) {
+                    if (!constructorWrapper.hasDefaultConstructor && element.getKind() != ElementKind.INTERFACE) {
                         context.error(element, "No default public constructor found in custom mapping class %s\\n Please add one", customMapper);
                     }
 
