@@ -16,6 +16,13 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -23,7 +30,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import java.util.*;
 
 /**
  * Wrapper for specific type
@@ -140,7 +146,7 @@ public class BeanWrapper {
     }
 
     public String getOutGetterPathFor(String field) {
-        return String.format("out.%s", getGetterFor(field));
+        return String.format("out.%s()", getGetterFor(field));
     }
 
     public String getGetterFor(String field) {
