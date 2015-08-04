@@ -22,8 +22,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -223,7 +226,15 @@ public class MapperMethodGenerator {
                     customFields.addAll(customFieldsFor);
                     continue;
                 } else {
-                    outFieldName = customFieldsFor.get(0).to;
+		    final Comparator<Field> comparator = new Comparator<Field>() {
+			@Override
+			public int compare(final Field o1, final Field o2) {
+			    return o1.to.length() - o2.to.length();
+			}
+		    };
+		    Field min = Collections.min(customFieldsFor, comparator);
+		    outFieldName = min.to;
+		    //outFieldName = customFieldsFor.get(0).to;
                 }
             }
 
