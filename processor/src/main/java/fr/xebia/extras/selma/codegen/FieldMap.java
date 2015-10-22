@@ -84,7 +84,8 @@ public class FieldMap {
     private List<Field> findStartingWith(Map<String, String> from, String fieldName) {
         List<Field> res = new ArrayList<Field>();
         for (String key : from.keySet()) {
-            if (key.startsWith(fieldName)){
+            if ((key.startsWith(fieldName) && key.contains(fieldName + ".")) ||
+                    key.equals(fieldName)){
                 res.add(new Field(key, from.get(key), element));
             }
         }

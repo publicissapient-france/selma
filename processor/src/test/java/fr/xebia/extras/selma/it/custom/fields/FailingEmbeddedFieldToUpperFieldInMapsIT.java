@@ -65,8 +65,8 @@ public class FailingEmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBas
 
     @Test
     public void given_a_mapper_with_custom_bad_upper_field_to_embedded_field_compilation_should_fail() throws Exception {
-        assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "Proposal asProposalBadSource(ProposalDto proposal);", "Bad custom field to field mapping: getter for field passengerager is missing in source bean fr.xebia.extras.selma.beans.ProposalDto !");
-       // Assert.assertEquals(EXPECTED_ERROR_COUNT, compilationErrorCount());
+        assertCompilationWarning(FailingEmbeddedFieldToUpperFieldMapper.class, "Proposal asProposalBadSource(ProposalDto proposal);", "Custom @Field({\"passenger.age\",\"passengerager\"}) mapping is never used !");
+        // Assert.assertEquals(EXPECTED_ERROR_COUNT, compilationErrorCount());
     }
 
 }
