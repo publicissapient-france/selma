@@ -128,12 +128,12 @@ public class SourceNodeVars {
     }
 
     public String itemVar() {
-        return String.format("%s%sItem", (char) ptr, (field == null ? "out" : field));
+        return String.format("%s%sItem", (char) ptr, (field == null ? "out" : field.replaceAll("\\.|\\(\\)", "")));
     }
 
 
     public String itemEntry() {
-        return String.format("%s%sEntry", (char) ptr, (field == null ? "out" : field));
+        return String.format("%s%sEntry", (char) ptr, (field == null ? "out" : field.replaceAll("\\.|\\(\\)", "")));
     }
 
     public String indexVar() {
@@ -141,15 +141,15 @@ public class SourceNodeVars {
     }
 
     public String indexVar(char indexChar) {
-        return String.format("%c%sIndex", indexChar, (field == null ? "out" : field));
+        return String.format("%c%sIndex", indexChar, (field == null ? "out" : field.replaceAll("\\.|\\(\\)", "")));
     }
 
     public String tmpVar(String suffix) {
-        return String.format("%s%sTmp%s", (char) ptr, (field == null ? "out" : field), suffix);
+        return String.format("%s%sTmp%s", (char) ptr, (field == null ? "out" : field.replaceAll("\\.|\\(\\)", "")), suffix);
     }
 
     public String totalCountVar() {
-        return String.format("%s%sTotalCount", (char) ptr, (field == null ? "out" : field));
+        return String.format("%s%sTotalCount", (char) ptr, (field == null ? "out" : field.replaceAll("\\.|\\(\\)", "")));
     }
 
     public SourceNodeVars withInFieldPrefix(String inFieldPrefix) {
