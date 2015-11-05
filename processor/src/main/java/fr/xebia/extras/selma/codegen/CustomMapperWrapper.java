@@ -338,11 +338,11 @@ public class CustomMapperWrapper {
 
         @Override
         public int hashCode() {
-            int result = in != null ? in.hashCode() : 0;
-            result = 31 * result + (out != null ? out.hashCode() : 0);
+            // Here we use the string representation of types because hashCode is not consistent bw instances
+            int result = (""+in).hashCode();
+            result = 31 * result + (""+out).hashCode();
             return result;
         }
-
     }
 
     class CustomMapperEntry {
