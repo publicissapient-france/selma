@@ -1,65 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--                                                                           -->
-<!--  Copyright 2013 Séven Le Mesle                                            -->
-<!--                                                                           -->
-<!--  Licensed under the Apache License, Version 2.0 (the "License");          -->
-<!--  you may not use this file except in compliance with the License.         -->
-<!--  You may obtain a copy of the License at                                  -->
-<!--                                                                           -->
-<!--           http://www.apache.org/licenses/LICENSE-2.0                      -->
-<!--                                                                           -->
-<!--  Unless required by applicable law or agreed asDto in writing, software      -->
-<!--  distributed under the License is distributed on an "AS IS" BASIS,        -->
-<!--  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
-<!--  See the License for the specific language governing permissions and      -->
-<!--  limitations under the License.                                           -->
-<!--                                                                           -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>selma-parent</artifactId>
-        <groupId>fr.xebia.extras</groupId>
-        <version>0.13-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+<!-- -->
+<!-- Copyright 2013 Séven Le Mesle -->
+<!-- -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+<!-- -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<!-- -->
+<!-- Unless required by applicable law or agreed asDto in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+<!-- -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>selma-parent</artifactId>
+		<groupId>fr.xebia.extras</groupId>
+		<version>0.13-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
 
-    <artifactId>examples</artifactId>
-    <packaging>jar</packaging>
+	<artifactId>examples</artifactId>
+	<packaging>jar</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>fr.xebia.extras</groupId>
-            <artifactId>example-common</artifactId>
-            <version>0.13-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.xebia.extras</groupId>
-            <artifactId>selma-processor</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>fr.xebia.extras</groupId>
+			<artifactId>example-common</artifactId>
+			<version>0.13-SNAPSHOT</version>
+		</dependency>
 
-        <dependency>
-            <groupId>fr.xebia.extras</groupId>
-            <artifactId>selma</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>fr.xebia.extras</groupId>
+			<artifactId>selma</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>2.2.4</version>
+				<configuration>
+					<defaultOutputDirectory>
+						${project.build.directory}/generated-sources/selma
+					</defaultOutputDirectory>
+					<processors>
+						<processor>fr.xebia.extras.selma.codegen.MapperProcessor</processor>
+					</processors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>process</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>process</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>fr.xebia.extras</groupId>
+						<artifactId>selma-processor</artifactId>
+						<version>${project.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.9.1</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/selma</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
 
 </project>
