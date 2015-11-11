@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.SelmaConstants;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -69,14 +70,15 @@ public final class MapperProcessor extends AbstractProcessor {
             types = processingEnv.getTypeUtils();
             populateAllMappers(roundEnv);
 
-        try {
-            generateMappingClassses();
-        } catch (IOException e) {
-            e.printStackTrace();
-            StringWriter writer = new StringWriter();
-            e.printStackTrace(new PrintWriter(writer));
-            error(writer.toString(), null);
-        }
+            try {
+                generateMappingClassses();
+            } catch (IOException e) {
+                e.printStackTrace();
+                StringWriter writer = new StringWriter();
+                e.printStackTrace(new PrintWriter(writer));
+                error(writer.toString(), null);
+            }
+            remainingMapperTypes.clear();
         }
         return res;
     }
@@ -93,7 +95,8 @@ public final class MapperProcessor extends AbstractProcessor {
     private void populateAllMappers(RoundEnvironment roundEnv) {
 
         for (Element element : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
-            if (!isValidMapperUse(element)) {
+            boolean abstractClass = isAbstractClass(element);
+            if (isSelmaGenerated(element) || !isValidMapperUse(element)) {
                 continue;
             } else {
                 TypeElement typeElement = (TypeElement) element;
@@ -102,7 +105,10 @@ public final class MapperProcessor extends AbstractProcessor {
 
                 for (Element method : methods) {
                     ExecutableElement executableElement = (ExecutableElement) method;
-
+                    // We should only process abstract method as mapper to implement
+                    if (abstractClass && !isAbstractMethod(executableElement)) {
+                        continue;
+                    }
                     if (isValidMapperMethod(executableElement)) {
                         putMapper(element, executableElement);
                     }
@@ -110,6 +116,14 @@ public final class MapperProcessor extends AbstractProcessor {
 
             }
         }
+    }
+
+    private boolean isAbstractMethod(ExecutableElement executableElement) {
+        return executableElement.getModifiers().contains(Modifier.ABSTRACT);
+    }
+
+    private boolean isSelmaGenerated(Element element) {
+        return (""+element.getSimpleName()).endsWith(SelmaConstants.MAPPER_CLASS_SUFFIX);
     }
 
     private boolean isValidMapperMethod(ExecutableElement executableElement) {
@@ -165,11 +179,23 @@ public final class MapperProcessor extends AbstractProcessor {
 
     private boolean isValidMapperUse(Element element) {
         boolean res = true;
-        if (element.getKind() != ElementKind.INTERFACE) {
-            error(element, "@Mapper can only be used on interface not on %s", element.getKind());
+        if (element.getKind() != ElementKind.INTERFACE && !isAbstractClass(element)) {
+            error(element, "@Mapper can only be used on interface or public abstract class");
             res = false;
         }
 
+        return res;
+    }
+
+    private boolean isAbstractClass(Element element) {
+        boolean res = false;
+        if (element.getKind() == ElementKind.CLASS) {
+            TypeElement typeElement = (TypeElement) element;
+            res = typeElement.getModifiers().contains(Modifier.ABSTRACT) &&
+                    typeElement.getModifiers().contains(Modifier.PUBLIC) &&
+                    !typeElement.getModifiers().contains(Modifier.FINAL);
+
+        }
         return res;
     }
 

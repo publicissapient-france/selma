@@ -22,13 +22,13 @@ import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
 
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.util.List;
 
-import static fr.xebia.extras.selma.IgnoreMissing.ALL;
-import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.IgnoreMissing.NONE;
+import static fr.xebia.extras.selma.IgnoreMissing.*;
 
 /**
  * Class used to wrap the Mapper Annotation
@@ -54,6 +54,7 @@ public class MapperWrapper {
     private final IgnoreMissing ignoreMissing;
     final IoC ioC;
     private final CollectionMappingStrategy collectionMappingStrategy;
+    private final boolean abstractClass;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -72,7 +73,7 @@ public class MapperWrapper {
 
         IgnoreMissing missing = IgnoreMissing.valueOf(mapper.getAsString(WITH_IGNORE_MISSING));
         if (missing == DEFAULT) {
-            if (configuration.isIgnoreMissingProperties()){
+            if (configuration.isIgnoreMissingProperties()) {
                 ignoreMissing = ALL;
             } else {
                 ignoreMissing = NONE;
@@ -91,6 +92,9 @@ public class MapperWrapper {
         // Here we collect custom mappers
         customMappers = new CustomMapperWrapper(mapper, context);
         mappingRegistry.customMappers(customMappers);
+        if (mapperInterface.getModifiers().contains(Modifier.ABSTRACT)){
+            customMappers.addMappersElementMethods(mapperInterface);
+        }
 
         enumMappers = new EnumMappersWrapper(withEnums(), context, mapperInterface);
         mappingRegistry.enumMappers(enumMappers);
@@ -100,6 +104,8 @@ public class MapperWrapper {
 
         source = new SourceWrapper(mapper, context);
 
+        abstractClass = mapperInterface.getModifiers().contains(Modifier.ABSTRACT) &&
+                mapperInterface.getKind() == ElementKind.CLASS;
     }
 
 
@@ -166,6 +172,7 @@ public class MapperWrapper {
 
     /**
      * Method used to collect dependencies from mapping methods that need fields and constructor init
+     *
      * @param maps maps annotation we want to collect
      */
     public void collectMaps(MapsWrapper maps) {
@@ -185,11 +192,15 @@ public class MapperWrapper {
         source.emitAssigns(writer);
     }
 
-    public IgnoreMissing ignoreMissing(){
+    public IgnoreMissing ignoreMissing() {
         return ignoreMissing;
     }
 
     public boolean allowCollectionGetter() {
         return collectionMappingStrategy == CollectionMappingStrategy.ALLOW_GETTER;
+    }
+
+    public boolean isAbstractClass() {
+        return abstractClass;
     }
 }

@@ -110,11 +110,7 @@ public class MapperClassGenerator {
                 if (mapper.ioC == IoC.SPRING){
                     writer.emitAnnotation("org.springframework.stereotype.Service");
                 }
-                if (mapper.isFinalMappers()) {
-                    writer.beginType(adapterName, "class", EnumSet.of(PUBLIC, FINAL), null, strippedTypeName);
-                } else {
-                    writer.beginType(adapterName, "class", EnumSet.of(PUBLIC), null, strippedTypeName);
-                }
+                openClassBlock(writer, adapterName, strippedTypeName);
                 writer.emitEmptyLine();
                 firstMethod = false;
             }
@@ -133,6 +129,21 @@ public class MapperClassGenerator {
         writer.close();
 
         mapper.reportUnused();
+    }
+
+    private void openClassBlock(JavaWriter writer, String adapterName, String strippedTypeName) throws IOException {
+        String[] interfaceName = new String[]{strippedTypeName};
+        String className = strippedTypeName;
+        Set<Modifier> modifiers = EnumSet.of(PUBLIC);
+        if (mapper.isAbstractClass()){
+            interfaceName = new String[]{};
+        } else {
+            className = null;
+        }
+        if (mapper.isFinalMappers()) {
+            modifiers = EnumSet.of(PUBLIC, FINAL);
+        }
+        writer.beginType(adapterName, "class", modifiers, className, interfaceName);
     }
 
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {

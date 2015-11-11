@@ -115,13 +115,13 @@ public class CustomMapperWrapper {
 
     /**
      * Adds a custom mapping method to the registry for later use at codegen.
-     *
-     * @param method
+     *  @param method
      * @param immutable
+     * @param ignoreAbstract
      */
-    private void pushCustomMapper(final TypeElement element, final MethodWrapper method, Boolean immutable) {
+    private void pushCustomMapper(final TypeElement element, final MethodWrapper method, Boolean immutable, boolean ignoreAbstract) {
         MappingBuilder res = null;
-        String customMapperFieldName = buildMapperFieldName(element);
+        String customMapperFieldName = ignoreAbstract ? "this" : buildMapperFieldName(element);
 
         InOutType inOutType = method.inOutType();
         String methodCall = String.format("%s.%s", customMapperFieldName, method.getSimpleName());
@@ -163,24 +163,7 @@ public class CustomMapperWrapper {
 
                 final TypeElement element = context.elements.getTypeElement(customMapper.replace(".class", ""));
 
-                final List<ExecutableElement> methods = ElementFilter.methodsIn(element.getEnclosedElements());
-                final HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes = new HashMap<CustomMapperKey, CustomMapperEntry>();
-                for (ExecutableElement method : methods) {
-                    MethodWrapper methodWrapper = new MethodWrapper(method, context);
-                    if (isValidCustomMapping(methodWrapper)) {
-
-                        if (methodWrapper.isCustomMapper()) {
-                            pushCustomMapper(element, methodWrapper, null);
-                            addCustomInOutType(customInOutTypes, methodWrapper);
-                        } else {
-                            pushMappingInterceptor(element, methodWrapper);
-                        }
-                        mappingMethodCount++;
-                    }
-                }
-
-                // Create defaults custom mappers if immutable or mutable is missing
-                addMissingMappings(customInOutTypes, element);
+                mappingMethodCount += collectCustomMethods(element, false);
 
 
                 if (mappingMethodCount == 0) {
@@ -202,12 +185,39 @@ public class CustomMapperWrapper {
 
     }
 
-    private void addMissingMappings(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, TypeElement element) {
+    private int collectCustomMethods(TypeElement element, boolean ignoreAbstract) {
+        int mappingMethodCount = 0;
+        final List<ExecutableElement> methods = ElementFilter.methodsIn(element.getEnclosedElements());
+        final HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes = new HashMap<CustomMapperKey, CustomMapperEntry>();
+        for (ExecutableElement method : methods) {
+            MethodWrapper methodWrapper = new MethodWrapper(method, context);
+            // We should ignore abstract methods if parsing an abstract mapper class
+            if (ignoreAbstract && methodWrapper.isAbstract()){
+                continue;
+            }
+            if (isValidCustomMapping(methodWrapper)) {
+
+                if (methodWrapper.isCustomMapper()) {
+                    pushCustomMapper(element, methodWrapper, null, ignoreAbstract);
+                    addCustomInOutType(customInOutTypes, methodWrapper);
+                } else {
+                    pushMappingInterceptor(element, methodWrapper);
+                }
+                mappingMethodCount++;
+            }
+        }
+
+        // Create defaults custom mappers if immutable or mutable is missing
+        addMissingMappings(customInOutTypes, element, ignoreAbstract);
+        return mappingMethodCount;
+    }
+
+    private void addMissingMappings(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, TypeElement element, boolean ignoreAbstract) {
         for (Map.Entry<CustomMapperKey, CustomMapperEntry> entry : customInOutTypes.entrySet()) {
             if (entry.getValue().updateGraphMethod == null) {
-                pushCustomMapper(element, entry.getValue().immutableMethod, Boolean.TRUE);
+                pushCustomMapper(element, entry.getValue().immutableMethod, Boolean.TRUE, ignoreAbstract);
             } else if (entry.getValue().immutableMethod == null) {
-                pushCustomMapper(element, entry.getValue().updateGraphMethod, Boolean.FALSE);
+                pushCustomMapper(element, entry.getValue().updateGraphMethod, Boolean.FALSE, ignoreAbstract);
             }
         }
     }
@@ -311,6 +321,10 @@ public class CustomMapperWrapper {
                 customMapperFields.add(childField);
             }
         }
+    }
+
+    public void addMappersElementMethods(TypeElement mapperInterface) {
+        collectCustomMethods(mapperInterface, true);
     }
 
     class CustomMapperKey {

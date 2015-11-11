@@ -203,4 +203,7 @@ public class MethodWrapper {
     }
 
 
+    public boolean isAbstract() {
+        return method.getModifiers().contains(Modifier.ABSTRACT);
+    }
 }
