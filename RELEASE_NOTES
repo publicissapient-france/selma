@@ -1,4 +1,9 @@
-0.12 - 23/10/2015
+0.13 -
+
+*
+*
+
+0.12 - 4/23/2015
 This release adds support for collection mapping strategy
 * #55: Use getter to populate collection when available
 

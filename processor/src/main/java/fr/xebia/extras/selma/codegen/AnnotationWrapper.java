@@ -95,7 +95,7 @@ public class AnnotationWrapper {
             List<? extends AnnotationValue> values = (List<? extends AnnotationValue>) myValue.getValue();
             for (AnnotationValue value : values) {
                 if (value.getValue() instanceof AnnotationMirror){
-                    res.add(new AnnotationWrapper(context, (AnnotationMirror) value, annotatedElement));
+                    res.add(new AnnotationWrapper(context, (AnnotationMirror) value.getValue(), annotatedElement));
                 }
             }
         }
