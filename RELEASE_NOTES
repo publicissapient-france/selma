@@ -1,7 +1,12 @@
-0.13 -
-
-*
-*
+0.13 - 11/19/2015
+This release fixes bugs in the mapping of embedded properties and adds support abstract class mapper.
+Abstract mappers can declare custom mappings methods.
+* #53: Support for Abstract class mappers to allow custom mapping method to call mapper methods with 'this'
+* #54: Map collections from getter method to support Jaxb beans
+* #65: Fix properties matching to force exact name match instead of startsWith match
+* #66: Fix temporary variables names on embedded field mapping
+* #67: Fix custom mapper registry to match properly both update and immutable methods
+* #68: Fix bad AnnotationMirror cast not valid in eclipse compiler
 
 0.12 - 4/23/2015
 This release adds support for collection mapping strategy
