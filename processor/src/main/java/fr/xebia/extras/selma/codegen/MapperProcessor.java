@@ -86,7 +86,8 @@ public final class MapperProcessor extends AbstractProcessor {
     private void generateMappingClassses() throws IOException {
 
         for (String classe : remainingMapperTypes.keySet()) {
-            MapperClassGenerator classGenerator = new MapperClassGenerator(classe, remainingMapperTypes.get(classe), processingEnv);
+            MapperClassGenerator classGenerator = new MapperClassGenerator(classe, remainingMapperTypes.get(classe),
+                    processingEnv);
             classGenerator.build();
         }
 
@@ -134,11 +135,13 @@ public final class MapperProcessor extends AbstractProcessor {
         }
 
         if (executableElement.getParameters().size() < 1) {
-            error(executableElement, "@Mapper method %s can not have less than one parameter", executableElement.getSimpleName());
+            error(executableElement, "@Mapper method %s can not have less than one parameter",
+                    executableElement.getSimpleName());
             return false;
         }
         if (executableElement.getParameters().size() > 2) {
-            error(executableElement, "@Mapper method %s can not have more than two parameters", executableElement.getSimpleName());
+            error(executableElement, "@Mapper method %s can not have more than two parameters",
+                    executableElement.getSimpleName());
             return false;
         }
 
@@ -151,7 +154,8 @@ public final class MapperProcessor extends AbstractProcessor {
             TypeMirror returnType = executableElement.getReturnType();
             VariableElement variableElement = executableElement.getParameters().get(1);
             if (!variableElement.asType().toString().equals(returnType.toString())) {
-                error(executableElement, "@Mapper method %s second parameter type should be %s as the return type is", executableElement.getSimpleName(), executableElement.getReturnType());
+                error(executableElement, "@Mapper method %s second parameter type should be %s as the return type is",
+                        executableElement.getSimpleName(), executableElement.getReturnType());
                 return false;
             }
         }

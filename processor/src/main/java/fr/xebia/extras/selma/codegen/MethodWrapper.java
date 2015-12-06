@@ -24,6 +24,8 @@ import fr.xebia.extras.selma.Mapper;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.regex.Matcher;
@@ -40,13 +42,18 @@ public class MethodWrapper {
     private static final String SETTER_FORMAT = "set(.*)";
     private static final Pattern SETTER_PATTERN = Pattern.compile(SETTER_FORMAT);
     private final ExecutableElement method;
+    private final ExecutableType executableType;
+    private DeclaredType parentType;
     private final MapperGeneratorContext context;
     boolean ignoreMissingProperties = false;
     private String fieldName;
 
-    public MethodWrapper(ExecutableElement method, MapperGeneratorContext context) {
+    public MethodWrapper(ExecutableElement method, DeclaredType declaredType, MapperGeneratorContext context) {
         this.method = method;
+        this.parentType = declaredType;
         this.context = context;
+        // Try to resolve any inherited or declared generic type using asMemberOf processed class
+        this.executableType = (ExecutableType)context.type.asMemberOf(parentType, method);
 
         AnnotationWrapper annotationWrapper = AnnotationWrapper.buildFor(context, method, Mapper.class);
         if (annotationWrapper != null) {
@@ -55,16 +62,15 @@ public class MethodWrapper {
     }
 
     public TypeMirror firstParameterType() {
-
         if (method.getParameters().size() > 0) {
-            return method.getParameters().get(0).asType();
+                return executableType.getParameterTypes().get(0);
         } else {
             return null;
         }
     }
 
     public TypeMirror returnType() {
-        return method.getReturnType();
+        return executableType.getReturnType();
     }
 
     public String getSimpleName() {
@@ -82,7 +88,7 @@ public class MethodWrapper {
 
     private TypeMirror secondParameterType() {
         if (method.getParameters().size() > 1) {
-            return method.getParameters().get(1).asType();
+            return executableType.getParameterTypes().get(1);
         } else {
             return null;
         }
@@ -113,7 +119,8 @@ public class MethodWrapper {
      */
     public boolean isGetter() {
         boolean res = false;
-        if (method.getParameters().size() == 0 && method.getReturnType().getKind() != TypeKind.VOID && method.getModifiers().contains(Modifier.PUBLIC)) {
+        if (method.getParameters().size() == 0 && method.getReturnType().getKind() != TypeKind.VOID
+                && method.getModifiers().contains(Modifier.PUBLIC)) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
             if (res) {
@@ -130,7 +137,8 @@ public class MethodWrapper {
      */
     public boolean isSetter() {
         boolean res = false;
-        if (method.getParameters().size() == 1 && method.getReturnType().getKind() == TypeKind.VOID && method.getModifiers().contains(Modifier.PUBLIC)) {
+        if (method.getParameters().size() == 1 && method.getReturnType().getKind() == TypeKind.VOID
+                && method.getModifiers().contains(Modifier.PUBLIC)) {
             Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
             res = setterMatcher.matches();
             if (res) {
@@ -172,7 +180,8 @@ public class MethodWrapper {
      * @return
      */
     public boolean isCustomMapper() {
-        return (hasReturnType() && hasOneParameter()) || (hasReturnType() && hasTwoParameter() && secondParamIsReturnType());
+        return (hasReturnType() && hasOneParameter()) ||
+                (hasReturnType() && hasTwoParameter() && secondParamIsReturnType());
     }
 
     private boolean secondParamIsReturnType() {

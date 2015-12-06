@@ -1,3 +1,7 @@
+0.14 -
+
+* #63: Support for generic type in mappers
+
 0.13 - 11/19/2015
 This release fixes bugs in the mapping of embedded properties and adds support abstract class mapper.
 Abstract mappers can declare custom mappings methods.

@@ -23,7 +23,9 @@ import fr.xebia.extras.selma.SelmaConstants;
 import javax.annotation.Resource;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.*;
@@ -43,6 +45,7 @@ public class MapperClassGenerator {
     private final MapperGeneratorContext context;
     private final TypeElement element;
     private final MapperWrapper mapper;
+    private final DeclaredType declaredType;
     private List<MethodWrapper> methodWrappers;
 
     public MapperClassGenerator(String classe, Collection<ExecutableElement> executableElements, ProcessingEnvironment processingEnvironment) {
@@ -52,6 +55,7 @@ public class MapperClassGenerator {
         context = new MapperGeneratorContext(processingEnv);
 
         element = context.getTypeElement(classe);
+        declaredType = (DeclaredType) element.asType();
 
         mapper = new MapperWrapper(context, element);
 
@@ -66,7 +70,7 @@ public class MapperClassGenerator {
 
         for (ExecutableElement mapperMethod : mapperMethods) {
 
-            MethodWrapper methodWrapper = new MethodWrapper(mapperMethod, context);
+            MethodWrapper methodWrapper = new MethodWrapper(mapperMethod, declaredType, context);
             res.add(methodWrapper);
 
             mapper.buildEnumForMethod(methodWrapper);

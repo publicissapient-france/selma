@@ -60,7 +60,7 @@ public class BeanWrapper {
             if (exclusions.contains(method.getSimpleName().toString())) {
                 continue;
             }
-            MethodWrapper methodWrapper = new MethodWrapper(method, context);
+            MethodWrapper methodWrapper = new MethodWrapper(method, (DeclaredType) typeElement.asType(), context);
 
             if (methodWrapper.isGetter()) {
                 putGetterField(methodWrapper, result);

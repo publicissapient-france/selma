@@ -20,6 +20,7 @@ import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.IoC;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.io.IOException;
@@ -63,7 +64,8 @@ public class CustomMapperWrapper {
         collectCustomMappers();
     }
 
-    public CustomMapperWrapper(CustomMapperWrapper parent, AnnotationWrapper annotationWrapper, MapperGeneratorContext context) {
+    public CustomMapperWrapper(CustomMapperWrapper parent, AnnotationWrapper annotationWrapper,
+                               MapperGeneratorContext context) {
         this.parent = parent;
         this.annotationWrapper = annotationWrapper;
         this.customMapperFields = new LinkedList<TypeElement>();
@@ -100,11 +102,13 @@ public class CustomMapperWrapper {
                 if (ioC == IoC.SPRING) {
                     writer.emitAnnotation("org.springframework.beans.factory.annotation.Autowired");
                 }
-                writer.emitField(customMapperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
+                writer.emitField(customMapperField.asType().toString(), String.format(CUSTOM_MAPPER_FIELD_TPL,
+                        customMapperField.getSimpleName().toString()), EnumSet.of(PRIVATE));
 
                 writer.emitEmptyLine();
                 writer.emitJavadoc("Custom Mapper setter for " + field);
-                writer.beginMethod("void", "setCustomMapper" + customMapperField.getSimpleName(), EnumSet.of(PUBLIC, FINAL), customMapperField.asType().toString(), "mapper");
+                writer.beginMethod("void", "setCustomMapper" + customMapperField.getSimpleName(),
+                        EnumSet.of(PUBLIC, FINAL), customMapperField.asType().toString(), "mapper");
                 writer.emitStatement("this.%s = mapper", field);
                 writer.endMethod();
                 writer.emitEmptyLine();
@@ -119,7 +123,8 @@ public class CustomMapperWrapper {
      * @param immutable
      * @param ignoreAbstract
      */
-    private void pushCustomMapper(final TypeElement element, final MethodWrapper method, Boolean immutable, boolean ignoreAbstract) {
+    private void pushCustomMapper(final TypeElement element, final MethodWrapper method, Boolean immutable,
+                                  boolean ignoreAbstract) {
         MappingBuilder res = null;
         String customMapperFieldName = ignoreAbstract ? "this" : buildMapperFieldName(element);
 
@@ -128,7 +133,8 @@ public class CustomMapperWrapper {
 
         if (immutable == null){
             res = MappingBuilder.newCustomMapper(inOutType, methodCall);
-            unusedCustomMappers.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
+            unusedCustomMappers.put(inOutType,
+                    String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
         } else if (immutable) {
             res = MappingBuilder.newCustomMapper(inOutType, methodCall);
             inOutType = new InOutType(inOutType, true);
@@ -145,7 +151,8 @@ public class CustomMapperWrapper {
 
         String customMapperFieldName = buildMapperFieldName(element);
         InOutType inOutType = method.inOutArgs();
-        MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType, String.format("%s.%s", customMapperFieldName, method.getSimpleName()));
+        MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType,
+                String.format("%s.%s", customMapperFieldName, method.getSimpleName()));
 
         // Push IOType for both mutable and immutable mapping
         interceptorMap.put(inOutType, res);
@@ -167,12 +174,15 @@ public class CustomMapperWrapper {
 
 
                 if (mappingMethodCount == 0) {
-                    context.error(element, "No valid mapping method found in custom selma class %s\\n A custom mapping method is public and returns a type not void, it takes one parameter or more if you specified datasource.", customMapper);
+                    context.error(element, "No valid mapping method found in custom selma class %s\\n " +
+                            "A custom mapping method is public and returns a type not void, it takes one parameter or" +
+                            " more if you specified datasource.", customMapper);
                 } else {
 
                     TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, element);
                     if (!constructorWrapper.hasDefaultConstructor && element.getKind() != ElementKind.INTERFACE) {
-                        context.error(element, "No default public constructor found in custom mapping class %s\\n Please add one", customMapper);
+                        context.error(element, "No default public constructor found in custom mapping class %s\\n" +
+                                " Please add one", customMapper);
                     }
 
                     // Here we collect the name of the field to create in the Mapper generated class
@@ -190,7 +200,7 @@ public class CustomMapperWrapper {
         final List<ExecutableElement> methods = ElementFilter.methodsIn(element.getEnclosedElements());
         final HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes = new HashMap<CustomMapperKey, CustomMapperEntry>();
         for (ExecutableElement method : methods) {
-            MethodWrapper methodWrapper = new MethodWrapper(method, context);
+            MethodWrapper methodWrapper = new MethodWrapper(method, (DeclaredType) element.asType(), context);
             // We should ignore abstract methods if parsing an abstract mapper class
             if (ignoreAbstract && methodWrapper.isAbstract()){
                 continue;
@@ -212,7 +222,8 @@ public class CustomMapperWrapper {
         return mappingMethodCount;
     }
 
-    private void addMissingMappings(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, TypeElement element, boolean ignoreAbstract) {
+    private void addMissingMappings(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, TypeElement element,
+                                    boolean ignoreAbstract) {
         for (Map.Entry<CustomMapperKey, CustomMapperEntry> entry : customInOutTypes.entrySet()) {
             if (entry.getValue().updateGraphMethod == null) {
                 pushCustomMapper(element, entry.getValue().immutableMethod, Boolean.TRUE, ignoreAbstract);
@@ -222,7 +233,8 @@ public class CustomMapperWrapper {
         }
     }
 
-    private void addCustomInOutType(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes, MethodWrapper methodWrapper) {
+    private void addCustomInOutType(HashMap<CustomMapperKey, CustomMapperEntry> customInOutTypes,
+                                    MethodWrapper methodWrapper) {
         CustomMapperKey key = new CustomMapperKey(methodWrapper.inOutType());
         CustomMapperEntry entry1 = customInOutTypes.get(key);
         if (entry1 == null){
@@ -247,24 +259,21 @@ public class CustomMapperWrapper {
         }
 
         if (!methodWrapper.element().getModifiers().contains(javax.lang.model.element.Modifier.PUBLIC)) {
-            context.warn(methodWrapper.element(), "Custom mapping method should be *public* (Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
+            context.warn(methodWrapper.element(), "Custom mapping method should be *public* " +
+                    "(Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
             res = false;
         }
 
         if (methodWrapper.element().getModifiers().contains(Modifier.STATIC)) {
-            context.warn(methodWrapper.element(), "Custom mapping method can not be *static* (Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
+            context.warn(methodWrapper.element(), "Custom mapping method can not be *static* " +
+                    "(Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
             res = false;
         }
-
-/*
-        if (methodWrapper.element().getModifiers().contains(Modifier.ABSTRACT)) {
-            context.warn(methodWrapper.element(), "Custom mapping method can not be *abstract* (Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
-            res = false;
-        }
-*/
 
         if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor()) {
-            context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one or two parameters and interceptor method should be void and have two parameters (Fix method signature) on %s", methodWrapper.getSimpleName());
+            context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one or" +
+                    " two parameters and interceptor method should be void and have two parameters " +
+                    "(Fix method signature) on %s", methodWrapper.getSimpleName());
             res = false;
         }
 
