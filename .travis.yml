@@ -1,5 +1,12 @@
 language: java
-before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
+
+before_install:
+  - git clone -b travis `git config --get remote.origin.url` target/travis
+  - cat /etc/hosts # optionally check the content *before*
+  - sudo hostname "$(hostname | cut -c1-63)"
+  - sed -e "s/^\\(127\\.0\\.0\\.1.*\\)/\\1 $(hostname | cut -c1-63)/" /etc/hosts | sudo tee /etc/hosts
+  - cat /etc/hosts # optionally check the content *after*
+
 script: "sh ./travis.sh"
 
 jdk:
