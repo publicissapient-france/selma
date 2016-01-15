@@ -168,7 +168,7 @@ public class CustomMapperWrapper {
 
             for (String customMapper : customClasses) {
 
-                final TypeElement element = context.elements.getTypeElement(customMapper.replace(".class", ""));
+                final TypeElement element = context.elements.getTypeElement(customMapper.replaceAll("\\.class$", ""));
 
                 mappingMethodCount += collectCustomMethods(element, false);
 
