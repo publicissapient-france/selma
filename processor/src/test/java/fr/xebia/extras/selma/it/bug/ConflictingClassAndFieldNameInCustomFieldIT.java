@@ -28,19 +28,6 @@ public class ConflictingClassAndFieldNameInCustomFieldIT extends IntegrationTest
                 "Mapping custom field city from source bean fr.xebia.extras.selma.it.bug.beans.Address, setter for " +
                 "field addresscity is missing in destination bean fr.xebia.extras.selma.it.bug.beans.AddressDto !");
 
-        assertCompilationError(PersonMapper.class, "PersonDto asDto(Person person);",
-                "Mapping custom field country from source bean fr.xebia.extras.selma.it.bug.beans.Address, setter " +
-                        "for field addresscountry is missing");
-
-        assertCompilationError(PersonMapper.class, "PersonDto asDto(Person person);",
-                "Mapping custom field street from source bean fr.xebia.extras.selma.it.bug.beans.Address, setter " +
-                        "for field addressstreet is missing");
-
-        assertCompilationError(PersonMapper.class, "PersonDto asDto(Person person);",
-                "Mapping custom field zipcode from source bean fr.xebia.extras.selma.it.bug.beans.Address, setter " +
-                        "for field addresszipcode is missing");
-
-        Assert.assertEquals(4, compilationErrorCount());
     }
 
 }
