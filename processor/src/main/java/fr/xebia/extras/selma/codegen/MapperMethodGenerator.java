@@ -250,8 +250,21 @@ public class MapperMethodGenerator {
 
 
             if (isMissingInDestination) {
-                context.error(mapperMethod.element(), String.format("setter for field %s from source bean %s is missing in destination bean %s !\n" +
-                        " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing getter or specify corresponding @Field to customize field to field mapping", field, inOutType.in(), inOutType.out(), inOutType.in(), field, inOutType.in(), field));
+                if (!customFieldsFor.isEmpty()){
+                    context.error(mapperMethod.element(), String.format("Mapping custom field %s from source bean %s, setter for" +
+                                    " field %s is missing in destination bean %s !\n" +
+                                    " --> Check your custom field %s, you can add simple class name or FQCN to the longest field path " +
+                                    " or add missing getter",
+                            field, inOutType.in(), outFieldName, inOutType.out(), customFieldsFor.get(0)));
+                } else {
+                    context.error(mapperMethod.element(), String.format("Mapping field %s from source bean %s, setter for" +
+                                    " field %s is missing in destination bean %s !\n" +
+                                    " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\")" +
+                                    " to mapper interface / method or add missing getter or specify corresponding @Field " +
+                                    "to customize field to field mapping",
+                            field, inOutType.in(), outFieldName, inOutType.out(), inOutType.in(), field, inOutType.in(), field));
+                }
+                outFields.remove(field);
                 continue;
             }
 

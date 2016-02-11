@@ -31,22 +31,26 @@ public class FailingMissingFieldsInMapsMapperIT extends IntegrationTestBase {
     @Test
     public void given_maps_with_ignore_SOURCE_should_skip_silently_missing_in_source_and_raise_error_in_destination() throws Exception {
         assertCompilationError(FailingMissingFieldInMapsMapper.class, "PersonOut mapMissingSource(PersonIn in);",
-                "setter for field male from source bean fr.xebia.extras.selma.beans.PersonIn is missing in destination bean fr.xebia.extras.selma.beans.PersonOut");
+                "Mapping field male from source bean fr.xebia.extras.selma.beans.PersonIn, setter for field male is" +
+                        " missing in destination bean fr.xebia.extras.selma.beans.PersonOut !");
     }
 
 
     @Test
     public void given_maps_with_ignore_DESTINATION_should_skip_silently_missing_in_destination_and_raise_error_in_source() throws Exception {
         assertCompilationError(FailingMissingFieldInMapsMapper.class, "PersonOut mapMissingDestination(PersonIn in);",
-                "setter for field biography from destination bean fr.xebia.extras.selma.beans.PersonOut has no getter in source bean fr.xebia.extras.selma.beans.PersonIn");
+                "setter for field biography from destination bean fr.xebia.extras.selma.beans.PersonOut has no getter" +
+                        " in source bean fr.xebia.extras.selma.beans.PersonIn");
     }
 
     @Test
     public void given_maps_with_ignore_NONE_should_raise_error_missing_in_destination_and_source() throws Exception {
         assertCompilationError(FailingMissingFieldInMapsMapper.class, "PersonOut mapMissingNone(PersonIn in);",
-                "setter for field biography from destination bean fr.xebia.extras.selma.beans.PersonOut has no getter in source bean fr.xebia.extras.selma.beans.PersonIn");
+                "setter for field biography from destination bean fr.xebia.extras.selma.beans.PersonOut has no getter" +
+                        " in source bean fr.xebia.extras.selma.beans.PersonIn");
         assertCompilationError(FailingMissingFieldInMapsMapper.class, "PersonOut mapMissingNone(PersonIn in);",
-                "setter for field male from source bean fr.xebia.extras.selma.beans.PersonIn is missing in destination bean fr.xebia.extras.selma.beans.PersonOut");
+                "Mapping field male from source bean fr.xebia.extras.selma.beans.PersonIn, setter for field male is" +
+                        " missing in destination bean fr.xebia.extras.selma.beans.PersonOut !");
     }
 
 

@@ -35,14 +35,20 @@ public class FailingMappersIT extends IntegrationTestBase {
     @Test
     public void compilation_should_fail_on_missing_out_property_without_ignore() throws Exception {
 
-        assertCompilationError(MissingPropertyMapper.class, "PersonOut map(PersonIn in);", String.format("setter for field male from source bean %s is missing in destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
+        assertCompilationError(MissingPropertyMapper.class,
+                "PersonOut map(PersonIn in);",
+                String.format("Mapping field male from source bean %s, setter for field male is missing in " +
+                        "destination bean %s", PersonIn.class.getName(), PersonOut.class.getName()));
         Assert.assertEquals(2, compilationErrorCount());
     }
 
     @Test
     public void compilation_should_fail_on_missing_in_property_without_ignore() throws Exception {
 
-        assertCompilationError(MissingPropertyMapper.class, "PersonOut map(PersonIn in);", String.format("setter for field biography from destination bean %s has no getter in source bean %s", PersonOut.class.getName(), PersonIn.class.getName()));
+        assertCompilationError(MissingPropertyMapper.class,
+                "PersonOut map(PersonIn in);",
+                String.format("setter for field biography from destination bean %s has no getter in source bean %s",
+                        PersonOut.class.getName(), PersonIn.class.getName()));
         Assert.assertEquals(2, compilationErrorCount());
     }
 
