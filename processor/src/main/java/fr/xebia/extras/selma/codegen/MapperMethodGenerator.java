@@ -177,7 +177,7 @@ public class MapperMethodGenerator {
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
             if (stackElem.child) {
 
-                lastChild(stackElem.lastNode).child(mappingBuilder.build(context, stackElem.sourceNodeVars()));
+                stackElem.lastNode.lastChild().child(mappingBuilder.build(context, stackElem.sourceNodeVars()));
             } else {
                 stackElem.lastNode.body(mappingBuilder.build(context, stackElem.sourceNodeVars()));
             }
@@ -286,15 +286,15 @@ public class MapperMethodGenerator {
             }
 
 
-            ptr = lastChild(ptr);
+            ptr = ptr.lastChild();
 
             outFields.remove(outFieldName);
         }
 
         // Build custom embedded field to field
         for (Field customField : customFields) {
-            ptr = buildMapping(customField, inBean, outBean, ptr, outFields, inOutType.isOutPutAsParam());
-            ptr = lastChild(ptr);
+            ptr = buildEmbeddedMapping(customField, inBean, outBean, ptr, outFields, inOutType.isOutPutAsParam());
+            ptr = ptr.lastChild();
         }
 
         if (!maps.ignoreMissing().isIgnoreSource()) { // Report destination bean fields not mapped
@@ -312,7 +312,6 @@ public class MapperMethodGenerator {
     /**
      * Build mapping source node tree for custom field to field with embedded property
      *
-     * @param ptr
      * @param customField
      * @param inBean
      * @param outBean
@@ -320,10 +319,10 @@ public class MapperMethodGenerator {
      * @param outPutAsParam
      * @return
      */
-    private MappingSourceNode buildMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root, Set<String> outFields, boolean outPutAsParam) {
+    private MappingSourceNode buildEmbeddedMapping(Field customField, BeanWrapper inBean, BeanWrapper outBean, MappingSourceNode root, Set<String> outFields, boolean outPutAsParam) {
         MappingSourceNode ptr = blank();
         MappingSourceNode ptrRoot = ptr;
-        String lastVisitedField = null;
+        String lastVisitedField;
 
         if (customField.hasEmbeddedSourceAndDestination()) {
             context.error(customField.element, "Bad custom field to field mapping: both source and destination can not be embedded !\n" +
@@ -439,12 +438,6 @@ public class MapperMethodGenerator {
         return root.child(sourceEmbedded ? ptrRoot.body : ptrRoot.child);
     }
 
-    private MappingSourceNode lastChild(MappingSourceNode ptr) {
-        while (ptr.child != null) {
-            ptr = ptr.child;
-        }
-        return ptr;
-    }
 
     public MapsWrapper maps() {
         return maps;

@@ -55,6 +55,14 @@ public abstract class MappingSourceNode {
 
     }
 
+    public MappingSourceNode lastChild() {
+        MappingSourceNode ptr = this;
+        while (ptr.child != null) {
+            ptr = ptr.child;
+        }
+        return ptr;
+    }
+
     public MappingSourceNode body(MappingSourceNode body) {
         if (this.body != null) {
             return child(body);
