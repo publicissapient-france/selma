@@ -25,16 +25,15 @@ import fr.xebia.extras.selma.beans.PersonOut;
 /**
  *
  */
-@Mapper(ignoreMissingProperties = true, withFinalMappers = false)
+@Mapper(ignoreMissingProperties = true, withFinalMappers = false, withInstanceCache = false)
 public interface UseDeclaredMethodMapper {
 
     /**
      * Handles mapping of PersonIn to PersonOut
      *
-     * @param in
      * @return
      */
-    PersonOut asPersonOut(PersonIn in);
+	PersonOut asPersonOut(PersonIn in);
 
     /**
      * Handles mapping of AddressIn to AddressOut.
