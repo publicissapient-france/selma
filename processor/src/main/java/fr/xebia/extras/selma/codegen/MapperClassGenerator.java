@@ -18,6 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.IoC;
+import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.SelmaConstants;
 
 import javax.annotation.Resource;
@@ -57,7 +58,7 @@ public class MapperClassGenerator {
         element = context.getTypeElement(classe);
         declaredType = (DeclaredType) element.asType();
 
-        mapper = new MapperWrapper(context, element);
+		mapper = new MapperWrapper(context, element);
 
 
         methodWrappers = validateTypes();
