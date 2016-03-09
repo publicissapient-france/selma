@@ -156,6 +156,17 @@ public abstract class MappingSourceNode {
         };
     }
 
+	public static MappingSourceNode controlInCache(final String field, final InOutType inOutType) {
+		return new MappingSourceNode() {
+			@Override
+			void writeNode(JavaWriter writer) throws IOException {
+				writer.emitStatement("%s object = getInstanceCache().get(%s)", inOutType.out().toString(), field);
+				writer.beginControlFlow(String.format("if (object != null)"));
+				writer.emitStatement("return object");
+				writer.endControlFlow();
+			}
+		};
+	}
 
     public static MappingSourceNode controlNotNull(final String field, final boolean outPutAsParam) {
         return new MappingSourceNode() {
@@ -354,7 +365,7 @@ public abstract class MappingSourceNode {
     }
 
 
-    public static MappingSourceNode instantiateOut(final InOutType inOutType, final String params) {
+	public static MappingSourceNode instantiateOut(final boolean useInstanceCache, final InOutType inOutType, final String params) {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
@@ -363,10 +374,18 @@ public abstract class MappingSourceNode {
                    */
                 if (inOutType.isOutPutAsParam()) {
                     writer.beginControlFlow("if (out == null)");
-                    writer.emitStatement("out = new %s(%s)", inOutType.out().toString(), params);
+					instantiate(inOutType, params, writer);
                     writer.endControlFlow();
                 } else {
+					instantiate(inOutType, params, writer);
+				}
+			}
+
+			private void instantiate(final InOutType inOutType, final String params, JavaWriter writer)
+					throws IOException {
                     writer.emitStatement("out = new %s(%s)", inOutType.out().toString(), params);
+				if (useInstanceCache) {
+					writer.emitStatement("getInstanceCache().put(in, out)");
                 }
             }
         };

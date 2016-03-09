@@ -42,6 +42,7 @@ public class MapperMethodGenerator {
     private final SourceConfiguration configuration;
     private final MapsWrapper maps;
     private final BeanWrapperFactory beanWrapperFactory;
+	private final MapperWrapper mapperWrapper;
 
     public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperWrapper mapperWrapper) {
         this.writer = writer;
@@ -50,6 +51,7 @@ public class MapperMethodGenerator {
         this.configuration = mapperWrapper.configuration();
         this.beanWrapperFactory = new BeanWrapperFactory();
         this.maps = new MapsWrapper(method, mapperWrapper);
+		this.mapperWrapper = mapperWrapper;
     }
 
     public void build() throws IOException {
@@ -89,6 +91,9 @@ public class MapperMethodGenerator {
         MappingSourceNode methodNode = (inOutType.isOutPutAsParam() ? methodRoot.body(blank()) : methodRoot.body(declareOut(inOutType.out())));
 
         MappingBuilder mappingBuilder = findBuilderFor(inOutType);
+		if (mapperWrapper.isUseInstanceCache()) {
+			methodNode = methodNode.child(controlInCache("in", inOutType));
+		}
 
         if (mappingBuilder != null) {
 
@@ -101,7 +106,7 @@ public class MapperMethodGenerator {
 
             final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.outAsTypeElement());
 
-            ptr = ptr.body(instantiateOut(inOutType,
+			ptr = ptr.body(instantiateOut(mapperWrapper.isUseInstanceCache(), inOutType,
                     (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : "")));
             context.depth++;
             ptr.child(generate(inOutType));
