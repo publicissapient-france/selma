@@ -16,12 +16,12 @@
  */
 package fr.xebia.extras.selma;
 
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IoC.NO;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
-
-import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.IoC.NO;
 
 /**
  * Mapper annotation used to denote interfaces that needs mappers implementation to be built.
@@ -103,6 +103,8 @@ public @interface Mapper {
      * type for matching fields in source and destination bean.
      */
     Class<?>[] withImmutables() default {};
+
+	String[] withImmutablesPackages() default {};
 
     /**
      * This is used to describe fields to be ignored in the generated mapping methods. This allows to skip specific properties
