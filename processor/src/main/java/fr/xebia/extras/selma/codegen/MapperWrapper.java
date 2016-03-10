@@ -39,6 +39,7 @@ public class MapperWrapper {
     public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
     public static final String WITH_IOC = "withIoC";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
+    public static final String WITH_IOC_SERVICE_NAME="withIoCServiceName";
 
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
@@ -53,6 +54,7 @@ public class MapperWrapper {
     private final SourceWrapper source;
     private final IgnoreMissing ignoreMissing;
     final IoC ioC;
+    final String ioCServiceName;
     private final CollectionMappingStrategy collectionMappingStrategy;
     private final boolean abstractClass;
 
@@ -83,7 +85,7 @@ public class MapperWrapper {
         }
 
         ioC = IoC.valueOf(mapper.getAsString(WITH_IOC));
-
+        ioCServiceName =mapper.getAsString(WITH_IOC_SERVICE_NAME);
         collectionMappingStrategy = CollectionMappingStrategy.valueOf(mapper.getAsString(WITH_COLLECTION_STRATEGY));
 
         fields = new FieldsWrapper(context, mapperInterface, mapper);

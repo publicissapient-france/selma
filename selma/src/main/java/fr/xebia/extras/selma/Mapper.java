@@ -128,6 +128,12 @@ public @interface Mapper {
     IoC withIoC() default NO;
 
     /**
+     * define the name of the service that will be used with the Spring annotations.
+     * @return
+     */
+    String withIoCServiceName() default "";
+
+    /**
      * By default Selma uses a setter to provide new mapped collections. Passing this attribute to ALLOW_GETTER will
      * make Selma use a getter to map collections if the setter does not exist.
      */
