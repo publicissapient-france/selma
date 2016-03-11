@@ -20,17 +20,16 @@ import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.SelmaConstants;
 
-import javax.annotation.Resource;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.*;
 
-import static javax.lang.model.element.Modifier.*;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
  * Handles the generation of the Mapper class
@@ -112,7 +111,11 @@ public class MapperClassGenerator {
                 writer.emitPackage(packageName);
                 writer.emitEmptyLine();
                 if (mapper.ioC == IoC.SPRING){
-                    writer.emitAnnotation("org.springframework.stereotype.Service");
+                    if (mapper.ioCServiceName !="") {
+                        writer.emitAnnotation("org.springframework.stereotype.Service","\""+mapper.ioCServiceName+"\"");
+                    }else{
+                        writer.emitAnnotation("org.springframework.stereotype.Service");
+                    }
                 }
                 openClassBlock(writer, adapterName, strippedTypeName);
                 writer.emitEmptyLine();
