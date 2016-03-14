@@ -57,6 +57,7 @@ public class Selma {
 
     private static final Map<String, Object> mappers = new ConcurrentHashMap<String, Object>();
     public static final String SET_CUSTOM_MAPPER = "setCustomMapper";
+    public static final String SET_FACTORY = "setFactory";
 
     /**
      * Return a builder style component to build the Mapper using this builder you can pass the sources, custom mappers and bypass the default cache registry.
@@ -137,11 +138,15 @@ public class Selma {
 
 
     private synchronized static <T, V, U> T getMapper(Class<T> mapperClass, List source, List customMappers) throws IllegalArgumentException {
-        return getMapper(mapperClass, source, customMappers, true);
+        return getMapper(mapperClass, source, customMappers, true, null);
     }
 
 
-    private synchronized static <T, V, U> T getMapper(Class<T> mapperClass, List source, List customMappers, boolean useCache) throws IllegalArgumentException {
+    private synchronized static <T, V, U> T getMapper(Class<T> mapperClass,
+                                                      List source,
+                                                      List customMappers,
+                                                      boolean useCache,
+                                                      List factories) throws IllegalArgumentException {
 
         final String mapperKey = String.format("%s-%s-%s", mapperClass.getCanonicalName(), source, customMappers);
 
@@ -172,6 +177,31 @@ public class Selma {
                     mapperInstance = retainedConstructor.newInstance(source.toArray());
                 } else {
                     mapperInstance = mapperImpl.newInstance();
+                }
+
+                if (factories != null){
+                    for (Object factory : factories) {
+                        if (factory == null) {
+                            continue;
+                        }
+
+                        Class<?> factoryClass = factory.getClass();
+                        Method method = null;
+                        Class<?> classe = factoryClass;
+
+                        while (method == null && !Object.class.equals(classe)) { // Iterate over super classes to find the matching custom mapper in case it is a subclass
+                            Class<?>[] interfaces = classe.getInterfaces();
+                            Class<?>[] classes = Arrays.copyOf(interfaces, interfaces.length + 1);
+                            classes[interfaces.length] = classe;
+                            method = getSetFactoryMethodFor(generatedClassName, mapperImpl, factoryClass, classes);
+                            classe = classe.getSuperclass();
+                        }
+                        if (method != null) {
+                            method.invoke(mapperInstance, factory);
+                        } else {
+                            throw new IllegalArgumentException("given a Factory of type " + factoryClass.getSimpleName() + " while setter does not exist, add it to @Mapper interface");
+                        }
+                    }
                 }
 
                 if (customMappers != null) {
@@ -236,6 +266,22 @@ public class Selma {
         return method;
     }
 
+    private static <T> Method getSetFactoryMethodFor(String generatedClassName, Class<T> mapperImpl, Class<?> factoryClass, Class<?> ... classes) {
+        Method method = null;
+        for (Class<?> classe : classes) {
+            String setter = SET_FACTORY + classe.getSimpleName();
+            try {
+                method = mapperImpl.getMethod(setter, classe);
+                break;
+            } catch (NoSuchMethodException e) {
+
+            } catch (SecurityException e) {
+                throw new SelmaException(e, "Setter for custom mapper %s named %s not accessible in %s", factoryClass, setter, generatedClassName);
+            }
+        }
+        return method;
+    }
+
     public static class MapperBuilder<T> {
 
 
@@ -243,6 +289,7 @@ public class Selma {
         private final List customMappers;
         private final List sources;
         private final boolean cache;
+        private final List factories;
 
         private MapperBuilder(Class<T> mapperClass) {
 
@@ -250,36 +297,41 @@ public class Selma {
             customMappers = null;
             sources = null;
             cache = true;
+            factories= null;
         }
 
-        private MapperBuilder(Class<T> mapperClass, List sources, List customMappers, boolean cache) {
+        private MapperBuilder(Class<T> mapperClass, List sources, List customMappers, boolean cache, List factories) {
 
             this.mapperClass = mapperClass;
             this.sources = sources;
             this.customMappers = customMappers;
             this.cache = cache;
+            this.factories = factories;
         }
 
         public T build() {
             final T res;
-            res = getMapper(mapperClass, sources, customMappers, cache);
+            res = getMapper(mapperClass, sources, customMappers, cache, factories);
             return res;
         }
 
         public MapperBuilder<T> withCustom(Object... customMapper) {
 
-            return new MapperBuilder<T>(mapperClass, sources, asList(customMapper), cache);
+            return new MapperBuilder<T>(mapperClass, sources, asList(customMapper), cache, factories);
         }
 
         public MapperBuilder<T> withSources(Object... dataSource) {
 
-            return new MapperBuilder<T>(mapperClass, asList(dataSource), customMappers, cache);
+            return new MapperBuilder<T>(mapperClass, asList(dataSource), customMappers, cache, factories);
         }
 
         public MapperBuilder<T> disableCache() {
 
-            return new MapperBuilder<T>(mapperClass, sources, customMappers, false);
+            return new MapperBuilder<T>(mapperClass, sources, customMappers, false, factories);
         }
 
+        public MapperBuilder<T> withFactories(Object... factories) {
+            return new MapperBuilder<T>(mapperClass, sources, customMappers, cache, asList(factories));
+        }
     }
 }

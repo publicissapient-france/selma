@@ -24,6 +24,7 @@ import fr.xebia.extras.selma.Mapper;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
@@ -119,7 +120,7 @@ public class MethodWrapper {
      */
     public boolean isGetter() {
         boolean res = false;
-        if (method.getParameters().size() == 0 && method.getReturnType().getKind() != TypeKind.VOID
+        if (hasNoParameter() && method.getReturnType().getKind() != TypeKind.VOID
                 && method.getModifiers().contains(Modifier.PUBLIC)) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
@@ -214,5 +215,30 @@ public class MethodWrapper {
 
     public boolean isAbstract() {
         return method.getModifiers().contains(Modifier.ABSTRACT);
+    }
+
+    public boolean isFactory() {
+        boolean res = false;
+        if (hasReturnType()){
+            if (hasNoParameter()){
+                res = true;
+            }
+            else if (hasOneParameter()) {
+                VariableElement variableElement = method.getParameters().get(0);
+                TypeMirror typeMirror = variableElement.asType();
+                // TODO Validate is Class<T>
+                typeMirror.getKind();
+                res = true;
+            }
+        }
+        return hasReturnType() && (hasOneParameter() || hasNoParameter());
+    }
+
+    private boolean hasNoParameter() {
+        return method.getParameters().size() == 0;
+    }
+
+    public boolean hasTypeParameter() {
+        return !method.getTypeParameters().isEmpty();
     }
 }

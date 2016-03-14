@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static fr.xebia.extras.selma.IgnoreMissing.*;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
 
 /**
  * Class used to wrap the Mapper Annotation
@@ -57,6 +58,7 @@ public class MapperWrapper {
     final String ioCServiceName;
     private final CollectionMappingStrategy collectionMappingStrategy;
     private final boolean abstractClass;
+    private final FactoryWrapper factory;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -85,7 +87,7 @@ public class MapperWrapper {
         }
 
         ioC = IoC.valueOf(mapper.getAsString(WITH_IOC));
-        ioCServiceName =mapper.getAsString(WITH_IOC_SERVICE_NAME);
+        ioCServiceName = mapper.getAsString(WITH_IOC_SERVICE_NAME);
         collectionMappingStrategy = CollectionMappingStrategy.valueOf(mapper.getAsString(WITH_COLLECTION_STRATEGY));
 
         fields = new FieldsWrapper(context, mapperInterface, mapper);
@@ -105,6 +107,8 @@ public class MapperWrapper {
         mappingRegistry.immutableTypes(immutablesMapper);
 
         source = new SourceWrapper(mapper, context);
+
+        factory = new FactoryWrapper(mapper, context);
 
         abstractClass = mapperInterface.getModifiers().contains(Modifier.ABSTRACT) &&
                 mapperInterface.getKind() == ElementKind.CLASS;
@@ -204,5 +208,18 @@ public class MapperWrapper {
 
     public boolean isAbstractClass() {
         return abstractClass;
+    }
+
+    public void emitFactoryFields(JavaWriter writer, boolean assign) throws IOException {
+        factory.emitFactoryFields(writer, assign);
+    }
+
+    public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
+        MappingSourceNode res = factory.generateNewInstanceSourceNodes(inOutType, outBeanWrapper);
+        if (res == null){
+            res = instantiateOut(inOutType,
+                    (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : ""));
+        }
+        return res;
     }
 }

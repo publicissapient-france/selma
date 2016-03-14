@@ -156,6 +156,7 @@ public class MapperClassGenerator {
     private void buildConstructor(JavaWriter writer, String adapterName) throws IOException {
         mapper.emitSourceFields(writer);
         mapper.emitCustomMappersFields(writer, false);
+        mapper.emitFactoryFields(writer, false);
 
         // First build default constructor
         writer.emitEmptyLine();
@@ -167,6 +168,7 @@ public class MapperClassGenerator {
 
         // Add customMapper instantiation
         mapper.emitCustomMappersFields(writer, true);
+        mapper.emitFactoryFields(writer, true);
 
         writer.endMethod();
         writer.emitEmptyLine();

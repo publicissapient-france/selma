@@ -25,6 +25,7 @@ import javax.lang.model.type.DeclaredType;
 import java.util.List;
 
 import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
 
 /**
  * Created by slemesle on 10/11/14.
@@ -133,5 +134,9 @@ public class MapsWrapper {
     public boolean allowCollectionGetter() {
 
         return collectionMappingStrategy == CollectionMappingStrategy.DEFAULT ? mapperWrapper.allowCollectionGetter() : collectionMappingStrategy == CollectionMappingStrategy.ALLOW_GETTER;
+    }
+
+    public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
+        return mapperWrapper.generateNewInstanceSourceNodes(inOutType, outBeanWrapper);
     }
 }

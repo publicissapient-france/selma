@@ -81,6 +81,13 @@ public @interface Mapper {
     Class<?>[] withSources() default {};
 
     /**
+     * Add one or more class which should be used to create instances of the beans Selma will map.
+     *
+     * @return
+     */
+    Class<?>[] withFactories() default {};
+
+    /**
      * Add one or more custom configuration for enum to enum mapping with default values.
      */
     EnumMapper[] withEnums() default {};

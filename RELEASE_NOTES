@@ -1,6 +1,11 @@
 0.14 -
 
 * #63: Support for generic type in mappers
+* : Add Factory method and class support
+* : Add WithIoCServiceName to name Spring service using annotation
+* : Add Instance cache to support cyclic mapping
+* : Fix generic inherited type handling in collections and map
+
 
 0.13 - 11/19/2015
 This release fixes bugs in the mapping of embedded properties and adds support abstract class mapper.

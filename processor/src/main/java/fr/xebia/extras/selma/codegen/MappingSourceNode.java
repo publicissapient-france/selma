@@ -372,6 +372,41 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode callStaticFactoryOut(final InOutType inOutType, final String factoryCall) {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                   /*
+                        out = new X();
+                   */
+                if (inOutType.isOutPutAsParam()) {
+                    writer.beginControlFlow("if (out == null)");
+                    writer.emitStatement("out = %s()", factoryCall);
+                    writer.endControlFlow();
+                } else {
+                    writer.emitStatement("out = %s()", factoryCall);
+                }
+            }
+        };
+    }
+
+    public static MappingSourceNode callGenericFactoryOut(final InOutType inOutType, final String factoryCall) {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                   /*
+                        out = new X();
+                   */
+                if (inOutType.isOutPutAsParam()) {
+                    writer.beginControlFlow("if (out == null)");
+                    writer.emitStatement("out = %s(%s.class)", factoryCall, inOutType.out());
+                    writer.endControlFlow();
+                } else {
+                    writer.emitStatement("out = %s(%s.class)", factoryCall, inOutType.out());
+                }
+            }
+        };
+    }
 
     public static MappingSourceNode put(final String outCollection, final String itemVar) {
         return new MappingSourceNode() {

@@ -98,11 +98,9 @@ public class MapperMethodGenerator {
             isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
 
         } else if (inOutType.areDeclared() && isSupported(inOutType.out())) {
-
+            // TODO Use factory, source or default constructor to instantiate out
             final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.outAsTypeElement());
-
-            ptr = ptr.body(instantiateOut(inOutType,
-                    (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : "")));
+            ptr = ptr.body(maps.generateNewInstanceSourceNodes(inOutType, outBeanWrapper));
             context.depth++;
             ptr.child(generate(inOutType));
             context.depth--;
