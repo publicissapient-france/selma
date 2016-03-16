@@ -14,9 +14,10 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.factory;
+package fr.xebia.extras.selma.it.inject;
 
 import fr.xebia.extras.selma.beans.CityOut;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,25 +25,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Generic bean factory
  */
-public class BeanFactory {
+@Service
+public class BeanFactoryClass {
 
     AtomicInteger newInstance = new AtomicInteger();
     AtomicInteger newCityCalled = new AtomicInteger();
-    AtomicInteger newOutObjectCalled = new AtomicInteger();
 
     public <T>  T newInstance(Class<T> targetType) {
         newInstance.incrementAndGet();
-        try {
-            return targetType.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public <T extends OutObject>  T newOutObjectInstance(Class<T> targetType) {
-        newOutObjectCalled.incrementAndGet();
         try {
             return targetType.newInstance();
         } catch (InstantiationException e) {

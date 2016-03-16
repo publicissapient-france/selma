@@ -46,7 +46,7 @@ public class FactoryWrapper {
     private final Element annotatedElement;
     private final AnnotationWrapper annotationWrapper;
     private final MapperGeneratorContext context;
-    private final HashMap unusedFactories;
+    private final HashMap<Factory, String> unusedFactories;
     private final IoC ioC;
     private final List<TypeElement> factoryFields;
     private final ArrayList<Factory> staticFactories;
@@ -205,21 +205,38 @@ public class FactoryWrapper {
         }
     }
 
+    public void reportUnused() {
+        for (String field : unusedFactories.values()) {
+            context.warn(annotatedElement, "Factory method \"%s\" is never used", field);
+        }
+    }
+
+
+    /**
+     * Called to search for a matching factory and return the corresponding MappingSourceNode
+     * @param inOutType         the type association we are currently mapping
+     * @param outBeanWrapper    The Bean wrapper of the bean we want to build
+     * @return  Null if no factory matches was found or the corresponding MappingSourceNode
+     */
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
 
+        TypeMirror out = inOutType.out();
         for (Factory factory : staticFactories){
-            if(factory.provide(inOutType.out())){
+            if(factory.provide(out)){
                 unusedFactories.remove(factory);
                 return factory.buildNewInstanceSourceNode(inOutType);
             }
         }
+        Factory found = null;
         for (Factory factory : genericFactories){
-            if(factory.provide(inOutType.out())){
-                unusedFactories.remove(factory);
-                return factory.buildNewInstanceSourceNode(inOutType);
+            if(factory.provide(out) && factory.isLowerClass(found)){
+                found = factory;
             }
         }
-
+        if (found != null){
+            unusedFactories.remove(found);
+            return found.buildNewInstanceSourceNode(inOutType);
+        }
         return null;
     }
 
@@ -257,7 +274,7 @@ public class FactoryWrapper {
                 if (context.type.isSameType(out, method.returnType())) {
                     return true;
                 }
-            } else if (context.type.isAssignable(out, ((TypeVariable)method.returnType()).getUpperBound())){
+            } else if (context.type.isAssignable(out, getUpperBound())){
                 return true;
             }
             return false;
@@ -265,10 +282,27 @@ public class FactoryWrapper {
 
         public MappingSourceNode buildNewInstanceSourceNode(InOutType inOutType) {
             if (!method.hasTypeParameter()){
+
                 return callStaticFactoryOut(inOutType, methodCall);
             } else {
                 return callGenericFactoryOut(inOutType, methodCall);
             }
+        }
+
+        public boolean isLowerClass(Factory factory) {
+            boolean res;
+            if (factory == null){
+                res = true;
+            } else {
+                TypeMirror upperBound = getUpperBound();
+                TypeMirror upperBoundCmp = factory.getUpperBound();
+                res = context.type.isAssignable(upperBound, upperBoundCmp);
+            }
+            return res;
+        }
+
+        private TypeMirror getUpperBound() {
+            return ((TypeVariable) method.returnType()).getUpperBound();
         }
     }
 }

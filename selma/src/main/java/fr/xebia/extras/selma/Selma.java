@@ -148,7 +148,8 @@ public class Selma {
                                                       boolean useCache,
                                                       List factories) throws IllegalArgumentException {
 
-        final String mapperKey = String.format("%s-%s-%s", mapperClass.getCanonicalName(), source, customMappers);
+        final String mapperKey = String.format("%s-%s-%s-%s", mapperClass.getCanonicalName(), source, customMappers,
+                                                factories);
 
         Object mapperInstance = mappers.get(mapperKey);
         if ((mapperInstance == null || !mapperClass.isAssignableFrom(mapperInstance.getClass())) || !useCache) {

@@ -30,7 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.Arrays;
 
 
-@Compile(withClasses = {AddressMapper.class, CustomImmutableMapperClass.class})
+@Compile(withClasses = {AddressMapper.class, CustomImmutableMapperClass.class, BeanFactoryClass.class})
 public class CustomMapperUsingSpringIoCIT extends IntegrationTestBase {
 
 

@@ -27,4 +27,6 @@ import fr.xebia.extras.selma.beans.AddressOut;
 public interface FactoryMapper {
 
     AddressOut asAddressOut(AddressIn in);
+
+    ExtendedAddressOut asExtendedAddressOut(ExtendedAddressIn in);
 }

@@ -14,22 +14,12 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.inject;
+package fr.xebia.extras.selma.it.factory;
 
-import fr.xebia.extras.selma.IoC;
-import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.AddressIn;
-import fr.xebia.extras.selma.beans.AddressOut;
 
 /**
- * Created by slemesle on 25/03/15.
+ * Created by slemesle on 15/03/2016.
  */
-@Mapper(withIgnoreFields = "extras",
-        withCustom =  CustomImmutableMapperClass.class,
-        withFactories = BeanFactoryClass.class,
-        withIoC = IoC.SPRING)
-public interface AddressMapper {
-
-    AddressOut asAddressOut(AddressIn in);
-
+public class ExtendedAddressIn extends AddressIn {
 }

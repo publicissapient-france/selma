@@ -150,6 +150,7 @@ public class MapperWrapper {
         // Report unused enumMapper
         enumMappers.reportUnused();
         immutablesMapper.reportUnused();
+        factory.reportUnused();
     }
 
     public void emitCustomMappersFields(JavaWriter writer, boolean assign) throws IOException {

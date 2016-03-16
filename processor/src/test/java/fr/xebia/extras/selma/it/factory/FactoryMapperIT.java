@@ -22,15 +22,22 @@ import fr.xebia.extras.selma.beans.AddressOut;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  *
  */
-@Compile(withClasses = {BeanFactory.class, FactoryMapper.class})
+@Compile(withClasses = {
+         BeanFactory.class,
+         FactoryMapper.class,
+         OutObject.class,
+         ExtendedAddressIn.class,
+         ExtendedAddressOut.class})
 public class FactoryMapperIT extends IntegrationTestBase {
 
     @Test
@@ -50,8 +57,39 @@ public class FactoryMapperIT extends IntegrationTestBase {
 
         AddressOut res = mapper.asAddressOut(address);
 
-        Assert.assertNotNull(res);
-        Assert.assertEquals(2, factory.getBuildMap().size());
+        assertNotNull(res);
+        assertEquals("Generic factory should have been called once for AddressOut", 1, factory.newInstance.get());
+        assertEquals("Static factory should have been called once for CityOut", 1, factory.newCityCalled.get());
+    }
+
+    @Test
+    public void given_a_factory_method_never_used_compiler_should_report_it() throws Exception {
+        assertCompilationWarning(FactoryMapper.class,
+                "public interface FactoryMapper {",
+                "Factory method \"fr.xebia.extras.selma.it.factory.BeanFactory.getBuildMap\" is never used");
+    }
+
+    @Test
+    public void given_a_valid_factory_class_mapper_should_use_closest_factory_to_instantiate_beans() throws Exception {
+        BeanFactory factory = new BeanFactory();
+        FactoryMapper mapper = Selma.builder(FactoryMapper.class).withFactories(factory).build();
+
+        ExtendedAddressIn address = new ExtendedAddressIn();
+        address.setCity(new CityIn());
+        address.setExtras(Arrays.asList(new String []{"134", "1234", "543"}));
+        address.setPrincipal(false);
+        address.setNumber(42);
+        address.setStreet("Victor Hugo");
+        address.getCity().setName("Paris");
+        address.getCity().setCapital(true);
+        address.getCity().setPopulation(10);
+
+        ExtendedAddressOut res = mapper.asExtendedAddressOut(address);
+
+        assertNotNull(res);
+        assertEquals("Generic newOutObjectInstance factory should have been called once for ExtendedAddressOut",
+                     1, factory.newOutObjectCalled.get());
+        assertEquals("Static factory should have been called once for CityOut", 1, factory.newCityCalled.get());
     }
 
 }
