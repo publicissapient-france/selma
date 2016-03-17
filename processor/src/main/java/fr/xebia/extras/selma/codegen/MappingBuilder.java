@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.codegen;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -214,8 +215,8 @@ public abstract class MappingBuilder {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
 
                 // We have a collection
-                final TypeMirror genericIn = inOutType.inAsDeclaredType().getTypeArguments().get(0);
-                final TypeMirror genericOut = inOutType.outAsDeclaredType().getTypeArguments().get(0);
+                final TypeMirror genericIn = getTypeArgument(context, inOutType.inAsDeclaredType(), 0);
+                final TypeMirror genericOut = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 // emit writer loop for collection and choose an implementation
                 String impl;
                 if (inOutType.outAsTypeElement().getKind() == ElementKind.CLASS) {
@@ -272,10 +273,10 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new MappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 // We have a Map
-                final TypeMirror genericInKey = inOutType.inAsDeclaredType().getTypeArguments().get(0);
-                final TypeMirror genericOutKey = inOutType.outAsDeclaredType().getTypeArguments().get(0);
-                final TypeMirror genericInValue = inOutType.inAsDeclaredType().getTypeArguments().get(1);
-                final TypeMirror genericOutValue = inOutType.outAsDeclaredType().getTypeArguments().get(1);
+                final TypeMirror genericInKey = getTypeArgument(context, inOutType.inAsDeclaredType(), 0);
+                final TypeMirror genericOutKey = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
+                final TypeMirror genericInValue = getTypeArgument(context, inOutType.inAsDeclaredType(), 1);
+                final TypeMirror genericOutValue = getTypeArgument(context, inOutType.outAsDeclaredType(), 1);
 
                 // emit writer loop for collection and choose an implementation
                 String impl;
@@ -593,6 +594,28 @@ public abstract class MappingBuilder {
         };
     }
 
+    /**
+     * Retrieve type arguments for Collections and Maps
+     * @return
+     */
+    private static TypeMirror getTypeArgument(final MapperGeneratorContext context, TypeMirror type, final int index) {
+        TypeMirror param = type.accept(new SimpleTypeVisitor6<TypeMirror, Void>() {
+            @Override
+            public TypeMirror visitDeclared(DeclaredType t, Void p) {
+                if (t.getTypeArguments().size() > 0) {
+                    return t.getTypeArguments().get(index);
+                }
+                TypeMirror superclass = ((TypeElement) t.asElement()).getSuperclass();
+                return getTypeArgument(context, superclass, index);
+            }
+        }, null);
+
+        if (param != null) {
+            return param;
+        }
+
+        return null;
+    }
 
     static public <T> List<T> intersection(List<T> list1, List<T> list2) {
         List<T> list = new ArrayList<T>();

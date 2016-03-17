@@ -1,10 +1,11 @@
-0.14 -
-
+0.14 - 3/17/2015
+This release fixes bugs regarding generic types and adds support for factory methods.
 * #63: Support for generic type in mappers
-* : Add Factory method and class support
-* : Add WithIoCServiceName to name Spring service using annotation
-* : Add Instance cache to support cyclic mapping
-* : Fix generic inherited type handling in collections and map
+* #39: Add Factory method and class support
+* #78: Add WithIoCServiceName to name Spring service using annotation
+* #75: Fix generic inherited type handling in collections and map
+* #70: Handle custom mappers in a .class package, Thanks to Antoine Leveugle
+* #57: Improve error messages for failing custom field to field mapping
 
 
 0.13 - 11/19/2015
