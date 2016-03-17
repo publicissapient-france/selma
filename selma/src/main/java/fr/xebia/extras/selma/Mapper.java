@@ -135,8 +135,8 @@ public @interface Mapper {
     IoC withIoC() default NO;
 
     /**
-     * define the name of the service that will be used with the Spring annotations.
-     * @return
+     * Define the name of the service that will be used with the Spring annotations. This is only usable with:
+     * withIoC = SPRING
      */
     String withIoCServiceName() default "";
 
