@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
  * it gives convenience method to simplify method manipulation
  */
 public class MethodWrapper {
-
     private static final String GETTER_FORMAT = "(get|is)(.*)";
     private static final Pattern GETTER_PATTERN = Pattern.compile(GETTER_FORMAT);
     private static final String SETTER_FORMAT = "set(.*)";
@@ -138,12 +137,19 @@ public class MethodWrapper {
      */
     public boolean isSetter() {
         boolean res = false;
-        if (method.getParameters().size() == 1 && method.getReturnType().getKind() == TypeKind.VOID
-                && method.getModifiers().contains(Modifier.PUBLIC)) {
-            Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
-            res = setterMatcher.matches();
-            if (res) {
-                fieldName = setterMatcher.group(1);
+        if (method.getParameters().size() == 1 && method.getModifiers().contains(Modifier.PUBLIC)) {
+            boolean validReturnType = method.getReturnType().getKind() == TypeKind.VOID;
+            if (!validReturnType) {
+                // check method as a member of the actual parentType
+                ExecutableType memberMethod = (ExecutableType) context.type.asMemberOf(parentType, method);
+                validReturnType = context.type.isSameType(memberMethod.getReturnType(), parentType);
+            }
+            if (validReturnType) {
+                Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
+                res = setterMatcher.matches();
+                if (res) {
+                    fieldName = setterMatcher.group(1);
+                }
             }
         }
         return res;
