@@ -16,25 +16,21 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static fr.xebia.extras.selma.IgnoreMissing.ALL;
-import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.IgnoreMissing.NONE;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-
+import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.CollectionMappingStrategy;
 import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
 
-import com.squareup.javawriter.JavaWriter;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import java.io.IOException;
+import java.util.List;
+
+import static fr.xebia.extras.selma.IgnoreMissing.*;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
 
 /**
  * Class used to wrap the Mapper Annotation
@@ -45,7 +41,7 @@ public class MapperWrapper {
     public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
     public static final String WITH_IOC = "withIoC";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
-    public static final String WITH_IOC_SERVICE_NAME="withIoCServiceName";
+    public static final String WITH_IOC_SERVICE_NAME = "withIoCServiceName";
 
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
@@ -101,7 +97,7 @@ public class MapperWrapper {
         // Here we collect custom mappers
         customMappers = new CustomMapperWrapper(mapper, context);
         mappingRegistry.customMappers(customMappers);
-        if (mapperInterface.getModifiers().contains(Modifier.ABSTRACT)){
+        if (mapperInterface.getModifiers().contains(Modifier.ABSTRACT)) {
             customMappers.addMappersElementMethods(mapperInterface);
         }
 
@@ -222,7 +218,7 @@ public class MapperWrapper {
 
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
         MappingSourceNode res = factory.generateNewInstanceSourceNodes(inOutType, outBeanWrapper);
-        if (res == null){
+        if (res == null) {
             res = instantiateOut(inOutType,
                     (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : ""));
         }

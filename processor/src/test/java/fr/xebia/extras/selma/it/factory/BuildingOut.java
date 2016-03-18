@@ -12,7 +12,8 @@ public class BuildingOut {
     private String street;
     private int number;
 
-    private BuildingOut() {}
+    private BuildingOut() {
+    }
 
     public String getName() {
         return name;

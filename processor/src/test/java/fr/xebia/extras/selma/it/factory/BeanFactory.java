@@ -16,10 +16,10 @@
  */
 package fr.xebia.extras.selma.it.factory;
 
+import fr.xebia.extras.selma.beans.CityOut;
+
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import fr.xebia.extras.selma.beans.CityOut;
 
 /**
  * Generic bean factory
@@ -30,7 +30,7 @@ public class BeanFactory {
     AtomicInteger newCityCalled = new AtomicInteger();
     AtomicInteger newOutObjectCalled = new AtomicInteger();
 
-    public <T>  T newInstance(Class<T> targetType) {
+    public <T> T newInstance(Class<T> targetType) {
         newInstance.incrementAndGet();
         try {
             return targetType.newInstance();
@@ -41,7 +41,7 @@ public class BeanFactory {
         }
     }
 
-    public <T extends OutObject>  T newOutObjectInstance(Class<T> targetType) {
+    public <T extends OutObject> T newOutObjectInstance(Class<T> targetType) {
         newOutObjectCalled.incrementAndGet();
         try {
             return targetType.newInstance();
@@ -52,7 +52,7 @@ public class BeanFactory {
         }
     }
 
-    public CityOut newCity(){
+    public CityOut newCity() {
         newCityCalled.incrementAndGet();
         return new CityOut();
     }
@@ -61,7 +61,7 @@ public class BeanFactory {
         return BuildingOut.create();
     }
 
-    public Map getBuildMap(){
+    public Map getBuildMap() {
         return null;
     }
 }

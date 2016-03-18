@@ -16,33 +16,32 @@
  */
 package fr.xebia.extras.selma.it.factory;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Arrays;
-
-import org.junit.Test;
-
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.junit.Test;
+
+import java.util.Arrays;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
  */
 @Compile(withClasses = {
-         BeanFactory.class,
-         FactoryMapper.class,
-         OutObject.class,
-         ExtendedAddressIn.class,
-         ExtendedAddressOut.class,
-         BuildingIn.class,
-         BuildingOut.class
+        BeanFactory.class,
+        FactoryMapper.class,
+        OutObject.class,
+        ExtendedAddressIn.class,
+        ExtendedAddressOut.class,
+        BuildingIn.class,
+        BuildingOut.class
 })
 public class FactoryMapperIT extends IntegrationTestBase {
 
@@ -53,7 +52,7 @@ public class FactoryMapperIT extends IntegrationTestBase {
 
         AddressIn address = new AddressIn();
         address.setCity(new CityIn());
-        address.setExtras(Arrays.asList(new String []{"134", "1234", "543"}));
+        address.setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
         address.setPrincipal(false);
         address.setNumber(42);
         address.setStreet("Victor Hugo");
@@ -82,7 +81,7 @@ public class FactoryMapperIT extends IntegrationTestBase {
 
         ExtendedAddressIn address = new ExtendedAddressIn();
         address.setCity(new CityIn());
-        address.setExtras(Arrays.asList(new String []{"134", "1234", "543"}));
+        address.setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
         address.setPrincipal(false);
         address.setNumber(42);
         address.setStreet("Victor Hugo");
@@ -98,7 +97,7 @@ public class FactoryMapperIT extends IntegrationTestBase {
 
         assertNotNull(res);
         assertEquals("Generic newOutObjectInstance factory should have been called once for ExtendedAddressOut",
-                     1, factory.newOutObjectCalled.get());
+                1, factory.newOutObjectCalled.get());
         assertEquals("Static factory should have been called once for CityOut", 1, factory.newCityCalled.get());
         assertThat(res.getBuilding(), notNullValue());
     }

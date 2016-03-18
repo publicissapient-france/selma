@@ -16,32 +16,23 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PUBLIC;
+import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.IoC;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.callGenericFactoryOut;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.callStaticFactoryOut;
-
+import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.util.ElementFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.util.ElementFilter;
-
-import fr.xebia.extras.selma.IoC;
-
-import com.squareup.javawriter.JavaWriter;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.callGenericFactoryOut;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.callStaticFactoryOut;
+import static javax.lang.model.element.Modifier.*;
 
 /**
  *
@@ -113,7 +104,7 @@ public class FactoryWrapper {
         for (ExecutableElement method : methods) {
             MethodWrapper methodWrapper = new MethodWrapper(method, (DeclaredType) element.asType(), context);
             // We should ignore abstract methods if parsing an abstract mapper class
-            if (ignoreAbstract && methodWrapper.isAbstract()){
+            if (ignoreAbstract && methodWrapper.isAbstract()) {
                 continue;
             }
             if (isValidFactoryMethod(methodWrapper)) {
@@ -132,17 +123,17 @@ public class FactoryWrapper {
         TypeMirror returnType = method.returnType();
         String methodCall = String.format("%s.%s", factoryFieldName, method.getSimpleName());
         Factory factory = new Factory(this.context, method, methodCall);
-        if (method.hasTypeParameter()){
+        if (method.hasTypeParameter()) {
             genericFactories.add(factory);
         } else {
             staticFactories.add(factory);
         }
 
         unusedFactories.put(factory,
-                    String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
+                String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
     }
 
-    private boolean isValidFactoryMethod(MethodWrapper methodWrapper){
+    private boolean isValidFactoryMethod(MethodWrapper methodWrapper) {
         boolean res = true;
 
         if (MapperProcessor.exclusions.contains(methodWrapper.getSimpleName())) {
@@ -178,6 +169,7 @@ public class FactoryWrapper {
 
     /**
      * Generates the code to declare custom factory fields, setter and call default constructor in mapper constructor
+     *
      * @param writer
      * @param assign
      * @throws IOException
@@ -221,26 +213,27 @@ public class FactoryWrapper {
 
     /**
      * Called to search for a matching factory and return the corresponding MappingSourceNode
-     * @param inOutType         the type association we are currently mapping
-     * @param outBeanWrapper    The Bean wrapper of the bean we want to build
-     * @return  Null if no factory matches was found or the corresponding MappingSourceNode
+     *
+     * @param inOutType      the type association we are currently mapping
+     * @param outBeanWrapper The Bean wrapper of the bean we want to build
+     * @return Null if no factory matches was found or the corresponding MappingSourceNode
      */
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
 
         TypeMirror out = inOutType.out();
-        for (Factory factory : staticFactories){
-            if(factory.provide(out)){
+        for (Factory factory : staticFactories) {
+            if (factory.provide(out)) {
                 unusedFactories.remove(factory);
                 return factory.buildNewInstanceSourceNode(inOutType);
             }
         }
         Factory found = null;
-        for (Factory factory : genericFactories){
-            if(factory.provide(out) && factory.isLowerClass(found)){
+        for (Factory factory : genericFactories) {
+            if (factory.provide(out) && factory.isLowerClass(found)) {
                 found = factory;
             }
         }
-        if (found != null){
+        if (found != null) {
             unusedFactories.remove(found);
             return found.buildNewInstanceSourceNode(inOutType);
         }
@@ -248,7 +241,7 @@ public class FactoryWrapper {
     }
 
     public boolean hasFactory(TypeMirror typeMirror) {
-        for (Factory factory : staticFactories){
+        for (Factory factory : staticFactories) {
             if (factory.provide(typeMirror)) {
                 return true;
             }
@@ -295,14 +288,14 @@ public class FactoryWrapper {
                 if (context.type.isSameType(out, method.returnType())) {
                     return true;
                 }
-            } else if (context.type.isAssignable(out, getUpperBound())){
+            } else if (context.type.isAssignable(out, getUpperBound())) {
                 return true;
             }
             return false;
         }
 
         public MappingSourceNode buildNewInstanceSourceNode(InOutType inOutType) {
-            if (!method.hasTypeParameter()){
+            if (!method.hasTypeParameter()) {
 
                 return callStaticFactoryOut(inOutType, methodCall);
             } else {
@@ -312,7 +305,7 @@ public class FactoryWrapper {
 
         public boolean isLowerClass(Factory factory) {
             boolean res;
-            if (factory == null){
+            if (factory == null) {
                 res = true;
             } else {
                 TypeMirror upperBound = getUpperBound();

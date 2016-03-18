@@ -16,15 +16,12 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.blank;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNotNull;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNull;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.declareOut;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMethod;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMethodNotFinal;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.notSupported;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.set;
+import com.squareup.javawriter.JavaWriter;
 
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +29,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-
-import com.squareup.javawriter.JavaWriter;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
 /**
  *
@@ -155,6 +147,7 @@ public class MapperMethodGenerator {
             return false;
         }
 
+        // Bean provided by a factory are supported
         if (maps.hasFactory(out)) {
             return true;
         }
@@ -263,7 +256,7 @@ public class MapperMethodGenerator {
 
 
             if (isMissingInDestination) {
-                if (!customFieldsFor.isEmpty()){
+                if (!customFieldsFor.isEmpty()) {
                     context.error(mapperMethod.element(), String.format("Mapping custom field %s from source bean %s, setter for" +
                                     " field %s is missing in destination bean %s !\n" +
                                     " --> Check your custom field %s, you can add simple class name or FQCN to the longest field path " +
