@@ -16,18 +16,28 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import com.squareup.javawriter.JavaWriter;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.blank;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNotNull;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNull;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.declareOut;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMethod;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMethodNotFinal;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.notSupported;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.set;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
+import com.squareup.javawriter.JavaWriter;
 
 /**
  *
@@ -97,15 +107,17 @@ public class MapperMethodGenerator {
             // set isPrimitiveOrImmutable so we can skip the null check
             isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
 
-        } else if (inOutType.areDeclared() && isSupported(inOutType.out())) {
-            // TODO Use factory, source or default constructor to instantiate out
-            final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.outAsTypeElement());
-            ptr = ptr.body(maps.generateNewInstanceSourceNodes(inOutType, outBeanWrapper));
-            context.depth++;
-            ptr.child(generate(inOutType));
-            context.depth--;
         } else {
-            handleNotSupported(inOutType, ptr);
+            if (inOutType.areDeclared() && isSupported(inOutType.out())) {
+                // TODO Use factory, source or default constructor to instantiate out
+                final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.outAsTypeElement());
+                ptr = ptr.body(maps.generateNewInstanceSourceNodes(inOutType, outBeanWrapper));
+                context.depth++;
+                ptr.child(generate(inOutType));
+                context.depth--;
+            } else {
+                handleNotSupported(inOutType, ptr);
+            }
         }
 
         isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
@@ -138,15 +150,18 @@ public class MapperMethodGenerator {
      * @return boolean telling whether this type can be supported by mapping code generation
      */
     private boolean isSupported(TypeMirror out) {
-        boolean res = false;
         Matcher matcher = STANDARD_JAVA_PACKAGE.matcher(out.toString());
-        if (!matcher.matches()) {
-            TypeElement outTypeElement = (TypeElement) context.type.asElement(out);
-            BeanWrapper outBean = getBeanWrapperOrNew(context, outTypeElement);
-            res = outBean.hasCallableConstructor();
+        if (matcher.matches()) {
+            return false;
         }
 
-        return res;
+        if (maps.hasFactory(out)) {
+            return true;
+        }
+
+        TypeElement outTypeElement = (TypeElement) context.type.asElement(out);
+        BeanWrapper outBean = getBeanWrapperOrNew(context, outTypeElement);
+        return outBean.hasCallableConstructor();
     }
 
     private void handleNotSupported(InOutType inOutType, MappingSourceNode ptr) {

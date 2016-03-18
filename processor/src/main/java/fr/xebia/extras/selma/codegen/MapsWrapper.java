@@ -16,16 +16,17 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import fr.xebia.extras.selma.CollectionMappingStrategy;
-import fr.xebia.extras.selma.IgnoreMissing;
-import fr.xebia.extras.selma.Maps;
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+
+import java.util.List;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import java.util.List;
+import javax.lang.model.type.TypeMirror;
 
-import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
+import fr.xebia.extras.selma.CollectionMappingStrategy;
+import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.Maps;
 
 /**
  * Created by slemesle on 10/11/14.
@@ -138,5 +139,9 @@ public class MapsWrapper {
 
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
         return mapperWrapper.generateNewInstanceSourceNodes(inOutType, outBeanWrapper);
+    }
+
+    public boolean hasFactory(TypeMirror typeMirror) {
+        return mapperWrapper.hasFactory(typeMirror);
     }
 }
