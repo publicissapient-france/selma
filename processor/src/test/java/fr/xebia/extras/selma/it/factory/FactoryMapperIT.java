@@ -16,18 +16,21 @@
  */
 package fr.xebia.extras.selma.it.factory;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Arrays;
+
+import org.junit.Test;
+
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import org.junit.Test;
-
-import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  *
@@ -37,7 +40,10 @@ import static org.junit.Assert.assertNotNull;
          FactoryMapper.class,
          OutObject.class,
          ExtendedAddressIn.class,
-         ExtendedAddressOut.class})
+         ExtendedAddressOut.class,
+         BuildingIn.class,
+         BuildingOut.class
+})
 public class FactoryMapperIT extends IntegrationTestBase {
 
     @Test
@@ -83,6 +89,10 @@ public class FactoryMapperIT extends IntegrationTestBase {
         address.getCity().setName("Paris");
         address.getCity().setCapital(true);
         address.getCity().setPopulation(10);
+        address.setBuilding(new BuildingIn());
+        address.getBuilding().setName("Pierre Humbert");
+        address.getBuilding().setNumber(167);
+        address.getBuilding().setStreet("Victor Hugo");
 
         ExtendedAddressOut res = mapper.asExtendedAddressOut(address);
 
@@ -90,6 +100,6 @@ public class FactoryMapperIT extends IntegrationTestBase {
         assertEquals("Generic newOutObjectInstance factory should have been called once for ExtendedAddressOut",
                      1, factory.newOutObjectCalled.get());
         assertEquals("Static factory should have been called once for CityOut", 1, factory.newCityCalled.get());
+        assertThat(res.getBuilding(), notNullValue());
     }
-
 }

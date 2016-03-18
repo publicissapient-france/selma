@@ -22,4 +22,13 @@ import fr.xebia.extras.selma.beans.AddressIn;
  * Created by slemesle on 15/03/2016.
  */
 public class ExtendedAddressIn extends AddressIn {
+    private BuildingIn building;
+
+    public BuildingIn getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(BuildingIn building) {
+        this.building = building;
+    }
 }

@@ -16,25 +16,32 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.IoC;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
-import javax.lang.model.element.*;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.util.ElementFilter;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.callGenericFactoryOut;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.callStaticFactoryOut;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.callGenericFactoryOut;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.callStaticFactoryOut;
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PUBLIC;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.util.ElementFilter;
+
+import fr.xebia.extras.selma.IoC;
+
+import com.squareup.javawriter.JavaWriter;
 
 /**
  *
@@ -238,6 +245,20 @@ public class FactoryWrapper {
             return found.buildNewInstanceSourceNode(inOutType);
         }
         return null;
+    }
+
+    public boolean hasFactory(TypeMirror typeMirror) {
+        for (Factory factory : staticFactories){
+            if (factory.provide(typeMirror)) {
+                return true;
+            }
+        }
+        for (Factory factory : genericFactories) {
+            if (factory.provide(typeMirror)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class Factory {

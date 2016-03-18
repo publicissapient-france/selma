@@ -22,4 +22,13 @@ import fr.xebia.extras.selma.beans.AddressOut;
  * Created by slemesle on 15/03/2016.
  */
 public class ExtendedAddressOut extends AddressOut implements OutObject {
+    private BuildingOut building;
+
+    public BuildingOut getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(BuildingOut building) {
+        this.building = building;
+    }
 }

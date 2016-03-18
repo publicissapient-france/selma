@@ -16,20 +16,25 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import com.squareup.javawriter.JavaWriter;
+import static fr.xebia.extras.selma.IgnoreMissing.ALL;
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IgnoreMissing.NONE;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+
 import fr.xebia.extras.selma.CollectionMappingStrategy;
 import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
 
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import java.io.IOException;
-import java.util.List;
-
-import static fr.xebia.extras.selma.IgnoreMissing.*;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
+import com.squareup.javawriter.JavaWriter;
 
 /**
  * Class used to wrap the Mapper Annotation
@@ -222,5 +227,9 @@ public class MapperWrapper {
                     (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : ""));
         }
         return res;
+    }
+
+    public boolean hasFactory(TypeMirror typeMirror) {
+        return factory.hasFactory(typeMirror);
     }
 }
