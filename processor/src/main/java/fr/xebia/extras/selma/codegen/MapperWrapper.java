@@ -42,6 +42,7 @@ public class MapperWrapper {
     public static final String WITH_IOC = "withIoC";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
     public static final String WITH_IOC_SERVICE_NAME = "withIoCServiceName";
+	public static final String USE_CACHE_INSTANCE = "withInstanceCache";
 
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
@@ -60,13 +61,13 @@ public class MapperWrapper {
     private final CollectionMappingStrategy collectionMappingStrategy;
     private final boolean abstractClass;
     private final FactoryWrapper factory;
+	private final boolean useInstanceCache;
 
-    public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
+	public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
         this.mapperInterface = mapperInterface;
 
         mappingRegistry = new MappingRegistry(context);
-
 
         mapper = AnnotationWrapper.buildFor(context, mapperInterface, Mapper.class);
 
@@ -113,6 +114,8 @@ public class MapperWrapper {
 
         abstractClass = mapperInterface.getModifiers().contains(Modifier.ABSTRACT) &&
                 mapperInterface.getKind() == ElementKind.CLASS;
+
+		useInstanceCache = mapper.getAsBoolean(USE_CACHE_INSTANCE);
     }
 
 
@@ -228,4 +231,8 @@ public class MapperWrapper {
     public boolean hasFactory(TypeMirror typeMirror) {
         return factory.hasFactory(typeMirror);
     }
+
+	public boolean isUseInstanceCache() {
+		return useInstanceCache;
+	}
 }

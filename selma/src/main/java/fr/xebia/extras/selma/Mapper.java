@@ -144,6 +144,11 @@ public @interface Mapper {
      * By default Selma uses a setter to provide new mapped collections. Passing this attribute to ALLOW_GETTER will
      * make Selma use a getter to map collections if the setter does not exist.
      */
-     CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+	CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+
+	/**
+	 * Instance cache is used to handle circular references in objects mapped by Selma
+	 */
+	boolean withInstanceCache() default true;
 
 }
