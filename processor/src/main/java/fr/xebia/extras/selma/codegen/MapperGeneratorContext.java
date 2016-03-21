@@ -17,17 +17,22 @@
 package fr.xebia.extras.selma.codegen;
 
 
-import fr.xebia.extras.selma.codegen.compiler.CompilerMessageRegistry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.*;
+
+import fr.xebia.extras.selma.codegen.compiler.CompilerMessageRegistry;
 
 /**
  * Source code generation context
@@ -53,6 +58,8 @@ public class MapperGeneratorContext {
     LinkedList<MappingMethod> methodStack;
     private String newParams;
     public final List<TypeElement> sources;
+
+	private MapperWrapper wrapper;
 
     public MapperGeneratorContext(ProcessingEnvironment processingEnvironment) {
         this.elements = processingEnvironment.getElementUtils();
@@ -264,4 +271,17 @@ public class MapperGeneratorContext {
             return inOutType;
         }
     }
+
+	public TypeElement getBoxedClass(PrimitiveType type) {
+		return processingEnv.getTypeUtils().boxedClass(type);
+	}
+
+	public MapperWrapper getWrapper() {
+		return wrapper;
+	}
+
+	public void setWrapper(MapperWrapper wrapper) {
+		this.wrapper = wrapper;
+	}
+
 }
