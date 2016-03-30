@@ -42,6 +42,7 @@ public class MapperWrapper {
     public static final String WITH_IOC = "withIoC";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
     public static final String WITH_IOC_SERVICE_NAME = "withIoCServiceName";
+    public static final String WITH_IGNORE_NULL_VALUE="withIgnoreNullValue";
 
     private final FieldsWrapper fields;
     private final SourceConfiguration configuration;
@@ -60,6 +61,7 @@ public class MapperWrapper {
     private final CollectionMappingStrategy collectionMappingStrategy;
     private final boolean abstractClass;
     private final FactoryWrapper factory;
+    private boolean ignoreNullValue;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
@@ -93,7 +95,8 @@ public class MapperWrapper {
 
         fields = new FieldsWrapper(context, mapperInterface, mapper);
         mappingRegistry.fields(fields);
-
+        ignoreNullValue=mapper.getAsBoolean(WITH_IGNORE_NULL_VALUE);
+        context.setIgnoreNullValue(ignoreNullValue);
         // Here we collect custom mappers
         customMappers = new CustomMapperWrapper(mapper, context);
         mappingRegistry.customMappers(customMappers);

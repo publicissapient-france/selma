@@ -548,7 +548,13 @@ public abstract class MappingBuilder {
             }
             return root;
         } else {
-            return buildNodes(context, vars);
+            if (context.isIgnoreNullValue() && !vars.isOutPrimitive()){
+                root = notNullInField(vars);
+                root.body(ptr);
+                return root;
+            }else {
+                return buildNodes(context, vars);
+            }
         }
     }
 

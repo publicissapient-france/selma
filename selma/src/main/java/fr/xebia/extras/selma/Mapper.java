@@ -117,6 +117,13 @@ public @interface Mapper {
      */
     String[] withIgnoreFields() default {};
 
+
+
+    /**
+     * This is used to not copy field with a null value
+     */
+    boolean withIgnoreNullValue() default false;
+
     /**
      * This is used to describe specific field to field mapping. If you need field "toto" to be mapped to "tutu", you should add
      * a @Field annotation here.
@@ -145,5 +152,6 @@ public @interface Mapper {
      * make Selma use a getter to map collections if the setter does not exist.
      */
      CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+
 
 }
