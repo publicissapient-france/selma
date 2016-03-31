@@ -16,8 +16,13 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.lang.model.element.TypeElement;
-import java.util.*;
 
 /**
  * Created by slemesle on 17/10/2014.
@@ -27,6 +32,7 @@ public class ImmutableTypesWrapper {
     private final MapperGeneratorContext context;
     private final Map<InOutType, MappingBuilder> immutables;
     private final Set<InOutType> unusedImmutables;
+	private final List<String> immutablesPackages;
 
 
     public ImmutableTypesWrapper(AnnotationWrapper mapper, MapperGeneratorContext context) {
@@ -44,6 +50,8 @@ public class ImmutableTypesWrapper {
             this.immutables.put(new InOutType(ioType, true), MappingBuilder.newImmutable());
             this.unusedImmutables.add(ioType);
         }
+
+		immutablesPackages = mapper.getAsStrings("withImmutablesPackages");
     }
 
 
@@ -52,6 +60,13 @@ public class ImmutableTypesWrapper {
 
         if (mappingBuilder != null) {
             unusedImmutables.remove(inOutType);
+		} else {
+			for (String packageName : immutablesPackages) {
+				if (inOutType.inAsDeclaredType().toString().startsWith(packageName)) {
+					mappingBuilder = MappingBuilder.newImmutable();
+					break;
+				}
+			}
         }
         return mappingBuilder;
     }
