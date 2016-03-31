@@ -37,6 +37,7 @@ public class MapperGeneratorContext {
 
     private final ProcessingEnvironment processingEnv;
     private final CompilerMessageRegistry messageRegistry;
+    private boolean ignoreNullValue=false;
     int depth = 0;
 
     Elements elements;
@@ -88,6 +89,14 @@ public class MapperGeneratorContext {
 
     public void warn(String s, ExecutableElement element) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, s, messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
+    }
+
+    public boolean isIgnoreNullValue() {
+        return ignoreNullValue;
+    }
+
+    public void setIgnoreNullValue(boolean ignoreNullValue) {
+        this.ignoreNullValue = ignoreNullValue;
     }
 
     /**
