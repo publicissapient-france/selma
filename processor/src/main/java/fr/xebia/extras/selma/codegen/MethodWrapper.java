@@ -25,10 +25,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -142,7 +139,12 @@ public class MethodWrapper {
             if (!validReturnType) {
                 // check method as a member of the actual parentType
                 ExecutableType memberMethod = (ExecutableType) context.type.asMemberOf(parentType, method);
-                validReturnType = context.type.isSameType(memberMethod.getReturnType(), parentType);
+                TypeMirror memberReturnType = memberMethod.getReturnType();
+                // can be a type variable if the return type is parameterized
+                if (memberReturnType.getKind() == TypeKind.TYPEVAR) {
+                    memberReturnType = ((TypeVariable) memberReturnType).getUpperBound();
+                }
+                validReturnType = context.type.isSameType(memberReturnType, parentType);
             }
             if (validReturnType) {
                 Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
