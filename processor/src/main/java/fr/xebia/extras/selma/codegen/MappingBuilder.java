@@ -84,6 +84,39 @@ public abstract class MappingBuilder {
 
 
         /**
+         * Mapping Primitives toString
+         */
+        mappingSpecificationList.add(new MappingSpecification() {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(true) {
+                    @Override
+                    public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+
+                        if (context.depth > 0) {
+                            root.body(set(vars.outSetterPath(), vars.inGetter() + "\"\""));
+                        } else {
+                            root.body(assignOutToString());
+                        }
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                boolean res = false;
+                if (inOutType.outIsDeclared() && String.class.getName().equals(inOutType.outAsDeclaredType().toString())) {
+                    if (inOutType.inIsDeclared()){
+                        res = isBoxedPrimitive(inOutType.inAsDeclaredType(), context);
+                    } else {
+                        res = inOutType.inIsPrimitive();
+                    }
+                }
+                return res;
+            }
+        });
+
+
+        /**
          * Different Enum Mapper
          */
         mappingSpecificationList.add(new MappingSpecification() {
@@ -123,9 +156,6 @@ public abstract class MappingBuilder {
          */
         mappingSpecificationList.add(new MappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-
-                TypeElement typeElement = inOutType.inAsTypeElement();
-                final List<String> enumValues = collectEnumValues(typeElement);
 
                 return new MappingBuilder(true) {
                     @Override

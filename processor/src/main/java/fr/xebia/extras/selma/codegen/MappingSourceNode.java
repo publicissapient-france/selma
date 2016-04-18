@@ -225,6 +225,15 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode assignOutToString() {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                writer.emitStatement("out = in + \"\"");
+            }
+        };
+    }
+
     public static MappingSourceNode declareOut(final TypeMirror outType) {
         return new MappingSourceNode() {
             @Override

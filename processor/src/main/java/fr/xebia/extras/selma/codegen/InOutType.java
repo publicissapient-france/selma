@@ -177,7 +177,7 @@ public class InOutType {
         return out().getKind().isPrimitive();
     }
 
-    private boolean inIsDeclared() {
+    protected boolean inIsDeclared() {
         return in.getKind() == TypeKind.DECLARED;
     }
 

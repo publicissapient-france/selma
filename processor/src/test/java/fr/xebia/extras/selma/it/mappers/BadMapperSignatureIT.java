@@ -40,12 +40,4 @@ public class BadMapperSignatureIT extends IntegrationTestBase {
 
     }
 
-    @Test
-    public void bad_mapper_signature_compilation_should_fail_on_two_parameters_type_differs() throws Exception {
-
-        assertCompilationError(BadMapperSignature.class, "String mapTwoParametersDifferentTypes (String in, boolean out);", "differs and this kind of conversion is not supported here");
-
-    }
-
-
 }
