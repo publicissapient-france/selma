@@ -104,6 +104,10 @@ public @interface Mapper {
      */
     Class<?>[] withImmutables() default {};
 
+    /**
+     * This is used to declare custom immutable types. Selma will copy by reference any types inside this package,
+     * when it meets same type for matching fields in source and destination bean.
+     */
 	String[] withImmutablesPackages() default {};
 
     /**
