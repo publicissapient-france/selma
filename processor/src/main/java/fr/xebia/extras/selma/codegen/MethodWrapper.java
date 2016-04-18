@@ -29,6 +29,9 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,7 +124,8 @@ public class MethodWrapper {
     public boolean isGetter() {
         boolean res = false;
         if (hasNoParameter() && method.getReturnType().getKind() != TypeKind.VOID
-                && method.getModifiers().contains(Modifier.PUBLIC)) {
+                && method.getModifiers().contains(Modifier.PUBLIC)
+                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
             if (res) {
@@ -139,7 +143,8 @@ public class MethodWrapper {
     public boolean isSetter() {
         boolean res = false;
         if (method.getParameters().size() == 1 && method.getReturnType().getKind() == TypeKind.VOID
-                && method.getModifiers().contains(Modifier.PUBLIC)) {
+                && method.getModifiers().contains(Modifier.PUBLIC)
+                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
             Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
             res = setterMatcher.matches();
             if (res) {
