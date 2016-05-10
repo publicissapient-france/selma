@@ -149,7 +149,7 @@ public class CustomMapperWrapper {
 
     private void pushMappingInterceptor(TypeElement element, MethodWrapper method) {
 
-        String customMapperFieldName = buildMapperFieldName(element);
+        String customMapperFieldName = ignoreAbstract ? "this" : buildMapperFieldName(element);
         InOutType inOutType = method.inOutArgs();
         MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType,
                 String.format("%s.%s", customMapperFieldName, method.getSimpleName()));
@@ -211,7 +211,7 @@ public class CustomMapperWrapper {
                     pushCustomMapper(element, methodWrapper, null, ignoreAbstract);
                     addCustomInOutType(customInOutTypes, methodWrapper);
                 } else {
-                    pushMappingInterceptor(element, methodWrapper);
+                    pushMappingInterceptor(element, methodWrapper, ignoreAbstract);
                 }
                 mappingMethodCount++;
             }
