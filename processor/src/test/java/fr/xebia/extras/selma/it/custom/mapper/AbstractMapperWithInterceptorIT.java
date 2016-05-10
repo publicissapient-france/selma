@@ -37,8 +37,8 @@ public class AbstractMapperWithInterceptorIT extends IntegrationTestBase {
         Assert.assertNotNull(res);
 
         Assert.assertEquals(personIn.getAddress().getStreet(), res.getAddress().getStreet());
-        Assert.assertEquals(personIn.getAddress().getNumber() +  AbstractMapperWithInterceptor.NUMBER_INCREMENT,
-                res.getAddress().getNumber());                                               // interceptor here
+        Assert.assertEquals(personIn.getAddress().getNumber() + AbstractMapperWithInterceptor.NUMBER_INCREMENT,
+                res.getAddress().getNumber());  // interceptor here
         Assert.assertEquals(personIn.getAddress().getExtras(), res.getAddress().getExtras());
 
         Assert.assertEquals(personIn.getAddress().getCity().getName(), res.getAddress().getCity().getName());

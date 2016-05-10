@@ -147,7 +147,7 @@ public class CustomMapperWrapper {
     }
 
 
-    private void pushMappingInterceptor(TypeElement element, MethodWrapper method) {
+    private void pushMappingInterceptor(TypeElement element, MethodWrapper method, boolean ignoreAbstract) {
 
         String customMapperFieldName = ignoreAbstract ? "this" : buildMapperFieldName(element);
         InOutType inOutType = method.inOutArgs();
