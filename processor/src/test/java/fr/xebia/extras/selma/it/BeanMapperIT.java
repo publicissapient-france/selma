@@ -27,6 +27,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+
 /**
  *
  */
@@ -60,11 +64,11 @@ public class BeanMapperIT extends IntegrationTestBase {
 
         PersonOut res = mapper.asPersonOut(personIn);
 
-        Assert.assertNotNull(res);
-        Assert.assertEquals(personIn.getAge(), res.getAge());
-        Assert.assertEquals(personIn.getBirthDay(), res.getBirthDay());
-        Assert.assertEquals(personIn.getFirstName(), res.getFirstName());
-        Assert.assertEquals(personIn.getLastName(), res.getLastName());
+        assertNotNull(res);
+        assertEquals(personIn.getAge(), res.getAge());
+        assertEquals(personIn.getBirthDay(), res.getBirthDay());
+        assertEquals(personIn.getFirstName(), res.getFirstName());
+        assertEquals(personIn.getLastName(), res.getLastName());
         org.junit.Assert.assertArrayEquals(personIn.getIndices(), res.getIndices());
         org.junit.Assert.assertEquals(personIn.getTags(), res.getTags());
         org.junit.Assert.assertEquals(personIn.getEnumIn().name(), res.getEnumIn().name());
@@ -90,14 +94,14 @@ public class BeanMapperIT extends IntegrationTestBase {
 
         PersonOut res = mapper.asPersonOut(personIn);
 
-        Assert.assertNotNull(res);
-        Assert.assertEquals(personIn.getAge(), res.getAge());
-        Assert.assertNull(res.getBirthDay());
-        Assert.assertNull(res.getFirstName());
-        Assert.assertNull(res.getLastName());
-        Assert.assertNull(res.getIndices());
-        Assert.assertNull(res.getTags());
-        Assert.assertNull(res.getEnumIn());
+        assertNotNull(res);
+        assertEquals(personIn.getAge(), res.getAge());
+        assertNull(res.getBirthDay());
+        assertNull(res.getFirstName());
+        assertNull(res.getLastName());
+        assertNull(res.getIndices());
+        assertNull(res.getTags());
+        assertNull(res.getEnumIn());
     }
 
     @Test
@@ -122,14 +126,14 @@ public class BeanMapperIT extends IntegrationTestBase {
 
         PersonOut res = mapper.asPersonOut(personIn);
 
-        Assert.assertNotNull(res);
-        Assert.assertEquals(personIn.getAge(), res.getAge());
-        Assert.assertNull(res.getBirthDay());
-        Assert.assertNull(res.getFirstName());
-        Assert.assertNull(res.getLastName());
-        Assert.assertNull(res.getIndices());
-        Assert.assertNull(res.getTags());
-        Assert.assertNull(res.getEnumIn());
+        assertNotNull(res);
+        assertEquals(personIn.getAge(), res.getAge());
+        assertNull(res.getBirthDay());
+        assertNull(res.getFirstName());
+        assertNull(res.getLastName());
+        assertNull(res.getIndices());
+        assertNull(res.getTags());
+        assertNull(res.getEnumIn());
         verifyAddress(personIn.getAddress(), res.getAddress());
         verifyAddress(personIn.getAddressBis(), res.getAddressBis());
     }
@@ -153,18 +157,18 @@ public class BeanMapperIT extends IntegrationTestBase {
 
         PersonOut res = mapper.asPersonOut(personIn);
 
-        Assert.assertNotNull(res);
+        assertNotNull(res);
         verifyAddress(personIn.getAddress(), res.getAddress());
         verifyAddress(personIn.getAddressBis(), res.getAddressBis());
     }
 
     private void verifyAddress(AddressIn address, AddressOut address1) {
         if (address == null) {
-            Assert.assertNull(address1);
+            assertNull(address1);
         } else {
-            Assert.assertEquals(address.getStreet(), address1.getStreet());
-            Assert.assertEquals(address.getNumber(), address1.getNumber());
-            Assert.assertEquals(address.getExtras(), address1.getExtras());
+            assertEquals(address.getStreet(), address1.getStreet());
+            assertEquals(address.getNumber(), address1.getNumber());
+            assertEquals(address.getExtras(), address1.getExtras());
 
             verifyCity(address.getCity(), address1.getCity());
         }
@@ -172,11 +176,11 @@ public class BeanMapperIT extends IntegrationTestBase {
 
     private void verifyCity(CityIn city, CityOut city1) {
         if (city == null) {
-            Assert.assertNull(city1);
+            assertNull(city1);
         } else {
-            Assert.assertEquals(city.getName(), city1.getName());
-            Assert.assertEquals(city.getPopulation(), city1.getPopulation());
-            Assert.assertEquals(city.isCapital(), city1.isCapital());
+            assertEquals(city.getName(), city1.getName());
+            assertEquals(city.getPopulation(), city1.getPopulation());
+            assertEquals(city.isCapital(), city1.isCapital());
         }
     }
 

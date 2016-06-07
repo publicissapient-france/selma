@@ -26,6 +26,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.*;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,7 +118,8 @@ public class MethodWrapper {
     public boolean isGetter() {
         boolean res = false;
         if (hasNoParameter() && method.getReturnType().getKind() != TypeKind.VOID
-                && method.getModifiers().contains(Modifier.PUBLIC)) {
+                && method.getModifiers().contains(Modifier.PUBLIC)
+                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
             if (res) {
@@ -134,7 +136,8 @@ public class MethodWrapper {
      */
     public boolean isSetter() {
         boolean res = false;
-        if (method.getParameters().size() == 1 && method.getModifiers().contains(Modifier.PUBLIC)) {
+        if (method.getParameters().size() == 1 && method.getModifiers().contains(Modifier.PUBLIC)
+            && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
             boolean validReturnType = method.getReturnType().getKind() == TypeKind.VOID;
             if (!validReturnType) {
                 // check method as a member of the actual parentType

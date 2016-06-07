@@ -16,21 +16,25 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.CollectionMappingStrategy;
-import fr.xebia.extras.selma.IgnoreMissing;
-import fr.xebia.extras.selma.IoC;
-import fr.xebia.extras.selma.Mapper;
+import static fr.xebia.extras.selma.IgnoreMissing.ALL;
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IgnoreMissing.NONE;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
+
+import java.io.IOException;
+import java.util.List;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import java.io.IOException;
-import java.util.List;
 
-import static fr.xebia.extras.selma.IgnoreMissing.*;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.instantiateOut;
+import com.squareup.javawriter.JavaWriter;
+
+import fr.xebia.extras.selma.CollectionMappingStrategy;
+import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.IoC;
+import fr.xebia.extras.selma.Mapper;
 
 /**
  * Class used to wrap the Mapper Annotation
@@ -42,6 +46,7 @@ public class MapperWrapper {
     public static final String WITH_IOC = "withIoC";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
     public static final String WITH_IOC_SERVICE_NAME = "withIoCServiceName";
+	public static final String USE_CACHE_INSTANCE = "withInstanceCache";
     public static final String WITH_IGNORE_NULL_VALUE="withIgnoreNullValue";
 
     private final FieldsWrapper fields;
@@ -62,13 +67,13 @@ public class MapperWrapper {
     private final boolean abstractClass;
     private final FactoryWrapper factory;
     private boolean ignoreNullValue;
+	private final boolean useInstanceCache;
 
-    public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
+	public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
         this.context = context;
         this.mapperInterface = mapperInterface;
 
         mappingRegistry = new MappingRegistry(context);
-
 
         mapper = AnnotationWrapper.buildFor(context, mapperInterface, Mapper.class);
 
@@ -116,6 +121,8 @@ public class MapperWrapper {
 
         abstractClass = mapperInterface.getModifiers().contains(Modifier.ABSTRACT) &&
                 mapperInterface.getKind() == ElementKind.CLASS;
+
+		useInstanceCache = mapper.getAsBoolean(USE_CACHE_INSTANCE);
     }
 
 
@@ -222,7 +229,7 @@ public class MapperWrapper {
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
         MappingSourceNode res = factory.generateNewInstanceSourceNodes(inOutType, outBeanWrapper);
         if (res == null) {
-            res = instantiateOut(inOutType,
+			res = instantiateOut(useInstanceCache, inOutType,
                     (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : ""));
         }
         return res;
@@ -231,4 +238,8 @@ public class MapperWrapper {
     public boolean hasFactory(TypeMirror typeMirror) {
         return factory.hasFactory(typeMirror);
     }
+
+	public boolean isUseInstanceCache() {
+		return useInstanceCache;
+	}
 }

@@ -16,16 +16,50 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import javax.lang.model.element.*;
-import javax.lang.model.type.*;
-import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.SimpleTypeVisitor6;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.arrayCopy;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.assign;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.assignOutPrime;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.assignOutToString;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.blank;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNotNull;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNullElse;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapArrayBis;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapCollection;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapDefaultCase;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapEnumBlock;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapEnumCase;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMap;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.set;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.statement;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.SimpleTypeVisitor6;
+
+import fr.xebia.extras.selma.SelmaConstants;
 
 /**
  *
@@ -84,6 +118,39 @@ public abstract class MappingBuilder {
 
 
         /**
+         * Mapping Primitives toString
+         */
+        mappingSpecificationList.add(new MappingSpecification() {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(true) {
+                    @Override
+                    public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+
+                        if (context.depth > 0) {
+                            root.body(set(vars.outSetterPath(), vars.inGetter() + "\"\""));
+                        } else {
+                            root.body(assignOutToString());
+                        }
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                boolean res = false;
+                if (inOutType.outIsDeclared() && String.class.getName().equals(inOutType.outAsDeclaredType().toString())) {
+                    if (inOutType.inIsDeclared()){
+                        res = isBoxedPrimitive(inOutType.inAsDeclaredType(), context);
+                    } else {
+                        res = inOutType.inIsPrimitive();
+                    }
+                }
+                return res;
+            }
+        });
+
+
+        /**
          * Different Enum Mapper
          */
         mappingSpecificationList.add(new MappingSpecification() {
@@ -98,7 +165,11 @@ public abstract class MappingBuilder {
                         // If we are in a nested context we should call an enum mapping method
                         if (context.depth > 0) {
                             String mappingMethod = context.mappingMethod(inOutType);
-                            root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+							if (context.getWrapper().isUseInstanceCache()) {
+								root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+							} else {
+								root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+							}
                         } else { // Otherwise we should build the real enum selma code
                             MappingSourceNode node = blank();
                             MappingSourceNode valuesBlock = node;
@@ -123,9 +194,6 @@ public abstract class MappingBuilder {
          */
         mappingSpecificationList.add(new MappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-
-                TypeElement typeElement = inOutType.inAsTypeElement();
-                final List<String> enumValues = collectEnumValues(typeElement);
 
                 return new MappingBuilder(true) {
                     @Override
@@ -403,10 +471,18 @@ public abstract class MappingBuilder {
 
     protected void setOrAssignNestedBean(final MapperGeneratorContext context, final SourceNodeVars vars, final InOutType inOutType) {
         String mappingMethod = context.mappingMethod(inOutType);
-        if (inOutType.isOutPutAsParam()) {
-            this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", mappingMethod)));
+		if (context.getWrapper().isUseInstanceCache()) {
+			if (inOutType.isOutPutAsParam()) {
+				this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+			} else {
+				this.root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+			}
         } else {
-            this.root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+			if (inOutType.isOutPutAsParam()) {
+				this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", mappingMethod)));
+			} else {
+				this.root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+			}
         }
     }
 
@@ -500,7 +576,7 @@ public abstract class MappingBuilder {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
-                root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
+				root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 return root.body;
             }
         };
@@ -512,9 +588,9 @@ public abstract class MappingBuilder {
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
                 if (inOutType.isOutPutAsParam()) {
-                    root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
+					root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 } else {
-                    root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
+					root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
                 }
                 return root.body;
             }
@@ -579,7 +655,11 @@ public abstract class MappingBuilder {
                 // If we are in a nested context we should call an enum mapping method
                 if (context.depth > 0) {
                     String mappingMethod = context.mappingMethod(inOutType);
-                    root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+					if (context.getWrapper().isUseInstanceCache()) {
+						root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+					} else {
+						root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+					}
                 } else { // Otherwise we should build the real enum selma code
                     MappingSourceNode node = blank();
                     MappingSourceNode valuesBlock = node;

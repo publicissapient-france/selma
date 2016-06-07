@@ -104,6 +104,10 @@ public @interface Mapper {
      */
     Class<?>[] withImmutables() default {};
 
+    /**
+     * This is used to declare custom immutable types. Selma will copy by reference any types inside this package,
+     * when it meets same type for matching fields in source and destination bean.
+     */
 	String[] withImmutablesPackages() default {};
 
     /**
@@ -153,7 +157,12 @@ public @interface Mapper {
      * By default Selma uses a setter to provide new mapped collections. Passing this attribute to ALLOW_GETTER will
      * make Selma use a getter to map collections if the setter does not exist.
      */
-     CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+	CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+
+	/**
+	 * Instance cache is used to handle circular references in objects mapped by Selma
+	 */
+	boolean withInstanceCache() default true;
 
 
 }

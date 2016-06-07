@@ -16,15 +16,21 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.SelmaConstants;
-
-import javax.lang.model.type.TypeMirror;
-import java.io.IOException;
-import java.util.EnumSet;
-
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
+import javax.lang.model.type.TypeMirror;
+
+import com.squareup.javawriter.JavaWriter;
+
+import fr.xebia.extras.selma.InstanceCache;
+import fr.xebia.extras.selma.SelmaConstants;
+import fr.xebia.extras.selma.SimpleInstanceCache;
 
 /**
  * Builds the mapping graph
@@ -86,66 +92,41 @@ public abstract class MappingSourceNode {
 
     }
 
-    public static MappingSourceNode mapMethod(final String inType, final String outType, final String name, final boolean override) {
+	public static MappingSourceNode mapMethod(final MapperGeneratorContext context, final InOutType inOutType, final String name, final boolean override, final boolean isFinal) {
 
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
+				List<String> parameters = new ArrayList<String>();
+				parameters.add(inOutType.in().toString());
+				parameters.add(SelmaConstants.IN_VAR);
+				if (inOutType.isOutPutAsParam()) {
+					parameters.add(inOutType.out().toString());
+					parameters.add(SelmaConstants.OUT_VAR);
+				}
 
-                writer.emitJavadoc("Mapping method overridden by Selma");
-                if (override) {
-                    writer.emitAnnotation(Override.class);
-                }
-                writer.beginMethod(outType, name, EnumSet.of(PUBLIC, FINAL), inType, SelmaConstants.IN_VAR);
+				if (override) {
+					writer.emitAnnotation(Override.class);
+				}
 
-                writeBody(writer);
-
-                writer.emitStatement("return out");
-                writer.endMethod();
-                writer.emitEmptyLine();
-            }
-        };
-    }
-
-    public static MappingSourceNode mapMethod(final InOutType inOutType, final String name, final boolean override) {
-
-        return new MappingSourceNode() {
-            @Override void writeNode(JavaWriter writer) throws IOException {
-
-                writer.emitJavadoc("Mapping method overridden by Selma");
-                if (override) {
-                    writer.emitAnnotation(Override.class);
-                }
-                if (inOutType.isOutPutAsParam()) {
-                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC, FINAL), inOutType.in().toString(), SelmaConstants.IN_VAR, inOutType.out().toString(), SelmaConstants.OUT_VAR);
-                } else {
-                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC, FINAL), inOutType.in().toString(), SelmaConstants.IN_VAR);
-                }
-                writeBody(writer);
-
-                writer.emitStatement("return out");
-                writer.endMethod();
-                writer.emitEmptyLine();
-            }
-        };
-    }
+				if (context.getWrapper().isUseInstanceCache()) {
+					// Method without instance cache : call the other method with a new InstanceCache as parameter
+					writer.emitJavadoc("Mapping method overridden by Selma");
+					writer.beginMethod(inOutType.out().toString(), name, isFinal ? EnumSet.of(PUBLIC, FINAL) : EnumSet.of(PUBLIC), parameters, null);
+					if (inOutType.isOutPutAsParam()) {
+						writer.emitStatement("return %s(in, out, new %s())", name, SimpleInstanceCache.class.getName());
+					} else {
+						writer.emitStatement("return %s(in, new %s())", name, SimpleInstanceCache.class.getName());
+					}
+					writer.endMethod();
+					writer.emitEmptyLine();
 
 
-    public static MappingSourceNode mapMethodNotFinal(final InOutType inOutType, final String name, final boolean override) {
+                	parameters.add(InstanceCache.class.getName());
+                	parameters.add(SelmaConstants.INSTANCE_CACHE);
+				}
 
-        return new MappingSourceNode() {
-            @Override
-            void writeNode(JavaWriter writer) throws IOException {
-
-                writer.emitJavadoc("Mapping method overridden by Selma");
-                if (override) {
-                    writer.emitAnnotation(Override.class);
-                }
-                if (inOutType.isOutPutAsParam()) {
-                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC), inOutType.in().toString(), SelmaConstants.IN_VAR, inOutType.out().toString(), SelmaConstants.OUT_VAR);
-                } else {
-                    writer.beginMethod(inOutType.out().toString(), name, EnumSet.of(PUBLIC), inOutType.in().toString(), SelmaConstants.IN_VAR);
-                }
+				writer.beginMethod(inOutType.out().toString(), name, isFinal ? EnumSet.of(PUBLIC, FINAL) : EnumSet.of(PUBLIC), parameters, null);
 
                 writeBody(writer);
 
@@ -156,6 +137,17 @@ public abstract class MappingSourceNode {
         };
     }
 
+	public static MappingSourceNode controlInCache(final String field, final String outType) {
+		return new MappingSourceNode() {
+			@Override
+			void writeNode(JavaWriter writer) throws IOException {
+				writer.emitStatement("%s object = %s.get(%s)", outType, SelmaConstants.INSTANCE_CACHE, field);
+				writer.beginControlFlow(String.format("if (object != null)"));
+				writer.emitStatement("return object");
+				writer.endControlFlow();
+			}
+		};
+	}
 
     public static MappingSourceNode controlNotNull(final String field, final boolean outPutAsParam) {
         return new MappingSourceNode() {
@@ -201,7 +193,7 @@ public abstract class MappingSourceNode {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
-                writer.emitStatement("%s(%s)", outField, inField);
+				writer.emitStatement("%s(%s)", outField, inField);
             }
         };
     }
@@ -221,6 +213,15 @@ public abstract class MappingSourceNode {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
                 writer.emitStatement("out = in");
+            }
+        };
+    }
+
+    public static MappingSourceNode assignOutToString() {
+        return new MappingSourceNode() {
+            @Override
+            void writeNode(JavaWriter writer) throws IOException {
+                writer.emitStatement("out = in + \"\"");
             }
         };
     }
@@ -354,7 +355,7 @@ public abstract class MappingSourceNode {
     }
 
 
-    public static MappingSourceNode instantiateOut(final InOutType inOutType, final String params) {
+	public static MappingSourceNode instantiateOut(final boolean useInstanceCache, final InOutType inOutType, final String params) {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
@@ -363,10 +364,18 @@ public abstract class MappingSourceNode {
                    */
                 if (inOutType.isOutPutAsParam()) {
                     writer.beginControlFlow("if (out == null)");
-                    writer.emitStatement("out = new %s(%s)", inOutType.out().toString(), params);
+					instantiate(inOutType, params, writer);
                     writer.endControlFlow();
                 } else {
-                    writer.emitStatement("out = new %s(%s)", inOutType.out().toString(), params);
+					instantiate(inOutType, params, writer);
+				}
+			}
+
+			private void instantiate(final InOutType inOutType, final String params, JavaWriter writer)
+					throws IOException {
+				writer.emitStatement("%s = new %s(%s)", SelmaConstants.OUT_VAR, inOutType.out().toString(), params);
+				if (useInstanceCache) {
+					writer.emitStatement("%s.put(%s, %s)", SelmaConstants.INSTANCE_CACHE, SelmaConstants.IN_VAR, SelmaConstants.OUT_VAR);
                 }
             }
         };
