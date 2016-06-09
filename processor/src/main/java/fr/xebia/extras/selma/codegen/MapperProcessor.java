@@ -85,8 +85,8 @@ public final class MapperProcessor extends AbstractProcessor {
 
     private void generateMappingClassses() throws IOException {
 
-        for (String classe : remainingMapperTypes.keySet()) {
-            MapperClassGenerator classGenerator = new MapperClassGenerator(classe, remainingMapperTypes.get(classe),
+        for (Map.Entry<String, List<ExecutableElement>> entry : remainingMapperTypes.entrySet()) {
+            MapperClassGenerator classGenerator = new MapperClassGenerator(entry.getKey(), entry.getValue(),
                     processingEnv);
             classGenerator.build();
         }

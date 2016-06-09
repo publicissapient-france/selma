@@ -25,13 +25,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.*;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +35,6 @@ import java.util.regex.Pattern;
  * it gives convenience method to simplify method manipulation
  */
 public class MethodWrapper {
-
     private static final String GETTER_FORMAT = "(get|is)(.*)";
     private static final Pattern GETTER_PATTERN = Pattern.compile(GETTER_FORMAT);
     private static final String SETTER_FORMAT = "set(.*)";
@@ -142,13 +136,25 @@ public class MethodWrapper {
      */
     public boolean isSetter() {
         boolean res = false;
-        if (method.getParameters().size() == 1 && method.getReturnType().getKind() == TypeKind.VOID
-                && method.getModifiers().contains(Modifier.PUBLIC)
-                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
-            Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
-            res = setterMatcher.matches();
-            if (res) {
-                fieldName = setterMatcher.group(1);
+        if (method.getParameters().size() == 1 && method.getModifiers().contains(Modifier.PUBLIC)
+            && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
+            boolean validReturnType = method.getReturnType().getKind() == TypeKind.VOID;
+            if (!validReturnType) {
+                // check method as a member of the actual parentType
+                ExecutableType memberMethod = (ExecutableType) context.type.asMemberOf(parentType, method);
+                TypeMirror memberReturnType = memberMethod.getReturnType();
+                // can be a type variable if the return type is parameterized
+                if (memberReturnType.getKind() == TypeKind.TYPEVAR) {
+                    memberReturnType = ((TypeVariable) memberReturnType).getUpperBound();
+                }
+                validReturnType = context.type.isSameType(memberReturnType, parentType);
+            }
+            if (validReturnType) {
+                Matcher setterMatcher = SETTER_PATTERN.matcher(method.getSimpleName());
+                res = setterMatcher.matches();
+                if (res) {
+                    fieldName = setterMatcher.group(1);
+                }
             }
         }
         return res;
