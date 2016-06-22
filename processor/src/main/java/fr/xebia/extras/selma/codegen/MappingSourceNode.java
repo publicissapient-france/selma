@@ -239,8 +239,9 @@ public abstract class MappingSourceNode {
         return new MappingSourceNode() {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
-                writer.emitJavadoc("Throw notSupportedExeption because we failed to generate the mapping code: \n" + message);
-                writer.emitStatement("throw new UnsupportedOperationException(\"%s\")", message);
+                writer.emitJavadoc("Throw UnsupportedOperationException because we failed to generate the mapping code:\n" + message);
+                // new lines in message result in uncompilable code.
+                writer.emitStatement("throw new UnsupportedOperationException(\"%s\")", message.replace("\n", " "));
             }
         };
     }
@@ -284,7 +285,7 @@ public abstract class MappingSourceNode {
             @Override
             void writeNode(JavaWriter writer) throws IOException {
                 //for ( java.util.Map.Entry<java.lang.String,java.lang.String> _inEntry  : inType.entrySet())
-                writer.beginControlFlow(String.format("for (java.util.Map.Entry<%s,%s> %s : %s.entrySet())", keyType, valueType, itemVar, inField));
+                writer.beginControlFlow("for (java.util.Map.Entry<%s,%s> %s : %s.entrySet())", keyType, valueType, itemVar, inField);
                 writeBody(writer);
                 writer.endControlFlow();
             }
