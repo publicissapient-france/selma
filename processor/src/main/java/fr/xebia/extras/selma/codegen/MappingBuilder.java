@@ -278,16 +278,17 @@ public abstract class MappingBuilder {
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return inOutType.areDeclared() &&
                         isCollection(inOutType.inAsDeclaredType(), context) &&
-                        isCollection(inOutType.outAsDeclaredType(), context) &&
-                        // can't map a raw input type
-                        getTypeArgument(context, inOutType.inAsDeclaredType(), 0) != null;
+                        isCollection(inOutType.outAsDeclaredType(), context);
             }
 
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
 
                 // We have a collection
                 final TypeMirror genericIn = getTypeArgument(context, inOutType.inAsDeclaredType(), 0);
-                assert genericIn != null; // should have been filtered out by match()
+                if (genericIn == null) {
+                    return null;
+                }
+
                 final TypeMirror genericOut = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 // emit writer loop for collection and choose an implementation
                 String impl;
@@ -352,12 +353,16 @@ public abstract class MappingBuilder {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 // We have a Map
                 final TypeMirror genericInKey = getTypeArgument(context, inOutType.inAsDeclaredType(), 0);
-                final TypeMirror genericOutKey = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 final TypeMirror genericInValue = getTypeArgument(context, inOutType.inAsDeclaredType(), 1);
+                if (genericInKey == null || genericInValue == null) {
+                    // can't meaningfully map a raw Map
+                    return null;
+                }
+
+                final TypeMirror genericOutKey = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 final TypeMirror genericOutValue = getTypeArgument(context, inOutType.outAsDeclaredType(), 1);
-                assert genericInKey != null && genericInValue != null; // should have been filtered out by match()
-                if (genericOutKey != null && genericOutValue == null) {
-                    throw new IllegalStateException("genericOutKey is non-null but genericOutValue is null");
+                if (genericOutKey == null ^ genericOutValue == null) {
+                    throw new IllegalStateException("genericOutKey and genericOutValue must both be null or non-null");
                 }
 
                 // emit writer loop for collection and choose an implementation
@@ -407,10 +412,7 @@ public abstract class MappingBuilder {
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return inOutType.areDeclared() &&
                         isMap(inOutType.inAsDeclaredType(), context) &&
-                        isMap(inOutType.outAsDeclaredType(), context) &&
-                        // can't meaningfully map a raw Map
-                        getTypeArgument(context, inOutType.inAsDeclaredType(), 0) != null &&
-                        getTypeArgument(context, inOutType.inAsDeclaredType(), 1) != null;
+                        isMap(inOutType.outAsDeclaredType(), context);
             }
         });
 

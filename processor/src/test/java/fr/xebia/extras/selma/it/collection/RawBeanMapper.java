@@ -18,11 +18,18 @@ package fr.xebia.extras.selma.it.collection;
 
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.RawBean;
+import fr.xebia.extras.selma.beans.RawListBean;
+import fr.xebia.extras.selma.beans.RawMapBean;
 
 /**
- *
+ * Have to use separate methods (and thus beans) as JDK7 doesn't reliably print multiple compile errors from the same
+ * compilation method (ie the clone() methods).
  */
 @Mapper
 public interface RawBeanMapper {
     RawBean clone(RawBean rawBean);
+
+    RawListBean clone(RawListBean rawBean);
+
+    RawMapBean clone(RawMapBean rawBean);
 }

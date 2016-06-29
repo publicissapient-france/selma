@@ -179,7 +179,7 @@ public class MapperMethodGenerator {
                 "--> Add a custom mapper or 'withIgnoreFields' on @Mapper or @Maps to fix this ! If you think this a Bug in Selma please report issue here [https://github.com/xebia-france/selma/issues].", inOutType.in(), inOutType.out(), mapperMethod.element().getEnclosingElement(), mapperMethod.element().toString());
         ptr.body(notSupported(message));
         if (configuration.isIgnoreNotSupported()) {
-            context.warn(message, mapperMethod.element());
+            context.warn(mapperMethod.element(), message);
         } else {
             context.error(mapperMethod.element(), message);
         }

@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
@@ -102,10 +101,21 @@ public class MapperGeneratorContext {
         };
     }
 
+    public void error(Element element, String templateMessage, Object... args) {
+        message(Diagnostic.Kind.ERROR, element, templateMessage, args);
+    }
 
-    public void error(Element element, String message, Object... args) {
+    public void warn(Element element, String templateMessage, Object... args) {
+        message(Diagnostic.Kind.WARNING, element, templateMessage, args);
+    }
 
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(message, args), messageRegistry.hasMessageFor(Diagnostic.Kind.ERROR, element) ? null : element);
+    private void message(Diagnostic.Kind kind, Element element, String templateMessage, Object... args) {
+        if (messageRegistry.hasMessageFor(kind, element)) {
+            // jdk7 treats a null element as a valid element too, so later messages with null get lost
+            processingEnv.getMessager().printMessage(kind, String.format(templateMessage, args));
+        } else {
+            processingEnv.getMessager().printMessage(kind, String.format(templateMessage, args), element);
+        }
     }
 
     public void pushStackForBody(MappingSourceNode node, SourceNodeVars vars) {
@@ -121,10 +131,6 @@ public class MapperGeneratorContext {
             return stack.pop();
         }
         return null;
-    }
-
-    public void warn(String s, ExecutableElement element) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, s, messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
     }
 
     public boolean isIgnoreNullValue() {
@@ -209,10 +215,6 @@ public class MapperGeneratorContext {
 
     public Types types() {
         return type;
-    }
-
-    public void warn(Element element, String templateMessage, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(templateMessage, args), messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
     }
 
     public void setNewParams(String newParams) {
