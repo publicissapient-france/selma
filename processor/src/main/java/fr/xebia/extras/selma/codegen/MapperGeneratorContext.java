@@ -24,11 +24,13 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
@@ -45,9 +47,9 @@ public class MapperGeneratorContext {
     private boolean ignoreNullValue=false;
     int depth = 0;
 
-    Elements elements;
+    final Elements elements;
 
-    Types type;
+    final Types type;
 
     // Handle nesting on source node
     LinkedList<StackElem> stack;
@@ -62,6 +64,9 @@ public class MapperGeneratorContext {
 
 	private MapperWrapper wrapper;
 
+    private final DeclaredType objectType;
+    private final TypeVisitor<Boolean, MapperGeneratorContext> isValueTypeVisitor;
+
     public MapperGeneratorContext(ProcessingEnvironment processingEnvironment) {
         this.elements = processingEnvironment.getElementUtils();
         this.type = processingEnvironment.getTypeUtils();
@@ -71,12 +76,46 @@ public class MapperGeneratorContext {
         methodStack = new LinkedList<MappingMethod>();
         messageRegistry = new CompilerMessageRegistry();
         sources = new ArrayList<TypeElement>();
+
+        objectType = type.getDeclaredType(elements.getTypeElement("java.lang.Object"));
+        isValueTypeVisitor = new SimpleTypeVisitor6<Boolean, MapperGeneratorContext>() {
+            private final DeclaredType enumType = getDeclaredType("java.lang.Enum");
+            private final DeclaredType numberType = getDeclaredType("java.lang.Number");
+            private final DeclaredType stringType = getDeclaredType("java.lang.String");
+            private final DeclaredType booleanType = getDeclaredType("java.lang.Boolean");
+            private final DeclaredType characterType = getDeclaredType("java.lang.Character");
+
+            @Override
+            public Boolean visitDeclared(DeclaredType t, MapperGeneratorContext ctx) {
+                return ctx.types().isSubtype(t, enumType) ||
+                        ctx.types().isSubtype(t, numberType) ||
+                        ctx.types().isSameType(t, stringType) ||
+                        ctx.types().isSameType(t, booleanType) ||
+                        ctx.types().isSameType(t, characterType);
+            }
+
+            @Override
+            public Boolean visitPrimitive(PrimitiveType t, MapperGeneratorContext ctx) {
+                return true;
+            }
+        };
     }
 
+    public void error(Element element, String templateMessage, Object... args) {
+        message(Diagnostic.Kind.ERROR, element, templateMessage, args);
+    }
 
-    public void error(Element element, String message, Object... args) {
+    public void warn(Element element, String templateMessage, Object... args) {
+        message(Diagnostic.Kind.WARNING, element, templateMessage, args);
+    }
 
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(message, args), messageRegistry.hasMessageFor(Diagnostic.Kind.ERROR, element) ? null : element);
+    private void message(Diagnostic.Kind kind, Element element, String templateMessage, Object... args) {
+        if (messageRegistry.hasMessageFor(kind, element)) {
+            // jdk7 treats a null element as a valid element too, so later messages with null get lost
+            processingEnv.getMessager().printMessage(kind, String.format(templateMessage, args));
+        } else {
+            processingEnv.getMessager().printMessage(kind, String.format(templateMessage, args), element);
+        }
     }
 
     public void pushStackForBody(MappingSourceNode node, SourceNodeVars vars) {
@@ -92,10 +131,6 @@ public class MapperGeneratorContext {
             return stack.pop();
         }
         return null;
-    }
-
-    public void warn(String s, ExecutableElement element) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, s, messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
     }
 
     public boolean isIgnoreNullValue() {
@@ -178,8 +213,8 @@ public class MapperGeneratorContext {
         return elements;
     }
 
-    public void warn(Element element, String templateMessage, Object... args) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(templateMessage, args), messageRegistry.hasMessageFor(Diagnostic.Kind.WARNING, element) ? null : element);
+    public Types types() {
+        return type;
     }
 
     public void setNewParams(String newParams) {
@@ -196,6 +231,18 @@ public class MapperGeneratorContext {
 
     public TypeElement getTypeElement(String classe) {
         return elements.getTypeElement(classe);
+    }
+
+    public DeclaredType getDeclaredType(String classe) {
+        return type.getDeclaredType(getTypeElement(classe));
+    }
+
+    public boolean isValueType(TypeMirror typeMirror) {
+        return typeMirror.accept(isValueTypeVisitor, this);
+    }
+
+    public TypeMirror getObjectType() {
+        return objectType;
     }
 
     public void setSources(List<TypeElement> _sources) {

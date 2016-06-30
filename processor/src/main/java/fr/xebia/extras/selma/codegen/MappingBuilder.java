@@ -276,14 +276,19 @@ public abstract class MappingBuilder {
         // Map collections
         mappingSpecificationList.add(new MappingSpecification() {
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-
-                return inOutType.areDeclared() && isCollection(inOutType.inAsDeclaredType(), context) && isCollection(inOutType.outAsDeclaredType(), context);
+                return inOutType.areDeclared() &&
+                        isCollection(inOutType.inAsDeclaredType(), context) &&
+                        isCollection(inOutType.outAsDeclaredType(), context);
             }
 
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
 
                 // We have a collection
                 final TypeMirror genericIn = getTypeArgument(context, inOutType.inAsDeclaredType(), 0);
+                if (genericIn == null) {
+                    return null;
+                }
+
                 final TypeMirror genericOut = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 // emit writer loop for collection and choose an implementation
                 String impl;
@@ -291,7 +296,8 @@ public abstract class MappingBuilder {
                     // Use given class for collection
                     impl = inOutType.out().toString();
                 } else {
-                    impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) + "<" + genericOut.toString() + ">";
+                    impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) +
+                            (genericOut == null ? "" : "<" + genericOut.toString() + ">");
                 }
                 final String implementation = impl;
                 TypeElement outElement = context.elements().getTypeElement(impl.replaceAll("<.*>", ""));
@@ -327,11 +333,16 @@ public abstract class MappingBuilder {
                             node.child(vars.setOrAssign(tmpVar));
                         }
                         context.pushStackForBody(node,
-                                new SourceNodeVars().withInOutType(new InOutType(genericIn, genericOut, false))
+                                new SourceNodeVars().withInOutType(createInOutType())
                                                     .withInField(itemVar)
                                                     .withOutField(String.format("%s.add", tmpVar)).withAssign(false).withIndexPtr(vars.nextPtr()));
 
                         return root.body;
+                    }
+
+                    private InOutType createInOutType() {
+                        TypeMirror out = genericOut == null ? context.getObjectType() : genericOut;
+                        return new InOutType(genericIn, out, false);
                     }
                 };
             }
@@ -342,9 +353,17 @@ public abstract class MappingBuilder {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 // We have a Map
                 final TypeMirror genericInKey = getTypeArgument(context, inOutType.inAsDeclaredType(), 0);
-                final TypeMirror genericOutKey = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 final TypeMirror genericInValue = getTypeArgument(context, inOutType.inAsDeclaredType(), 1);
+                if (genericInKey == null || genericInValue == null) {
+                    // can't meaningfully map a raw Map
+                    return null;
+                }
+
+                final TypeMirror genericOutKey = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
                 final TypeMirror genericOutValue = getTypeArgument(context, inOutType.outAsDeclaredType(), 1);
+                if (genericOutKey == null ^ genericOutValue == null) {
+                    throw new IllegalStateException("genericOutKey and genericOutValue must both be null or non-null");
+                }
 
                 // emit writer loop for collection and choose an implementation
                 String impl;
@@ -353,7 +372,8 @@ public abstract class MappingBuilder {
                     impl = inOutType.out().toString();
 
                 } else {
-                    impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) + "<" + genericOutKey.toString() + ", " + genericOutValue.toString() + ">";
+                    impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) +
+                            (genericOutKey == null ? "" : "<" + genericOutKey.toString() + ", " + genericOutValue.toString() + ">");
                 }
                 final String implementation = impl;
 
@@ -367,22 +387,32 @@ public abstract class MappingBuilder {
                         MappingSourceNode node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s()", implementation)))
                                                      .child(vars.setOrAssign(tmpVar))
                                                      .child(mapMap(itemVar, genericInKey.toString(), genericInValue.toString(), vars.inGetter()))
-                                                     .body(assign(String.format("%s %s", genericOutKey, keyVar), "null"));
-                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInValue, genericOutValue, false))
+                                                     .body(assign(String.format("%s %s", genericOutKey == null ? "Object" : genericOutKey, keyVar), "null"));
+                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(createInOutType(genericInValue, genericOutValue))
                                                                             .withInField(String.format("%s.getValue()", itemVar)).withInFieldPrefix(String.format("%s,", keyVar))
                                                                             .withOutField(String.format("%s.put", tmpVar))
                                                                             .withAssign(false).withIndexPtr(vars.nextPtr()));
-                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(new InOutType(genericInKey, genericOutKey, false))
+                        context.pushStackForChild(node, new SourceNodeVars().withInOutType(createInOutType(genericInKey, genericOutKey))
                                                                             .withInField(String.format("%s.getKey()", itemVar))
                                                                             .withOutField(keyVar)
                                                                             .withAssign(true).withIndexPtr(vars.nextPtr()));
                         return root.body;
                     }
+
+                    private InOutType createInOutType(TypeMirror in, TypeMirror out) {
+                        if (out == null) {
+                            out = context.getObjectType();
+                        }
+
+                        return new InOutType(in, out, false);
+                    }
                 };
             }
 
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                return inOutType.areDeclared() && isMap(inOutType.inAsDeclaredType(), context) && isMap(inOutType.outAsDeclaredType(), context);
+                return inOutType.areDeclared() &&
+                        isMap(inOutType.inAsDeclaredType(), context) &&
+                        isMap(inOutType.outAsDeclaredType(), context);
             }
         });
 
@@ -446,6 +476,25 @@ public abstract class MappingBuilder {
             }
         });
 
+        // Mapping assignable value types
+        mappingSpecificationList.add(new MappingSpecification() {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+
+                return new MappingBuilder(true) {
+                    @Override
+                    MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
+                        root.body(vars.setOrAssign("%s"));
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return context.types().isAssignable(inOutType.in(), inOutType.out()) &&
+                        context.isValueType(inOutType.in());
+            }
+        });
+
     }
 
     private static boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {
@@ -498,6 +547,10 @@ public abstract class MappingBuilder {
     }
 
     public static MappingBuilder getBuilderFor(final MapperGeneratorContext context, final InOutType inOutType) {
+        if (context.types().isSameType(context.getObjectType(), inOutType.in())) {
+            // can never build a useful Mapper if the input type is Object
+            return null;
+        }
 
         MappingBuilder res = null;
         for (MappingSpecification specification : mappingSpecificationList) {
@@ -685,7 +738,7 @@ public abstract class MappingBuilder {
      * @return
      */
     private static TypeMirror getTypeArgument(final MapperGeneratorContext context, TypeMirror type, final int index) {
-        TypeMirror param = type.accept(new SimpleTypeVisitor6<TypeMirror, Void>() {
+        return type.accept(new SimpleTypeVisitor6<TypeMirror, Void>() {
             @Override
             public TypeMirror visitDeclared(DeclaredType t, Void p) {
                 if (t.getTypeArguments().size() > 0) {
@@ -695,12 +748,6 @@ public abstract class MappingBuilder {
                 return getTypeArgument(context, superclass, index);
             }
         }, null);
-
-        if (param != null) {
-            return param;
-        }
-
-        return null;
     }
 
     static public <T> List<T> intersection(List<T> list1, List<T> list2) {
@@ -728,7 +775,6 @@ public abstract class MappingBuilder {
             }
         };
     }
-
 
     static abstract class MappingSpecification {
 

@@ -179,7 +179,7 @@ public class MapperMethodGenerator {
                 "--> Add a custom mapper or 'withIgnoreFields' on @Mapper or @Maps to fix this ! If you think this a Bug in Selma please report issue here [https://github.com/xebia-france/selma/issues].", inOutType.in(), inOutType.out(), mapperMethod.element().getEnclosingElement(), mapperMethod.element().toString());
         ptr.body(notSupported(message));
         if (configuration.isIgnoreNotSupported()) {
-            context.warn(message, mapperMethod.element());
+            context.warn(mapperMethod.element(), message);
         } else {
             context.error(mapperMethod.element(), message);
         }
@@ -198,11 +198,16 @@ public class MapperMethodGenerator {
             InOutType inOutType = stackElem.sourceNodeVars().inOutType;
             context.depth++;
             MappingBuilder mappingBuilder = findBuilderFor(inOutType);
-            if (stackElem.child) {
+            if (mappingBuilder != null) {
+                if (stackElem.child) {
 
-                stackElem.lastNode.lastChild().child(mappingBuilder.build(context, stackElem.sourceNodeVars()));
+                    stackElem.lastNode.lastChild().child(mappingBuilder.build(context, stackElem.sourceNodeVars()));
+                } else {
+                    stackElem.lastNode.body(mappingBuilder.build(context, stackElem.sourceNodeVars()));
+                }
             } else {
-                stackElem.lastNode.body(mappingBuilder.build(context, stackElem.sourceNodeVars()));
+                // just overwrite the whole node
+                handleNotSupported(inOutType, stackElem.lastNode);
             }
             context.depth--;
         }
@@ -304,7 +309,9 @@ public class MapperMethodGenerator {
                     handleNotSupported(inOutTypeForField, ptr);
                 }
             } catch (Exception e) {
-                System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
+                // javac processingEnv.messager() tends to trim after the first line, so print stack trace too
+                context.error(mapperMethod.element(), "Error while searching builder for field %s on %s mapper: %s",
+                        field, inOutType.toString(), e.toString());
                 e.printStackTrace();
             }
 
@@ -447,7 +454,9 @@ public class MapperMethodGenerator {
                 handleNotSupported(inOutType, ptr);
             }
         } catch (Exception e) {
-            System.out.printf("Error while searching builder for field %s on %s mapper", field, inOutType.toString());
+            // javac processingEnv.messager() tends to trim after the first line, so print stack trace too
+            context.error(mapperMethod.element(), "Error while searching builder for field %s on %s mapper: %s",
+                    field, inOutType.toString(), e.toString());
             e.printStackTrace();
         }
 
