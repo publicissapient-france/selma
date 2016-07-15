@@ -42,7 +42,7 @@ public class MapperWrapper {
     public static final String WITH_IOC = "withIoC";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
     public static final String WITH_IOC_SERVICE_NAME = "withIoCServiceName";
-    public static final String USE_CACHE_INSTANCE = "withInstanceCache";
+    public static final String WITH_CYCLIC_MAPPING = "withCyclicMapping";
     public static final String WITH_IGNORE_NULL_VALUE = "withIgnoreNullValue";
     final IoC ioC;
     final String ioCServiceName;
@@ -61,7 +61,7 @@ public class MapperWrapper {
     private final CollectionMappingStrategy collectionMappingStrategy;
     private final boolean abstractClass;
     private final FactoryWrapper factory;
-    private final boolean useInstanceCache;
+    private final boolean useCyclicMapping;
     private boolean ignoreNullValue;
 
     public MapperWrapper(MapperGeneratorContext context, TypeElement mapperInterface) {
@@ -117,7 +117,7 @@ public class MapperWrapper {
         abstractClass = mapperInterface.getModifiers().contains(Modifier.ABSTRACT) &&
                 mapperInterface.getKind() == ElementKind.CLASS;
 
-        useInstanceCache = mapper.getAsBoolean(USE_CACHE_INSTANCE);
+        useCyclicMapping = mapper.getAsBoolean(WITH_CYCLIC_MAPPING);
     }
 
 
@@ -224,7 +224,7 @@ public class MapperWrapper {
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
         MappingSourceNode res = factory.generateNewInstanceSourceNodes(inOutType, outBeanWrapper);
         if (res == null) {
-            res = instantiateOut(useInstanceCache, inOutType,
+            res = instantiateOut(useCyclicMapping, inOutType,
                     (outBeanWrapper.hasMatchingSourcesConstructor() ? context.newParams() : ""));
         }
         return res;
@@ -234,7 +234,7 @@ public class MapperWrapper {
         return factory.hasFactory(typeMirror);
     }
 
-    public boolean isUseInstanceCache() {
-        return useInstanceCache;
+    public boolean isUseCyclicMapping() {
+        return useCyclicMapping;
     }
 }

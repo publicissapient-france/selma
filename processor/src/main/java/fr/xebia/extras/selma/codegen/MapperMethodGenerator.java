@@ -90,7 +90,7 @@ public class MapperMethodGenerator {
 
         MappingSourceNode methodNode = (inOutType.isOutPutAsParam() ? methodRoot.body(blank()) : methodRoot.body(declareOut(inOutType.out())));
 
-        if (mapperWrapper.isUseInstanceCache()) {
+        if (mapperWrapper.isUseCyclicMapping()) {
             String out;
             if (inOutType.outIsPrimitive()) {
                 out = context.getBoxedClass((PrimitiveType) inOutType.out()).toString();
@@ -98,6 +98,7 @@ public class MapperMethodGenerator {
                 out = inOutType.out().toString();
             }
             methodNode = methodNode.child(controlInCache(SelmaConstants.IN_VAR, out));
+            methodNode = methodNode.child(pushInCache());
         }
 
         MappingBuilder mappingBuilder = findBuilderFor(inOutType);
@@ -121,18 +122,30 @@ public class MapperMethodGenerator {
             }
         }
 
+        MappingSourceNode tryBlockPtr = null;
+        if (mapperWrapper.isUseCyclicMapping()) {
+            methodNode = methodNode.child(tryBlock());
+            tryBlockPtr = methodNode;
+            methodNode = methodNode.body(blank());
+        }
+
         isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
         if (!isPrimitiveOrImmutable) {
             methodNode = methodNode.child(controlNotNull(SelmaConstants.IN_VAR, inOutType.isOutPutAsParam()));
             methodNode.body(blankRoot.body);
         } else {
-            methodNode.child(blankRoot.body);
+            methodNode = methodNode.child(blankRoot.body);
         }
 
         // Call the interceptor if it exist
         MappingBuilder interceptor = maps.mappingInterceptor(inOutType);
         if (interceptor != null) {
-            methodNode.child(interceptor.build(context, new SourceNodeVars()));
+            methodNode = methodNode.child(interceptor.build(context, new SourceNodeVars()));
+        }
+
+        if (mapperWrapper.isUseCyclicMapping()) {
+            tryBlockPtr = tryBlockPtr.child(finallyBlock());
+            tryBlockPtr.body(popFromCache());
         }
 
         // Give it a try

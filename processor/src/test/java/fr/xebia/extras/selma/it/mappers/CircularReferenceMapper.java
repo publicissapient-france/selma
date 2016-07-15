@@ -9,7 +9,7 @@ import fr.xebia.extras.selma.beans.CircularReference;
 /**
  * Mapper for an bean with circular reference
  */
-@Mapper
+@Mapper(withCyclicMapping = true)
 public interface CircularReferenceMapper {
 
     CircularReference as(CircularReference in);

@@ -25,7 +25,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
 /**
  *
  */
-@Mapper(ignoreMissingProperties = true, withFinalMappers = false, withInstanceCache = false)
+@Mapper(ignoreMissingProperties = true, withFinalMappers = false)
 public interface UseDeclaredMethodMapper {
 
     /**

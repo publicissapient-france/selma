@@ -64,7 +64,7 @@ public abstract class MappingSourceNode {
                     writer.emitAnnotation(Override.class);
                 }
 
-                if (context.getWrapper().isUseInstanceCache()) {
+                if (context.getWrapper().isUseCyclicMapping()) {
                     // Method without instance cache : call the other method with a new InstanceCache as parameter
                     writer.emitJavadoc("Mapping method overridden by Selma");
                     writer.beginMethod(inOutType.out().toString(), name, isFinal ? EnumSet.of(PUBLIC, FINAL) : EnumSet.of(PUBLIC), parameters, null);
@@ -103,6 +103,22 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode pushInCache() {
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+                writer.emitStatement("%s.push()", SelmaConstants.INSTANCE_CACHE);
+            }
+        };
+    }
+
+    public static MappingSourceNode popFromCache() {
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+                writer.emitStatement("%s.pop()", SelmaConstants.INSTANCE_CACHE);
+            }
+        };
+    }
+
     public static MappingSourceNode controlNotNull(final String field, final boolean outPutAsParam) {
         return new MappingSourceNode() {
             @Override void writeNode(JavaWriter writer) throws IOException {
@@ -113,6 +129,28 @@ public abstract class MappingSourceNode {
                     writer.nextControlFlow("else");
                     writer.emitStatement("out = null");
                 }
+                writer.endControlFlow();
+            }
+        };
+    }
+
+    public static MappingSourceNode tryBlock() {
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+                writer.beginControlFlow("try");
+                // body is Mandatory here
+                writeBody(writer);
+                writer.endControlFlow();
+            }
+        };
+    }
+
+    public static MappingSourceNode finallyBlock() {
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+                writer.beginControlFlow("finally");
+                // body is Mandatory here
+                writeBody(writer);
                 writer.endControlFlow();
             }
         };
@@ -289,7 +327,7 @@ public abstract class MappingSourceNode {
         };
     }
 
-    public static MappingSourceNode instantiateOut(final boolean useInstanceCache, final InOutType inOutType, final String params) {
+    public static MappingSourceNode instantiateOut(final boolean useCyclicMapping, final InOutType inOutType, final String params) {
         return new MappingSourceNode() {
             @Override void writeNode(JavaWriter writer) throws IOException {
                    /*
@@ -307,7 +345,7 @@ public abstract class MappingSourceNode {
             private void instantiate(final InOutType inOutType, final String params, JavaWriter writer)
                     throws IOException {
                 writer.emitStatement("%s = new %s(%s)", SelmaConstants.OUT_VAR, inOutType.out().toString(), params);
-                if (useInstanceCache) {
+                if (useCyclicMapping) {
                     writer.emitStatement("%s.put(%s, %s)", SelmaConstants.INSTANCE_CACHE, SelmaConstants.IN_VAR, SelmaConstants.OUT_VAR);
                 }
             }

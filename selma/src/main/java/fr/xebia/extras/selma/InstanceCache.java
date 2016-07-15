@@ -1,7 +1,10 @@
 package fr.xebia.extras.selma;
 
 public interface InstanceCache {
-    public <IN, OUT> OUT get(IN in);
+    <IN, OUT> OUT get(IN in);
 
-    public <IN, OUT> void put(IN in, OUT out);
+    <IN, OUT> void put(IN in, OUT out);
+
+    void push();
+    void pop();
 }

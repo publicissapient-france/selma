@@ -120,7 +120,7 @@ public abstract class MappingBuilder {
                         // If we are in a nested context we should call an enum mapping method
                         if (context.depth > 0) {
                             String mappingMethod = context.mappingMethod(inOutType);
-                            if (context.getWrapper().isUseInstanceCache()) {
+                            if (context.getWrapper().isUseCyclicMapping()) {
                                 root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
                             } else {
                                 root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
@@ -629,7 +629,7 @@ public abstract class MappingBuilder {
                 // If we are in a nested context we should call an enum mapping method
                 if (context.depth > 0) {
                     String mappingMethod = context.mappingMethod(inOutType);
-                    if (context.getWrapper().isUseInstanceCache()) {
+                    if (context.getWrapper().isUseCyclicMapping()) {
                         root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
                     } else {
                         root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
@@ -696,7 +696,7 @@ public abstract class MappingBuilder {
 
     protected void setOrAssignNestedBean(final MapperGeneratorContext context, final SourceNodeVars vars, final InOutType inOutType) {
         String mappingMethod = context.mappingMethod(inOutType);
-        if (context.getWrapper().isUseInstanceCache()) {
+        if (context.getWrapper().isUseCyclicMapping()) {
             if (inOutType.isOutPutAsParam()) {
                 this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
             } else {

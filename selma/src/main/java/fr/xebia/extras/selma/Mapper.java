@@ -161,7 +161,7 @@ public @interface Mapper {
     /**
      * Instance cache is used to handle circular references in objects mapped by Selma
      */
-    boolean withInstanceCache() default true;
+    boolean withCyclicMapping() default false;
 
 
 }
