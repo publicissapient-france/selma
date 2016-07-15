@@ -38,11 +38,13 @@ public class BeanWrapper {
     final TypeElement typeElement;
     final Map<String, FieldItem> fieldsGraph;
     private final TypeConstructorWrapper constructors;
+    private final TypeMirror typeMirror;
 
 
-    public BeanWrapper(MapperGeneratorContext context, TypeElement typeElement) {
+    public BeanWrapper(MapperGeneratorContext context, TypeMirror typeMirror) {
         this.context = context;
-        this.typeElement = typeElement;
+        this.typeMirror = typeMirror;
+        this.typeElement = (TypeElement) context.type.asElement(typeMirror);
 
         fieldsGraph = buildFieldGraph();
         constructors = new TypeConstructorWrapper(context, typeElement);
@@ -60,7 +62,7 @@ public class BeanWrapper {
             if (exclusions.contains(method.getSimpleName().toString())) {
                 continue;
             }
-            MethodWrapper methodWrapper = new MethodWrapper(method, (DeclaredType) typeElement.asType(), context);
+            MethodWrapper methodWrapper = new MethodWrapper(method, (DeclaredType)typeMirror, context);
 
             if (methodWrapper.isGetter()) {
                 putGetterField(methodWrapper, result);

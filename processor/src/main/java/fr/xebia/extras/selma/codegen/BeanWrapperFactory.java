@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 
 /**
@@ -25,14 +26,14 @@ import java.util.HashMap;
 public class BeanWrapperFactory {
 
 
-    private final HashMap<TypeElement, BeanWrapper> beanWrapperMap = new HashMap<TypeElement, BeanWrapper>();
+    private final HashMap<TypeMirror, BeanWrapper> beanWrapperMap = new HashMap<TypeMirror, BeanWrapper>();
 
-    public final BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeElement typeElement) {
+    public final BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeMirror typeMirror) {
 
-        BeanWrapper beanWrapper = beanWrapperMap.get(typeElement);
+        BeanWrapper beanWrapper = beanWrapperMap.get(typeMirror);
         if (beanWrapper == null) {
-            beanWrapper = new BeanWrapper(context, typeElement);
-            beanWrapperMap.put(typeElement, beanWrapper);
+            beanWrapper = new BeanWrapper(context, typeMirror);
+            beanWrapperMap.put(typeMirror, beanWrapper);
         }
         return beanWrapper;
     }

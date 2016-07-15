@@ -111,7 +111,7 @@ public class MapperMethodGenerator {
         } else {
             if (inOutType.areDeclared() && isSupported(inOutType.out())) {
                 // TODO Use factory, source or default constructor to instantiate out
-                final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.outAsTypeElement());
+                final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.out());
                 ptr = ptr.body(maps.generateNewInstanceSourceNodes(inOutType, outBeanWrapper));
                 context.depth++;
                 ptr.child(generate(inOutType));
@@ -139,8 +139,8 @@ public class MapperMethodGenerator {
         methodRoot.write(writer);
     }
 
-    private BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeElement typeElement) {
-        return beanWrapperFactory.getBeanWrapperOrNew(context, typeElement);
+    private BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeMirror typeMirror) {
+        return beanWrapperFactory.getBeanWrapperOrNew(context, typeMirror);
     }
 
     /**
@@ -162,7 +162,7 @@ public class MapperMethodGenerator {
         }
 
         TypeElement outTypeElement = (TypeElement) context.type.asElement(out);
-        BeanWrapper outBean = getBeanWrapperOrNew(context, outTypeElement);
+        BeanWrapper outBean = getBeanWrapperOrNew(context, out);
         return outBean.hasCallableConstructor();
     }
 
@@ -220,8 +220,8 @@ public class MapperMethodGenerator {
         TypeElement outTypeElement = (TypeElement) context.type.asElement(inOutType.out());
 
 
-        BeanWrapper outBean = getBeanWrapperOrNew(context, outTypeElement);
-        BeanWrapper inBean = getBeanWrapperOrNew(context, (TypeElement) context.type.asElement(inOutType.in()));
+        BeanWrapper outBean = getBeanWrapperOrNew(context, inOutType.out());
+        BeanWrapper inBean = getBeanWrapperOrNew(context, inOutType.in());
 
         Set<String> outFields = outBean.getSetterFields();
         List<Field> customFields = new ArrayList<Field>();
@@ -400,7 +400,7 @@ public class MapperMethodGenerator {
                 ptr = ptr.child(controlNull(field.toString()));
                 ptr.body(set(previousFieldPath + '.' + beanPtr.getSetterFor(lastVisitedField), "new " + beanPtr.getTypeForGetter(lastVisitedField) + "(" + context.newParams() + ")"));
             }
-            beanPtr = getBeanWrapperOrNew(context, (TypeElement) context.type.asElement(beanPtr.getTypeForGetter(lastVisitedField)));
+            beanPtr = getBeanWrapperOrNew(context, beanPtr.getTypeForGetter(lastVisitedField));
             previousFieldPath = field.toString();
         }
         lastVisitedField = fields[fields.length - 1];
