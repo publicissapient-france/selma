@@ -27,14 +27,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- *
  * User: slemesle
  * Date: 27/11/2013
  */
 public class OrderServiceTest {
 
     @Test
-    public void should_map_order(){
+    public void should_map_order() {
 
         Order in = new Order();
         in.setCreationDate(new Date());
@@ -73,7 +72,7 @@ public class OrderServiceTest {
         Assert.assertEquals(in.getCustomer().getEmail(), res.getCustomer().getEmail());
         Assert.assertEquals(in.getCustomer().getPhoneNumber(), res.getCustomer().getPhoneNumber());
         Assert.assertEquals(in.getCustomer().getName(), res.getCustomer().getName());
-        Assert.assertEquals(in.getCustomer().getDate(), res.getCustomer().getDate()+"");
+        Assert.assertEquals(in.getCustomer().getDate(), res.getCustomer().getDate() + "");
         Assert.assertEquals(in.getCustomer().getAddress().getCityLine(), res.getCustomer().getAddress().getCityLine());
         Assert.assertEquals(in.getCustomer().getAddress().getStreetLine1(), res.getCustomer().getAddress().getStreetLine1());
         Assert.assertEquals(in.getCustomer().getAddress().getStreetLine2(), res.getCustomer().getAddress().getStreetLine2());
@@ -88,7 +87,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void should_map_reverse_order(){
+    public void should_map_reverse_order() {
 
         OrderDto in = new OrderDto();
         in.setCreationDate(new Date());
@@ -124,7 +123,7 @@ public class OrderServiceTest {
         Assert.assertEquals(in.getCustomer().getEmail(), res.getCustomer().getEmail());
         Assert.assertEquals(in.getCustomer().getPhoneNumber(), res.getCustomer().getPhoneNumber());
         Assert.assertEquals(in.getCustomer().getName(), res.getCustomer().getName());
-        Assert.assertEquals(in.getCustomer().getDate()+"", res.getCustomer().getDate()+"");
+        Assert.assertEquals(in.getCustomer().getDate() + "", res.getCustomer().getDate() + "");
         Assert.assertEquals(in.getCustomer().getAddress().getCityLine(), res.getCustomer().getAddress().getCityLine());
         Assert.assertEquals(in.getCustomer().getAddress().getStreetLine1(), res.getCustomer().getAddress().getStreetLine1());
         Assert.assertEquals(in.getCustomer().getAddress().getStreetLine2(), res.getCustomer().getAddress().getStreetLine2());

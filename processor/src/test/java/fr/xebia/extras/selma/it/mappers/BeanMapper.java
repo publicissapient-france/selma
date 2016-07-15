@@ -16,11 +16,11 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
+import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
-import fr.xebia.extras.selma.beans.PersonOut;
 import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.beans.PersonOut;
 
 /**
  *
@@ -31,5 +31,5 @@ public interface BeanMapper {
     PersonOut asPersonOut(PersonIn in);
 
 
-    AddressOut asAddressOut (AddressIn in);
+    AddressOut asAddressOut(AddressIn in);
 }

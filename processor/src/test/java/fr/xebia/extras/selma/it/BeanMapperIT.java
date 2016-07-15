@@ -27,9 +27,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 
 /**
  *
@@ -38,7 +36,7 @@ import static junit.framework.Assert.assertNull;
 public class BeanMapperIT extends IntegrationTestBase {
 
     @Test
-    public void beanMapper_should_map_properties()throws Exception{
+    public void beanMapper_should_map_properties() throws Exception {
 
 
         BeanMapper mapper = Selma.getMapper(BeanMapper.class);
@@ -61,7 +59,6 @@ public class BeanMapperIT extends IntegrationTestBase {
         personIn.setEnumIn(EnumIn.VAL_2);
 
 
-
         PersonOut res = mapper.asPersonOut(personIn);
 
         assertNotNull(res);
@@ -77,7 +74,7 @@ public class BeanMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void beanMapper_should_map_properties_with_null_safety()throws Exception{
+    public void beanMapper_should_map_properties_with_null_safety() throws Exception {
 
         BeanMapper mapper = Selma.getMapper(BeanMapper.class);
 
@@ -105,7 +102,7 @@ public class BeanMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void beanMapper_should_map_first_level_nested_beans_with_safety()throws Exception{
+    public void beanMapper_should_map_first_level_nested_beans_with_safety() throws Exception {
 
         BeanMapper mapper = Selma.getMapper(BeanMapper.class);
 
@@ -140,7 +137,7 @@ public class BeanMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void beanMapper_should_map_second_level_nested_beans_with_safety()throws Exception{
+    public void beanMapper_should_map_second_level_nested_beans_with_safety() throws Exception {
 
         BeanMapper mapper = Selma.getMapper(BeanMapper.class);
 
@@ -149,7 +146,7 @@ public class BeanMapperIT extends IntegrationTestBase {
         personIn.getAddress().setCity(new CityIn());
         personIn.getAddress().getCity().setCapital(true);
         personIn.getAddress().getCity().setName("Paris");
-        personIn.getAddress().getCity().setPopulation(3*1000*1000);
+        personIn.getAddress().getCity().setPopulation(3 * 1000 * 1000);
 
         personIn.getAddress().setPrincipal(true);
         personIn.getAddress().setNumber(55);

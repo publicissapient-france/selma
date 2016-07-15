@@ -25,9 +25,9 @@ package fr.xebia.extras.selma.beans;
  */
 public class CityOut {
 
-    private  String name;
-    private  long population;
-    private  boolean capital;
+    private String name;
+    private long population;
+    private boolean capital;
 
     public String getName() {
         return name;

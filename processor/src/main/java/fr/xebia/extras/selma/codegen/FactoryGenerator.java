@@ -22,6 +22,4 @@ package fr.xebia.extras.selma.codegen;
 public class FactoryGenerator {
 
 
-
-
 }

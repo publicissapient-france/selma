@@ -19,10 +19,8 @@ package fr.xebia.extras.selma;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
-import java.util.Collection;
 
 import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.IgnoreMissing.NONE;
 
 /**
  * Mapper annotation used to describe specific mappings for methods inside a mapper interface.
@@ -47,9 +45,9 @@ public @interface Maps {
     /**
      * Add a list of custom mapper class.
      * A custom mapper is a class that gives one or more method :
-     *
+     * <p/>
      * public OutType methodName(InType in)
-     *
+     * <p/>
      * These methods will be called to handle custom mapping of in bean to the OutType
      */
     Class<?>[] withCustom() default {};
@@ -65,9 +63,9 @@ public @interface Maps {
      * here are ignoring case.
      * This support 3 kinds of notations to describe the property to ignore :
      * <ul>
-     *     <li>Only give the property name ("propertyName")</li>
-     *     <li>Class and property name ("MyClass.propertyName")</li>
-     *     <li>Fully qualified class and property name ("org.mypackage.MyClass.propertyName")</li>
+     * <li>Only give the property name ("propertyName")</li>
+     * <li>Class and property name ("MyClass.propertyName")</li>
+     * <li>Fully qualified class and property name ("org.mypackage.MyClass.propertyName")</li>
      * </ul>
      */
     String[] withIgnoreFields() default {};
@@ -76,7 +74,8 @@ public @interface Maps {
      * This is used to describe specific field to field mapping. If you need field "toto" to be mapped to "tutu", you should add
      * a @Field annotation here.
      * <code>
-     *    @Mapper(withCustomFields={@Field({"toto", "tutu"})})
+     *
+     * @Mapper(withCustomFields={@Field({"toto", "tutu"})})
      * </code>
      */
     Field[] withCustomFields() default {};
@@ -86,6 +85,6 @@ public @interface Maps {
      * By default Selma uses a setter to provide new mapped collections. Passing this attribute to true will
      * make Selma use a getter to map collections if the setter does not exist
      */
-     CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+    CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
 
 }

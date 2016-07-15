@@ -109,12 +109,12 @@ public class PersonIn {
         this.male = male;
     }
 
-    public void setAddress(AddressIn address) {
-        this.address = address;
-    }
-
     public AddressIn getAddress() {
         return address;
+    }
+
+    public void setAddress(AddressIn address) {
+        this.address = address;
     }
 
     public AddressIn getAddressBis() {

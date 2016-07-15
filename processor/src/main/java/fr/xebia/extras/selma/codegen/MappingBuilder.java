@@ -16,79 +16,34 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.arrayCopy;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.assign;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.assignOutPrime;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.assignOutToString;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.blank;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNotNull;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNullElse;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapArrayBis;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapCollection;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapDefaultCase;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapEnumBlock;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapEnumCase;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMap;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.set;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.statement;
+import fr.xebia.extras.selma.SelmaConstants;
 
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
+import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.SimpleTypeVisitor6;
-
-import fr.xebia.extras.selma.SelmaConstants;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
 /**
  *
  */
 public abstract class MappingBuilder {
 
-    private static final List<MappingSpecification> mappingSpecificationList = new LinkedList<MappingSpecification>();
-    private boolean nullSafe = false;
-
-    private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
-        boolean res = false;
-        if (inOutType.isDeclaredToPrimitive()) {
-            PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
-            res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
-        }
-        return res;
-    }
-
     public static final String JAVA_TIME_LOCAL_DATE_CLASS = "java.time.LocalDate";
     public static final String JAVA_TIME_DURATION_CLASS = "java.time.Duration";
     public static final String JAVA_TIME_INSTANT_CLASS = "java.time.Instant";
     public static final String JAVA_TIME_LOCAL_DATE_TIME_CLASS = "java.time.LocalDateTime";
-
+    private static final List<MappingSpecification> mappingSpecificationList = new LinkedList<MappingSpecification>();
     private static final Set<String> immutableTypes = new HashSet<String>(Arrays.asList(BigInteger.class.getName(),
             BigDecimal.class.getName(), UUID.class.getName(), JAVA_TIME_LOCAL_DATE_CLASS, JAVA_TIME_DURATION_CLASS,
             JAVA_TIME_INSTANT_CLASS, JAVA_TIME_LOCAL_DATE_TIME_CLASS, "java.time.LocalTime", "java.time.MonthDay",
             "java.time.OffsetDateTime", "java.time.OffsetTime", "java.time.Period", "java.time.Year",
             "java.time.YearMonth", "java.time.ZonedDateTime", "java.time.ZoneOffset"));
-
 
     static {  // init specs here
 
@@ -139,7 +94,7 @@ public abstract class MappingBuilder {
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 boolean res = false;
                 if (inOutType.outIsDeclared() && String.class.getName().equals(inOutType.outAsDeclaredType().toString())) {
-                    if (inOutType.inIsDeclared()){
+                    if (inOutType.inIsDeclared()) {
                         res = isBoxedPrimitive(inOutType.inAsDeclaredType(), context);
                     } else {
                         res = inOutType.inIsPrimitive();
@@ -165,11 +120,11 @@ public abstract class MappingBuilder {
                         // If we are in a nested context we should call an enum mapping method
                         if (context.depth > 0) {
                             String mappingMethod = context.mappingMethod(inOutType);
-							if (context.getWrapper().isUseInstanceCache()) {
-								root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
-							} else {
-								root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
-							}
+                            if (context.getWrapper().isUseInstanceCache()) {
+                                root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+                            } else {
+                                root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+                            }
                         } else { // Otherwise we should build the real enum selma code
                             MappingSourceNode node = blank();
                             MappingSourceNode valuesBlock = node;
@@ -497,17 +452,8 @@ public abstract class MappingBuilder {
 
     }
 
-    private static boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {
-        boolean res = false;
-
-        if (inOutType.isPrimitiveToDeclared()) {
-            PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
-            res = outAsPrimitive != null && outAsPrimitive.getKind() == inOutType.inKind();
-        }
-        return res;
-    }
-
     MappingSourceNode root;
+    private boolean nullSafe = false;
 
     private MappingBuilder() {
         this.root = blank();
@@ -518,21 +464,23 @@ public abstract class MappingBuilder {
         this.root = blank();
     }
 
-    protected void setOrAssignNestedBean(final MapperGeneratorContext context, final SourceNodeVars vars, final InOutType inOutType) {
-        String mappingMethod = context.mappingMethod(inOutType);
-		if (context.getWrapper().isUseInstanceCache()) {
-			if (inOutType.isOutPutAsParam()) {
-				this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
-			} else {
-				this.root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
-			}
-        } else {
-			if (inOutType.isOutPutAsParam()) {
-				this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", mappingMethod)));
-			} else {
-				this.root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
-			}
+    private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
+        boolean res = false;
+        if (inOutType.isDeclaredToPrimitive()) {
+            PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
+            res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
         }
+        return res;
+    }
+
+    private static boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {
+        boolean res = false;
+
+        if (inOutType.isPrimitiveToDeclared()) {
+            PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
+            res = outAsPrimitive != null && outAsPrimitive.getKind() == inOutType.inKind();
+        }
+        return res;
     }
 
     private static Map.Entry<TypeMirror, Integer> getArrayDimensionsAndType(final ArrayType arrayType) {
@@ -629,7 +577,7 @@ public abstract class MappingBuilder {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
-				root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
+                root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 return root.body;
             }
         };
@@ -641,9 +589,9 @@ public abstract class MappingBuilder {
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
                 context.mappingMethod(inOutType, name);
                 if (inOutType.isOutPutAsParam()) {
-					root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
+                    root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 } else {
-					root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
+                    root.body(vars.setOrAssign(String.format("%s(%%s)", name)));
                 }
                 return root.body;
             }
@@ -660,33 +608,6 @@ public abstract class MappingBuilder {
             }
         };
     }
-
-    abstract MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException;
-
-    public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
-        root = blank();
-        MappingSourceNode ptr = buildNodes(context, vars);
-        if (context.depth > 0 && !nullSafe) {
-            // working inside a bean
-            root = notNullInField(vars);
-            root.body(ptr);
-
-            // Do not set null to primitive type
-            if (!vars.isOutPrimitive() && !vars.useGetterForDestination) {
-                root.child(controlNullElse()).body(vars.setOrAssign("null"));
-            }
-            return root;
-        } else {
-            if (context.isIgnoreNullValue() && !vars.isOutPrimitive()){
-                root = notNullInField(vars);
-                root.body(ptr);
-                return root;
-            }else {
-                return buildNodes(context, vars);
-            }
-        }
-    }
-
 
     /**
      * Builds a method that match identical items  and use default value otherwise
@@ -708,11 +629,11 @@ public abstract class MappingBuilder {
                 // If we are in a nested context we should call an enum mapping method
                 if (context.depth > 0) {
                     String mappingMethod = context.mappingMethod(inOutType);
-					if (context.getWrapper().isUseInstanceCache()) {
-						root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
-					} else {
-						root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
-					}
+                    if (context.getWrapper().isUseInstanceCache()) {
+                        root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+                    } else {
+                        root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+                    }
                 } else { // Otherwise we should build the real enum selma code
                     MappingSourceNode node = blank();
                     MappingSourceNode valuesBlock = node;
@@ -735,6 +656,7 @@ public abstract class MappingBuilder {
 
     /**
      * Retrieve type arguments for Collections and Maps
+     *
      * @return
      */
     private static TypeMirror getTypeArgument(final MapperGeneratorContext context, TypeMirror type, final int index) {
@@ -762,10 +684,6 @@ public abstract class MappingBuilder {
         return list;
     }
 
-    public boolean isNullSafe() {
-        return nullSafe;
-    }
-
     public static MappingBuilder newImmutable() {
         return new MappingBuilder(true) {
             @Override
@@ -774,6 +692,53 @@ public abstract class MappingBuilder {
                 return root.body;
             }
         };
+    }
+
+    protected void setOrAssignNestedBean(final MapperGeneratorContext context, final SourceNodeVars vars, final InOutType inOutType) {
+        String mappingMethod = context.mappingMethod(inOutType);
+        if (context.getWrapper().isUseInstanceCache()) {
+            if (inOutType.isOutPutAsParam()) {
+                this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+            } else {
+                this.root.body(vars.setOrAssign(String.format("%s(%%s, %s)", mappingMethod, SelmaConstants.INSTANCE_CACHE)));
+            }
+        } else {
+            if (inOutType.isOutPutAsParam()) {
+                this.root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", mappingMethod)));
+            } else {
+                this.root.body(vars.setOrAssign(String.format("%s(%%s)", mappingMethod)));
+            }
+        }
+    }
+
+    abstract MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException;
+
+    public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+        root = blank();
+        MappingSourceNode ptr = buildNodes(context, vars);
+        if (context.depth > 0 && !nullSafe) {
+            // working inside a bean
+            root = notNullInField(vars);
+            root.body(ptr);
+
+            // Do not set null to primitive type
+            if (!vars.isOutPrimitive() && !vars.useGetterForDestination) {
+                root.child(controlNullElse()).body(vars.setOrAssign("null"));
+            }
+            return root;
+        } else {
+            if (context.isIgnoreNullValue() && !vars.isOutPrimitive()) {
+                root = notNullInField(vars);
+                root.body(ptr);
+                return root;
+            } else {
+                return buildNodes(context, vars);
+            }
+        }
+    }
+
+    public boolean isNullSafe() {
+        return nullSafe;
     }
 
     static abstract class MappingSpecification {

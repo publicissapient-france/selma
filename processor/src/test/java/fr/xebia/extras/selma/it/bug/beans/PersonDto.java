@@ -3,73 +3,60 @@ package fr.xebia.extras.selma.it.bug.beans;
 import java.util.Collections;
 import java.util.List;
 
-public class PersonDto
-{
+public class PersonDto {
     private String name;
     private String addressStreet;
     private String addressZipCode;
     private String addressCity;
     private String addressCountry;
-    
-    private List< AddressDto > additionalAddresses = Collections.emptyList();
 
-    public String getName()
-    {
+    private List<AddressDto> additionalAddresses = Collections.emptyList();
+
+    public String getName() {
         return name;
     }
 
-    public void setName( String name )
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getAddressZipCode()
-    {
+    public String getAddressZipCode() {
         return addressZipCode;
     }
 
-    public void setAddressZipCode( String addressZipCode )
-    {
+    public void setAddressZipCode(String addressZipCode) {
         this.addressZipCode = addressZipCode;
     }
 
-    public String getAddressCity()
-    {
+    public String getAddressCity() {
         return addressCity;
     }
 
-    public void setAddressCity( String addressCity )
-    {
+    public void setAddressCity(String addressCity) {
         this.addressCity = addressCity;
     }
 
-    public String getAddressCountry()
-    {
+    public String getAddressCountry() {
         return addressCountry;
     }
 
-    public void setAddressCountry( String addressCountry )
-    {
+    public void setAddressCountry(String addressCountry) {
         this.addressCountry = addressCountry;
     }
 
-    public List< AddressDto > getAdditionalAddresses()
-    {
+    public List<AddressDto> getAdditionalAddresses() {
         return additionalAddresses;
     }
 
-    public void setAdditionalAddresses( List< AddressDto > additionalAddresses )
-    {
+    public void setAdditionalAddresses(List<AddressDto> additionalAddresses) {
         this.additionalAddresses = additionalAddresses;
     }
 
-    public String getAddressStreet()
-    {
+    public String getAddressStreet() {
         return addressStreet;
     }
 
-    public void setAddressStreet( String addressStreet )
-    {
+    public void setAddressStreet(String addressStreet) {
         this.addressStreet = addressStreet;
     }
 }

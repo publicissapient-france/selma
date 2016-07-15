@@ -30,15 +30,17 @@ public @interface Compile {
 
     /**
      * Add all classes inside the package to compilation
+     *
      * @return
      */
-    String [] withPackage() default {};
+    String[] withPackage() default {};
 
     /**
      * Add listed classes to compilation
+     *
      * @return
      */
-    Class<?> [] withClasses() default {};
+    Class<?>[] withClasses() default {};
 
-    boolean shouldFail() default  false;
+    boolean shouldFail() default false;
 }

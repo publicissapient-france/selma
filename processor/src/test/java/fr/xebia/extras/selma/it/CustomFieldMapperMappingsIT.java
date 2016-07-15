@@ -19,7 +19,6 @@ package fr.xebia.extras.selma.it;
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.SimplePerson;
 import fr.xebia.extras.selma.beans.SimplePersonDto;
-import fr.xebia.extras.selma.it.mappers.CustomFieldMapper;
 import fr.xebia.extras.selma.it.mappers.CustomFieldMappingsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
@@ -33,7 +32,7 @@ import org.junit.Test;
 public class CustomFieldMapperMappingsIT extends IntegrationTestBase {
 
     @Test
-    public void given_a_mapper_with_custom_field_mapping_should_use_described_name_to_name_for_mapping(){
+    public void given_a_mapper_with_custom_field_mapping_should_use_described_name_to_name_for_mapping() {
         CustomFieldMappingsMapper mapper = Selma.mapper(CustomFieldMappingsMapper.class);
 
         SimplePerson person = new SimplePerson();
@@ -63,7 +62,7 @@ public class CustomFieldMapperMappingsIT extends IntegrationTestBase {
     }
 
     @Test
-    public void given_a_mapper_with_custom_field_mapping_should_use_default_same_field_name_for_mapping(){
+    public void given_a_mapper_with_custom_field_mapping_should_use_default_same_field_name_for_mapping() {
         CustomFieldMappingsMapper mapper = Selma.mapper(CustomFieldMappingsMapper.class);
 
         SimplePerson person = new SimplePerson();
@@ -76,7 +75,7 @@ public class CustomFieldMapperMappingsIT extends IntegrationTestBase {
 
 
     @Test
-    public void given_a_mapper_with_custom_field_mapping_method_should_use_default_same_field_name_for_mapping(){
+    public void given_a_mapper_with_custom_field_mapping_method_should_use_default_same_field_name_for_mapping() {
         CustomFieldMappingsMapper mapper = Selma.mapper(CustomFieldMappingsMapper.class);
 
         SimplePerson person = new SimplePerson();

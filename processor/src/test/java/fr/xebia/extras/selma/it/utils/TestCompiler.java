@@ -30,7 +30,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- *
  * User: slemesle
  * Date: 22/11/2013
  */
@@ -167,7 +166,7 @@ public class TestCompiler {
                 /*processorOptions*/Arrays.asList("-source", "6", "-g"),
                 null,
                 compilationUnits
-        );
+                                                            );
         task.setProcessors(Arrays.asList(new MapperProcessor()));
 
 
@@ -186,11 +185,11 @@ public class TestCompiler {
 
     private void initiateClassLoader(StandardJavaFileManager fileManager) {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        if(contextClassLoader == null){
+        if (contextClassLoader == null) {
             contextClassLoader = getClass().getClassLoader();
         }
         if (!(contextClassLoader instanceof TestClassLoader)) {
-            ClassLoader loader =  new TestClassLoader(contextClassLoader, fileManager.getClassLoader( StandardLocation.CLASS_OUTPUT));
+            ClassLoader loader = new TestClassLoader(contextClassLoader, fileManager.getClassLoader(StandardLocation.CLASS_OUTPUT));
             Thread.currentThread().setContextClassLoader(loader);
         }
     }
@@ -250,7 +249,7 @@ public class TestCompiler {
                                 new URL[]{new File(OUT_DIR + "/").toURI().toURL()},
                                 Thread.currentThread().getContextClassLoader()
                         )
-                );
+                                                            );
 
                 diagnostics = new DiagnosticCollector<JavaFileObject>();
 

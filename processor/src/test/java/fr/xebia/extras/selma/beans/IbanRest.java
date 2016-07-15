@@ -9,25 +9,25 @@ public class IbanRest {
     public IbanRest() {
 
     }
-    
+
     public IbanRest(Integer codeBanque, Integer codeBanqueDomiciliation) {
-	this.codeBanque = codeBanque;
-	this.codeBanqueDomiciliation = codeBanqueDomiciliation;
+        this.codeBanque = codeBanque;
+        this.codeBanqueDomiciliation = codeBanqueDomiciliation;
     }
 
     public Integer getCodeBanque() {
-	return codeBanque;
+        return codeBanque;
     }
 
     public void setCodeBanque(final Integer codeBanque) {
-	this.codeBanque = codeBanque;
+        this.codeBanque = codeBanque;
     }
 
     public Integer getCodeBanqueDomiciliation() {
-	return codeBanqueDomiciliation;
+        return codeBanqueDomiciliation;
     }
 
     public void setCodeBanqueDomiciliation(final Integer codeBanqueDomiciliation) {
-	this.codeBanqueDomiciliation = codeBanqueDomiciliation;
+        this.codeBanqueDomiciliation = codeBanqueDomiciliation;
     }
 }

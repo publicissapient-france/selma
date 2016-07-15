@@ -32,7 +32,7 @@ import java.util.*;
 public class NestedMapAndCollectionsMapperIT extends IntegrationTestBase {
 
     @Test
-    public void should_convert_list_of_set(){
+    public void should_convert_list_of_set() {
 
         ArrayList<HashSet<String>> in = new ArrayList<HashSet<String>>();
         in.add(new HashSet<String>(Arrays.asList("un", null, "deux")));
@@ -60,17 +60,17 @@ public class NestedMapAndCollectionsMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void should_convert_list_of_map(){
+    public void should_convert_list_of_map() {
         NestedMapAndCollectionMapper mapper = Selma.mapper(NestedMapAndCollectionMapper.class);
 
-        ArrayList<Map<Integer,String>> in = new ArrayList<Map<Integer,String>>();
+        ArrayList<Map<Integer, String>> in = new ArrayList<Map<Integer, String>>();
         in.add(new HashMap<Integer, String>());
         in.get(0).put(1, "un");
         in.add(null);
         in.add(new LinkedHashMap<Integer, String>());
         in.get(2).put(1, "un");
 
-        List<Map<Integer,String>> res = mapper.convertListOfMap(in);
+        List<Map<Integer, String>> res = mapper.convertListOfMap(in);
 
         Assert.assertEquals(3, res.size());
         Assert.assertEquals(1, res.get(0).size());
@@ -86,19 +86,18 @@ public class NestedMapAndCollectionsMapperIT extends IntegrationTestBase {
     }
 
 
-
     @Test
-    public void should_convert_map_of_list(){
+    public void should_convert_map_of_list() {
         NestedMapAndCollectionMapper mapper = Selma.mapper(NestedMapAndCollectionMapper.class);
 
-        Map<Integer,List<String>> in = new HashMap<Integer, List<String>>();
+        Map<Integer, List<String>> in = new HashMap<Integer, List<String>>();
 
         in.put(1, null);
         in.put(null, Arrays.asList("un", "deux", null));
         in.put(2, new ArrayList<String>());
 
 
-        Map<Integer,List<String>>  res = mapper.convertMapOfList(in);
+        Map<Integer, List<String>> res = mapper.convertMapOfList(in);
 
         Assert.assertEquals(3, res.size());
         Assert.assertNull(res.get(1));
@@ -109,9 +108,8 @@ public class NestedMapAndCollectionsMapperIT extends IntegrationTestBase {
     }
 
 
-
     @Test
-    public void should_convert_map_of_list_for_map(){
+    public void should_convert_map_of_list_for_map() {
         NestedMapAndCollectionMapper mapper = Selma.mapper(NestedMapAndCollectionMapper.class);
 
         Map<List<String>, Map<String, String>> in = new HashMap<List<String>, Map<String, String>>();
@@ -133,7 +131,6 @@ public class NestedMapAndCollectionsMapperIT extends IntegrationTestBase {
         Assert.assertTrue(res.get(Arrays.asList("un")).containsKey("first"));
         Assert.assertTrue(res.get(Arrays.asList("un")).containsValue("first"));
     }
-
 
 
 }

@@ -212,7 +212,7 @@ public class BeanWrapper {
 
     public DeclaredType getDeclaredTypeForGetter(String field) {
         final TypeMirror typeForGetter = getTypeForGetter(field);
-        if (typeForGetter.getKind() == TypeKind.DECLARED){
+        if (typeForGetter.getKind() == TypeKind.DECLARED) {
             return (DeclaredType) typeForGetter;
         }
         return null;

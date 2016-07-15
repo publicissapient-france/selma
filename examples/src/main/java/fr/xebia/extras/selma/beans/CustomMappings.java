@@ -18,17 +18,17 @@ package fr.xebia.extras.selma.beans;
 
 
 /**
- *
  * Custom Mapping show case
  */
 public class CustomMappings {
 
 
-    public String productTypeToString(ProductType in){
+    public String productTypeToString(ProductType in) {
 
         return in.toString();
     }
-    public ProductType productTypeToString(String in){
+
+    public ProductType productTypeToString(String in) {
 
         return ProductType.valueOf(in);
     }

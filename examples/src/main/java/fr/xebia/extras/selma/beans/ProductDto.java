@@ -16,7 +16,6 @@
  */
 package fr.xebia.extras.selma.beans;
 
-import java.util.Map;
 import java.util.Set;
 
 /**

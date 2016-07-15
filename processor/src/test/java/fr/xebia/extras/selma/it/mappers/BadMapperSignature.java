@@ -31,7 +31,7 @@ public interface BadMapperSignature {
     String mapThreeParameters(String in, String inBis, String inTer);
 
 
-    String mapDifferentTypes (boolean in);
+    String mapDifferentTypes(boolean in);
 
 
     String mapTwoParametersDifferentTypes(String in, boolean out);

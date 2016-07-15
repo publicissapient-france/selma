@@ -22,7 +22,8 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Created by slemesle on 27/03/15.
  */
-@Configuration @ComponentScan(value = "fr.xebia.extras.selma.it.inject", resourcePattern = "**/*Class.class")
+@Configuration
+@ComponentScan(value = "fr.xebia.extras.selma.it.inject", resourcePattern = "**/*Class.class")
 public class SpringConfiguration {
 
 

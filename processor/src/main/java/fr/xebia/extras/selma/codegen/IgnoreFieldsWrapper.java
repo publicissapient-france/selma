@@ -59,7 +59,6 @@ public class IgnoreFieldsWrapper {
     }
 
 
-
     /**
      * Tells wether the given field can be ignored for the given DeclaredType.
      *

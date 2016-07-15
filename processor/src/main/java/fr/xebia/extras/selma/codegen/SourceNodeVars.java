@@ -38,9 +38,9 @@ public class SourceNodeVars {
     InOutType inOutType;
 
     boolean assign = false;
+    boolean useGetterForDestination = false;
     private String inFieldPrefix;
     private byte ptr = 'a';
-    boolean useGetterForDestination = false;
 
     public SourceNodeVars(String inF, String outF, BeanWrapper inBean, BeanWrapper outBean) {
         this.field = inF;
@@ -69,7 +69,7 @@ public class SourceNodeVars {
         this.outBean = null;
         inField = inF;
         outField = outF;
-        outFieldGetter =  "out" ;
+        outFieldGetter = "out";
         inFieldPrefix = "";
     }
 

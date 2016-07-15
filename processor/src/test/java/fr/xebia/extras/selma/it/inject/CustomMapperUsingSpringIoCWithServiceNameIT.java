@@ -35,7 +35,7 @@ public class CustomMapperUsingSpringIoCWithServiceNameIT extends IntegrationTest
         AddressMapperWithName addressMapperByName = (AddressMapperWithName) context.getBean("addressSelmaMapper");
         Assert.assertNotNull(addressMapperByName);
         AddressMapperWithName addressMapper = context.getBean(AddressMapperWithName.class);
-        Assert.assertEquals(addressMapper,addressMapperByName);
+        Assert.assertEquals(addressMapper, addressMapperByName);
     }
 
 }

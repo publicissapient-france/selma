@@ -17,8 +17,9 @@
 package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.*;
+import fr.xebia.extras.selma.beans.NoGetterBean;
+import fr.xebia.extras.selma.beans.PersonIn;
+import fr.xebia.extras.selma.beans.PersonOut;
 
 /**
  *

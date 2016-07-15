@@ -19,7 +19,6 @@ package fr.xebia.extras.selma.it.mappers;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.CityOut;
 import fr.xebia.extras.selma.beans.CityOutWithDataSource;
-import fr.xebia.extras.selma.beans.DataSource;
 
 /**
  *
@@ -32,11 +31,11 @@ public class CustomMapperWithoutSource {
     public CustomMapperWithoutSource() {
     }
 
-    public CustomMapperWithoutSource(String message){
+    public CustomMapperWithoutSource(String message) {
         this.message = message;
     }
 
-    public CityOut mapCity(CityIn cityIn){
+    public CityOut mapCity(CityIn cityIn) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
@@ -44,7 +43,7 @@ public class CustomMapperWithoutSource {
         return cityOut;
     }
 
-    public CityOutWithDataSource asCityOutWithDataSource(CityIn cityIn){
+    public CityOutWithDataSource asCityOutWithDataSource(CityIn cityIn) {
         CityOutWithDataSource cityOut = new CityOutWithDataSource(null);
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
@@ -53,7 +52,7 @@ public class CustomMapperWithoutSource {
     }
 
 
-    public CityOutWithDataSource asCityOut(CityIn cityIn, CityOutWithDataSource out){
+    public CityOutWithDataSource asCityOut(CityIn cityIn, CityOutWithDataSource out) {
         CityOutWithDataSource cityOut = new CityOutWithDataSource(null);
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());

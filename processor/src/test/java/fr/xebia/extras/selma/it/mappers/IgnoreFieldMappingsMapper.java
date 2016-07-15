@@ -24,12 +24,11 @@ import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
 
 
-@Mapper ( withIgnoreFields = {"name", "notUsedClassField"})
+@Mapper(withIgnoreFields = {"name", "notUsedClassField"})
 public interface IgnoreFieldMappingsMapper {
 
 
-    @Maps(withIgnoreFields = {"male", "biography", "extras", "notUsedMethodField"})
-    PersonOut asPersonOut(PersonIn in);
+    @Maps(withIgnoreFields = {"male", "biography", "extras", "notUsedMethodField"}) PersonOut asPersonOut(PersonIn in);
 
 
     @Maps(withIgnoreFields = {"male", "biography", "extras", "notUsedMethodField"})

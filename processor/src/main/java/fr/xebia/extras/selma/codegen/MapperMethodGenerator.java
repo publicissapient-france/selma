@@ -16,15 +16,14 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.blank;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlInCache;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNotNull;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.controlNull;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.declareOut;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.mapMethod;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.notSupported;
-import static fr.xebia.extras.selma.codegen.MappingSourceNode.set;
+import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.SelmaConstants;
 
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +31,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
+import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
-import com.squareup.javawriter.JavaWriter;
-
-import fr.xebia.extras.selma.SelmaConstants;
 /**
  *
  */
@@ -54,7 +46,7 @@ public class MapperMethodGenerator {
     private final SourceConfiguration configuration;
     private final MapsWrapper maps;
     private final BeanWrapperFactory beanWrapperFactory;
-	private final MapperWrapper mapperWrapper;
+    private final MapperWrapper mapperWrapper;
 
     public MapperMethodGenerator(JavaWriter writer, MethodWrapper method, MapperWrapper mapperWrapper) {
         this.writer = writer;
@@ -63,7 +55,7 @@ public class MapperMethodGenerator {
         this.configuration = mapperWrapper.configuration();
         this.beanWrapperFactory = new BeanWrapperFactory();
         this.maps = new MapsWrapper(method, mapperWrapper);
-		this.mapperWrapper = mapperWrapper;
+        this.mapperWrapper = mapperWrapper;
     }
 
     public void build() throws IOException {
@@ -91,24 +83,24 @@ public class MapperMethodGenerator {
     private void buildMappingMethod(JavaWriter writer, InOutType inOutType, String name, boolean override) throws IOException {
 
         boolean isPrimitiveOrImmutable = false;
-		final MappingSourceNode methodRoot = mapMethod(context, inOutType, name, override, configuration.isFinalMappers());
+        final MappingSourceNode methodRoot = mapMethod(context, inOutType, name, override, configuration.isFinalMappers());
 
 
         MappingSourceNode ptr = blank(), blankRoot = ptr;
 
         MappingSourceNode methodNode = (inOutType.isOutPutAsParam() ? methodRoot.body(blank()) : methodRoot.body(declareOut(inOutType.out())));
 
-		if (mapperWrapper.isUseInstanceCache()) {
-			String out;
-			if (inOutType.outIsPrimitive()) {
-				out = context.getBoxedClass((PrimitiveType) inOutType.out()).toString();
-			} else {
-				out = inOutType.out().toString();
-			}
-			methodNode = methodNode.child(controlInCache(SelmaConstants.IN_VAR, out));
-		}
+        if (mapperWrapper.isUseInstanceCache()) {
+            String out;
+            if (inOutType.outIsPrimitive()) {
+                out = context.getBoxedClass((PrimitiveType) inOutType.out()).toString();
+            } else {
+                out = inOutType.out().toString();
+            }
+            methodNode = methodNode.child(controlInCache(SelmaConstants.IN_VAR, out));
+        }
 
-		MappingBuilder mappingBuilder = findBuilderFor(inOutType);
+        MappingBuilder mappingBuilder = findBuilderFor(inOutType);
         if (mappingBuilder != null) {
 
             ptr.body(mappingBuilder.build(context, new SourceNodeVars().withInOutType(inOutType).withAssign(true)));
@@ -131,7 +123,7 @@ public class MapperMethodGenerator {
 
         isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
         if (!isPrimitiveOrImmutable) {
-			methodNode = methodNode.child(controlNotNull(SelmaConstants.IN_VAR, inOutType.isOutPutAsParam()));
+            methodNode = methodNode.child(controlNotNull(SelmaConstants.IN_VAR, inOutType.isOutPutAsParam()));
             methodNode.body(blankRoot.body);
         } else {
             methodNode.child(blankRoot.body);
@@ -382,7 +374,7 @@ public class MapperMethodGenerator {
             return root;
         }
         String[] fields = sourceEmbedded ? customField.fromFields() : customField.toFields();
-		String previousFieldPath = sourceEmbedded ? SelmaConstants.IN_VAR : SelmaConstants.OUT_VAR;
+        String previousFieldPath = sourceEmbedded ? SelmaConstants.IN_VAR : SelmaConstants.OUT_VAR;
         StringBuilder field = new StringBuilder(previousFieldPath);
         for (int id = 0; id < fields.length - 1; id++) {
             lastVisitedField = fields[id];

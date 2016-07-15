@@ -16,31 +16,21 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PUBLIC;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import com.squareup.javawriter.JavaWriter;
+import fr.xebia.extras.selma.IoC;
+import fr.xebia.extras.selma.SelmaConstants;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.tools.JavaFileObject;
+import java.io.IOException;
+import java.util.*;
 
-import com.squareup.javawriter.JavaWriter;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
-import fr.xebia.extras.selma.IoC;
-import fr.xebia.extras.selma.SelmaConstants;
 /**
  * Handles the generation of the Mapper class
  */
@@ -66,8 +56,8 @@ public class MapperClassGenerator {
         element = context.getTypeElement(classe);
         declaredType = (DeclaredType) element.asType();
 
-		mapper = new MapperWrapper(context, element);
-		context.setWrapper(mapper);
+        mapper = new MapperWrapper(context, element);
+        context.setWrapper(mapper);
 
         methodWrappers = validateTypes();
     }
@@ -120,10 +110,10 @@ public class MapperClassGenerator {
                 writer.emitSingleLineComment(GENERATED_BY_SELMA);
                 writer.emitPackage(packageName);
                 writer.emitEmptyLine();
-                if (mapper.ioC == IoC.SPRING){
-                    if (mapper.ioCServiceName !="") {
-                        writer.emitAnnotation("org.springframework.stereotype.Service","\""+mapper.ioCServiceName+"\"");
-                    }else{
+                if (mapper.ioC == IoC.SPRING) {
+                    if (mapper.ioCServiceName != "") {
+                        writer.emitAnnotation("org.springframework.stereotype.Service", "\"" + mapper.ioCServiceName + "\"");
+                    } else {
                         writer.emitAnnotation("org.springframework.stereotype.Service");
                     }
                 }
@@ -152,7 +142,7 @@ public class MapperClassGenerator {
         String[] interfaceName = new String[]{strippedTypeName};
         String className = strippedTypeName;
         Set<Modifier> modifiers = EnumSet.of(PUBLIC);
-        if (mapper.isAbstractClass()){
+        if (mapper.isAbstractClass()) {
             interfaceName = new String[]{};
         } else {
             className = null;

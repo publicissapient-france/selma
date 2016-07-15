@@ -26,7 +26,7 @@ import org.junit.Test;
 public class CustomMapperTest {
 
     @Test
-    public void given_custom_mapper_selma_should_use_it_for_IOTypes(){
+    public void given_custom_mapper_selma_should_use_it_for_IOTypes() {
         DateBOMapper mapper = Selma.mapper(DateBOMapper.class);
         TypeIn in = new TypeIn("1245432");
         TypeOut out = mapper.asTypeOut(in);

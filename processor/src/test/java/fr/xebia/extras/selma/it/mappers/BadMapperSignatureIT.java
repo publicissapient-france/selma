@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  *
  */
-@Compile(withClasses = BadMapperSignature.class, shouldFail= true)
+@Compile(withClasses = BadMapperSignature.class, shouldFail = true)
 public class BadMapperSignatureIT extends IntegrationTestBase {
 
     @Test

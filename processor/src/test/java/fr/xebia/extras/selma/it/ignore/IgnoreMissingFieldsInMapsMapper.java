@@ -31,7 +31,6 @@ import static fr.xebia.extras.selma.IgnoreMissing.NONE;
 @Mapper(withIgnoreMissing = NONE)
 public interface IgnoreMissingFieldsInMapsMapper {
 
-    @Maps(withIgnoreMissing = ALL)
-    PersonOut map(PersonIn in);
+    @Maps(withIgnoreMissing = ALL) PersonOut map(PersonIn in);
 
 }

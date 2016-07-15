@@ -35,58 +35,58 @@ import org.junit.Test;
 public class BooleanBeanMapperIT extends IntegrationTestBase {
 
     @Test
-    public void should_map_primitive_boolean_with_is_getter(){
+    public void should_map_primitive_boolean_with_is_getter() {
         BooleanBean in = new BooleanBean();
         in.setPrimitive(true);
 
         BooleanBeanMapper mapper = Selma.mapper(BooleanBeanMapper.class);
-        BooleanBean res =  mapper.asBooleanBean(in);
+        BooleanBean res = mapper.asBooleanBean(in);
         Assert.assertTrue(res.isPrimitive());
     }
 
     @Test
-    public void should_map_boxed_boolean_with_is_getter(){
+    public void should_map_boxed_boolean_with_is_getter() {
         BooleanBean in = new BooleanBean();
         in.setBoxedIs(true);
 
         BooleanBeanMapper mapper = Selma.mapper(BooleanBeanMapper.class);
-        BooleanBean res =  mapper.asBooleanBean(in);
+        BooleanBean res = mapper.asBooleanBean(in);
         Assert.assertTrue(res.isBoxedIs());
     }
 
     @Test
-    public void should_map_boxed_boolean_with_get_getter(){
+    public void should_map_boxed_boolean_with_get_getter() {
         BooleanBean in = new BooleanBean();
         in.setBoxed(true);
 
         BooleanBeanMapper mapper = Selma.mapper(BooleanBeanMapper.class);
-        BooleanBean res =  mapper.asBooleanBean(in);
+        BooleanBean res = mapper.asBooleanBean(in);
         Assert.assertTrue(res.getBoxed());
     }
 
     @Test
-    public void should_map_primitive_boolean_with_get_getter(){
+    public void should_map_primitive_boolean_with_get_getter() {
         BooleanBean in = new BooleanBean();
         in.setPrimitiveIs(true);
 
         BooleanBeanMapper mapper = Selma.mapper(BooleanBeanMapper.class);
-        BooleanBean res =  mapper.asBooleanBean(in);
+        BooleanBean res = mapper.asBooleanBean(in);
         Assert.assertTrue(res.getPrimitiveIs());
     }
 
     @Test
-    public void should_map_primitive_boolean_to_boxed_boolean(){
+    public void should_map_primitive_boolean_to_boxed_boolean() {
 
         BooleanBeanMapper mapper = Selma.mapper(BooleanBeanMapper.class);
-        Boolean res =  mapper.asBoolean(true);
+        Boolean res = mapper.asBoolean(true);
         Assert.assertTrue(res);
     }
 
     @Test
-    public void should_map_boxed_boolean_to_primitive_boolean(){
+    public void should_map_boxed_boolean_to_primitive_boolean() {
 
         BooleanBeanMapper mapper = Selma.mapper(BooleanBeanMapper.class);
-        boolean res =  mapper.asBoolean(Boolean.TRUE);
+        boolean res = mapper.asBoolean(Boolean.TRUE);
         Assert.assertTrue(res);
     }
 

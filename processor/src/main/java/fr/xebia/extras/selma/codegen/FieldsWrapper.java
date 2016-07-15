@@ -21,7 +21,10 @@ import fr.xebia.extras.selma.Fields;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by slemesle on 23/06/2014.
@@ -47,7 +50,7 @@ public class FieldsWrapper {
             processFields(context, element);
         }
 
-        if (withCustomFields != null && withCustomFields.size() > 0){
+        if (withCustomFields != null && withCustomFields.size() > 0) {
             processFieldList(context, withCustomFields);
         }
 
@@ -79,13 +82,13 @@ public class FieldsWrapper {
 
     }
 
-    private void processFieldList(MapperGeneratorContext context,  List<AnnotationWrapper> fields) {
+    private void processFieldList(MapperGeneratorContext context, List<AnnotationWrapper> fields) {
         for (AnnotationWrapper field : fields) {
             List<String> fieldPair = field.getAsStrings("value");
             if (fieldPair.size() != 2) {
                 context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
-            } else if (fieldPair.get(0).isEmpty() || fieldPair.get(1).isEmpty()){
-                context.error(element, "Invalid @Field use, @Field can not have empty string \n"+
+            } else if (fieldPair.get(0).isEmpty() || fieldPair.get(1).isEmpty()) {
+                context.error(element, "Invalid @Field use, @Field can not have empty string \n" +
                         "--> Fix @Field({\"%s\",\"%s\"})", fieldPair.get(0), fieldPair.get(1));
             } else {
                 fieldsRegistry.push(fieldPair.get(0).toLowerCase(), fieldPair.get(1).toLowerCase());
@@ -115,9 +118,9 @@ public class FieldsWrapper {
             re.removeDestinationPrefix(destinationFqcn, destinationSimpleName);
             re.removeSourcePrefix(sourceFqcn, sourceSimpleName);
             Iterator<Field> parentIterator = resParent.iterator();
-            while (parentIterator.hasNext()){
+            while (parentIterator.hasNext()) {
                 Field parentField = parentIterator.next();
-                if (parentField.hasOneFieldMatching(re)){
+                if (parentField.hasOneFieldMatching(re)) {
                     parentIterator.remove();
                 }
             }

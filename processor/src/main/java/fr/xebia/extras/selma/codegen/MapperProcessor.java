@@ -42,12 +42,9 @@ import java.util.*;
 public final class MapperProcessor extends AbstractProcessor {
 
 
-    private final HashMap<String, List<ExecutableElement>> remainingMapperTypes = new HashMap<String, List<ExecutableElement>>();
-
-    static Types types;
-
-
     protected static final Set<ExecutableElement> exclusions = new HashSet<ExecutableElement>();
+    static Types types;
+    private final HashMap<String, List<ExecutableElement>> remainingMapperTypes = new HashMap<String, List<ExecutableElement>>();
 
     @Override public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -124,7 +121,7 @@ public final class MapperProcessor extends AbstractProcessor {
     }
 
     private boolean isSelmaGenerated(Element element) {
-        return (""+element.getSimpleName()).endsWith(SelmaConstants.MAPPER_CLASS_SUFFIX);
+        return ("" + element.getSimpleName()).endsWith(SelmaConstants.MAPPER_CLASS_SUFFIX);
     }
 
     private boolean isValidMapperMethod(ExecutableElement executableElement) {

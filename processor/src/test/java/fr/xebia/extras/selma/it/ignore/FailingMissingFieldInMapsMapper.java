@@ -30,13 +30,10 @@ import static fr.xebia.extras.selma.IgnoreMissing.*;
 @Mapper(withIgnoreMissing = ALL)
 public interface FailingMissingFieldInMapsMapper {
 
-    @Maps(withIgnoreMissing = SOURCE)
-    PersonOut mapMissingSource(PersonIn in);
+    @Maps(withIgnoreMissing = SOURCE) PersonOut mapMissingSource(PersonIn in);
 
-    @Maps(withIgnoreMissing = DESTINATION)
-    PersonOut mapMissingDestination(PersonIn in);
+    @Maps(withIgnoreMissing = DESTINATION) PersonOut mapMissingDestination(PersonIn in);
 
-    @Maps(withIgnoreMissing = NONE)
-    PersonOut mapMissingNone(PersonIn in);
+    @Maps(withIgnoreMissing = NONE) PersonOut mapMissingNone(PersonIn in);
 
 }

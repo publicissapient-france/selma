@@ -19,7 +19,10 @@ package fr.xebia.extras.selma.it.mappers;
 import fr.xebia.extras.selma.EnumMapper;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.*;
+import fr.xebia.extras.selma.beans.EnumA;
+import fr.xebia.extras.selma.beans.EnumB;
+import fr.xebia.extras.selma.beans.EnumBeanA;
+import fr.xebia.extras.selma.beans.EnumBeanB;
 
 /**
  * Created by slemesle on 12/03/2014.

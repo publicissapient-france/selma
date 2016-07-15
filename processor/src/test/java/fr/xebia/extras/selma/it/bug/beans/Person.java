@@ -7,12 +7,12 @@ public class Person {
     private String name;
 
     private Address address;
-    
-    private List< Address > additionalAddresses = Collections.emptyList();
-    
-    public Person()
-    {
+
+    private List<Address> additionalAddresses = Collections.emptyList();
+
+    public Person() {
     }
+
     public Person(String name) {
         this.name = name;
     }
@@ -20,25 +20,24 @@ public class Person {
     public String getName() {
         return name;
     }
-    
-    public void setName( String name )
-    {
+
+    public void setName(String name) {
         this.name = name;
     }
-    public Address getAddress()
-    {
+
+    public Address getAddress() {
         return address;
     }
-    public void setAddress( Address address )
-    {
+
+    public void setAddress(Address address) {
         this.address = address;
     }
-    public List< Address > getAdditionalAddresses()
-    {
+
+    public List<Address> getAdditionalAddresses() {
         return additionalAddresses;
     }
-    public void setAdditionalAddresses( List< Address > additionalAddresses )
-    {
+
+    public void setAdditionalAddresses(List<Address> additionalAddresses) {
         this.additionalAddresses = additionalAddresses;
     }
 }

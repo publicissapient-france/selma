@@ -31,7 +31,7 @@ public class BeanFactoryClass {
     AtomicInteger newInstance = new AtomicInteger();
     AtomicInteger newCityCalled = new AtomicInteger();
 
-    public <T>  T newInstance(Class<T> targetType) {
+    public <T> T newInstance(Class<T> targetType) {
         newInstance.incrementAndGet();
         try {
             return targetType.newInstance();
@@ -42,12 +42,12 @@ public class BeanFactoryClass {
         }
     }
 
-    public CityOut newCity(){
+    public CityOut newCity() {
         newCityCalled.incrementAndGet();
         return new CityOut();
     }
 
-    public Map getBuildMap(){
+    public Map getBuildMap() {
         return null;
     }
 }

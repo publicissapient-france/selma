@@ -28,35 +28,29 @@ import fr.xebia.extras.selma.beans.ProposalDto;
 @Mapper(withCustomFields = @Field({"passenger.date", "passengerDate"}))
 public interface FailingEmbeddedFieldToUpperFieldMapper {
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.age", "passengerAger"}), @Field({"passenger.card", "passengercard"})
-    })
-    ProposalDto asProposalDto(Proposal proposal);
+    }) ProposalDto asProposalDto(Proposal proposal);
 
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.age", "passengerAge"}), @Field({"passenger.card", "passenger.card"})
-    })
-    ProposalDto asProposalDto2(Proposal proposal);
+    }) ProposalDto asProposalDto2(Proposal proposal);
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.ager", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
-    })
-    ProposalDto asProposalDto3(Proposal proposal);
+    }) ProposalDto asProposalDto3(Proposal proposal);
 
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.ager.test", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
-    })
-    ProposalDto asProposalDto4(Proposal proposal);
+    }) ProposalDto asProposalDto4(Proposal proposal);
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.ager", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
-    })
-    Proposal asProposalBadDestination(ProposalDto proposal);
+    }) Proposal asProposalBadDestination(ProposalDto proposal);
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.age", "passengerAger"}), @Field({"passenger.card", "passengercard"})
-    })
-    Proposal asProposalBadSource(ProposalDto proposal);
+    }) Proposal asProposalBadSource(ProposalDto proposal);
 }

@@ -37,6 +37,7 @@ import static org.junit.Assert.*;
 public class PrimitivesMapperIT extends IntegrationTestBase {
 
     public static final String COUCOU = "coucou";
+    int defaultInt;
 
     @Test
     public void mapper_should_copy_string_reference() throws Exception {
@@ -68,9 +69,6 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
         assertEquals(3, res);
     }
-
-
-    int defaultInt;
 
     @Test
     public void mapper_should_convert_integer_to_int() throws Exception {

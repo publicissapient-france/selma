@@ -17,13 +17,14 @@
 package fr.xebia.extras.selma.it.custom.fields;
 
 import fr.xebia.extras.selma.Selma;
-import fr.xebia.extras.selma.beans.*;
+import fr.xebia.extras.selma.beans.Passenger;
+import fr.xebia.extras.selma.beans.Proposal;
+import fr.xebia.extras.selma.beans.ProposalDto;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**

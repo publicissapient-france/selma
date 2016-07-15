@@ -26,14 +26,15 @@ public class CollectionBeanDefensiveDestination {
 
     private List<String> strings;
 
-    public CollectionBeanDefensiveDestination() {}
+    public CollectionBeanDefensiveDestination() {
+    }
 
     public CollectionBeanDefensiveDestination(List<String> strings) {
         this.strings = strings;
     }
 
     public List<String> getStrings() {
-        if(strings == null){
+        if (strings == null) {
             strings = new ArrayList<String>();
         }
         return strings;

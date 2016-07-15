@@ -16,45 +16,44 @@
  */
 package fr.xebia.extras.selma.it;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.StringList;
 import fr.xebia.extras.selma.beans.StringMap;
 import fr.xebia.extras.selma.it.mappers.CollectionInheritanceMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created by slemesle on 12/03/2014.
  */
-@Compile(withClasses = { CollectionInheritanceMapper.class })
+@Compile(withClasses = {CollectionInheritanceMapper.class})
 public class CollectionInheritanceMapperIT extends IntegrationTestBase {
 
     @Test
-	public void mapTest() throws Exception {
+    public void mapTest() throws Exception {
 
-		StringMap map = new StringMap();
-		map.put("key1", "value1");
-		map.put("key2", "value2");
+        StringMap map = new StringMap();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
 
-		CollectionInheritanceMapper mapper = Selma.mapper(CollectionInheritanceMapper.class);
-		Assert.assertEquals(map, mapper.as(map));
-		Assert.assertNotSame(map, mapper.as(map));
+        CollectionInheritanceMapper mapper = Selma.mapper(CollectionInheritanceMapper.class);
+        Assert.assertEquals(map, mapper.as(map));
+        Assert.assertNotSame(map, mapper.as(map));
 
     }
 
-	@Test
-	public void listTest() throws Exception {
+    @Test
+    public void listTest() throws Exception {
 
-		StringList list = new StringList();
-		list.add("value1");
-		list.add("value2");
+        StringList list = new StringList();
+        list.add("value1");
+        list.add("value2");
 
-		CollectionInheritanceMapper mapper = Selma.mapper(CollectionInheritanceMapper.class);
-		Assert.assertEquals(list, mapper.as(list));
-		Assert.assertNotSame(list, mapper.as(list));
+        CollectionInheritanceMapper mapper = Selma.mapper(CollectionInheritanceMapper.class);
+        Assert.assertEquals(list, mapper.as(list));
+        Assert.assertNotSame(list, mapper.as(list));
 
-	}
+    }
 }

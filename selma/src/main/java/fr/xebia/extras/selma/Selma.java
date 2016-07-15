@@ -38,7 +38,7 @@ import static java.util.Arrays.asList;
  * // With sources
  * Selma.builder(MapperInterface.class).withSources(sourceInstance).build();
  * </code>
- *
+ * <p/>
  * <code>
  * // Without customMapper
  * Selma.builder(MapperInterface.class).withCustomMappers(customMappers).build();
@@ -56,9 +56,9 @@ import static java.util.Arrays.asList;
 public class Selma {
 
 
-    private static final ConcurrentMap<MapperKey, Object> mappers = new ConcurrentHashMap<MapperKey, Object>();
     public static final String SET_CUSTOM_MAPPER = "setCustomMapper";
     public static final String SET_FACTORY = "setFactory";
+    private static final ConcurrentMap<MapperKey, Object> mappers = new ConcurrentHashMap<MapperKey, Object>();
 
     /**
      * Return a builder style component to build the Mapper using this builder you can pass the sources, custom mappers and bypass the default cache registry.
@@ -258,15 +258,15 @@ public class Selma {
         }
     }
 
-    private static <T> Method getSetCustomMapperMethodFor(String generatedClassName, Class<T> mapperImpl, Class<?> customMapperClass, Class<?> ... classes) {
+    private static <T> Method getSetCustomMapperMethodFor(String generatedClassName, Class<T> mapperImpl, Class<?> customMapperClass, Class<?>... classes) {
         return getSetMethodFor(SET_CUSTOM_MAPPER, "custom mapper", generatedClassName, mapperImpl, customMapperClass, classes);
     }
 
-    private static <T> Method getSetFactoryMethodFor(String generatedClassName, Class<T> mapperImpl, Class<?> factoryClass, Class<?> ... classes) {
+    private static <T> Method getSetFactoryMethodFor(String generatedClassName, Class<T> mapperImpl, Class<?> factoryClass, Class<?>... classes) {
         return getSetMethodFor(SET_FACTORY, "factory", generatedClassName, mapperImpl, factoryClass, classes);
     }
 
-    private static <T> Method getSetMethodFor(String prefix, String type, String generatedClassName, Class<T> mapperImpl, Class<?> customClass, Class<?> ... classes) {
+    private static <T> Method getSetMethodFor(String prefix, String type, String generatedClassName, Class<T> mapperImpl, Class<?> customClass, Class<?>... classes) {
         Method method = null;
         for (Class<?> classe : classes) {
             String setter = prefix + classe.getSimpleName();

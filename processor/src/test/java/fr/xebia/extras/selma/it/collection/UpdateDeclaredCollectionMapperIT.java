@@ -17,17 +17,16 @@
 package fr.xebia.extras.selma.it.collection;
 
 import fr.xebia.extras.selma.Selma;
-import fr.xebia.extras.selma.beans.*;
+import fr.xebia.extras.selma.beans.Book;
+import fr.xebia.extras.selma.beans.Library;
+import fr.xebia.extras.selma.beans.LibraryDTO;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**

@@ -28,8 +28,7 @@ import fr.xebia.extras.selma.beans.SimpleContactsDto;
 @Mapper
 public interface FQCNOneCustomFieldToFieldMapping {
 
-    @Maps( withCustomFields = {
+    @Maps(withCustomFields = {
             @Field({"SimplePerson.prenom", "firstname"}), @Field({"fr.xebia.extras.selma.beans.SimplePerson.nom", "lastname"})
-    })
-    SimpleContactsDto asContactsDto(SimpleContacts in);
+    }) SimpleContactsDto asContactsDto(SimpleContacts in);
 }

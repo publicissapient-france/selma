@@ -89,7 +89,7 @@ public class SourceWrapper {
         }
     }
 
-    public String[] sourceConstructorArgs(){
+    public String[] sourceConstructorArgs() {
         return args;
     }
 

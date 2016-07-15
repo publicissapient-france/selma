@@ -38,6 +38,16 @@ public class InOutType {
         this.outPutAsParam = outPutAsParam;
     }
 
+    public InOutType(TypeMirror in, TypeMirror out, boolean outPutAsParam) {
+        this.in = in;
+        this.out = out;
+        this.outPutAsParam = outPutAsParam;
+
+        if (in == null || out == null) {
+            throw new IllegalArgumentException(String.format("in type %s and out type %s can not be null", in, out));
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,16 +75,6 @@ public class InOutType {
         sb.append(", outPutAsParam=").append(outPutAsParam);
         sb.append('}');
         return sb.toString();
-    }
-
-    public InOutType(TypeMirror in, TypeMirror out, boolean outPutAsParam) {
-        this.in = in;
-        this.out = out;
-        this.outPutAsParam = outPutAsParam;
-
-        if (in == null || out == null) {
-            throw new IllegalArgumentException(String.format("in type %s and out type %s can not be null", in, out));
-        }
     }
 
     public boolean areSamePrimitive() {

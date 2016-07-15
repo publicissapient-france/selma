@@ -17,10 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import fr.xebia.extras.selma.codegen.compiler.CompilerMessageRegistry;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -33,8 +30,10 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-
-import fr.xebia.extras.selma.codegen.compiler.CompilerMessageRegistry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Source code generation context
@@ -42,9 +41,9 @@ import fr.xebia.extras.selma.codegen.compiler.CompilerMessageRegistry;
 public class MapperGeneratorContext {
 
 
+    public final List<TypeElement> sources;
     private final ProcessingEnvironment processingEnv;
     private final CompilerMessageRegistry messageRegistry;
-    private boolean ignoreNullValue=false;
     int depth = 0;
 
     final Elements elements;
@@ -53,16 +52,13 @@ public class MapperGeneratorContext {
 
     // Handle nesting on source node
     LinkedList<StackElem> stack;
-
-    // Maintain a registry of known mapping methods
-    private HashMap<String, MappingMethod> mappingRegistry;
-
     // Handle method stack to build all mapping method not already built
     LinkedList<MappingMethod> methodStack;
+    private boolean ignoreNullValue = false;
+    // Maintain a registry of known mapping methods
+    private HashMap<String, MappingMethod> mappingRegistry;
     private String newParams;
-    public final List<TypeElement> sources;
-
-	private MapperWrapper wrapper;
+    private MapperWrapper wrapper;
 
     private final DeclaredType objectType;
     private final TypeVisitor<Boolean, MapperGeneratorContext> isValueTypeVisitor;
@@ -174,9 +170,9 @@ public class MapperGeneratorContext {
             return mappingRegistry.get(key.toString());
         }
         // Default enum mapper should always be considered immutable
-        if (inOutType.areDeclared() && inOutType.areEnums() && inOutType.isOutPutAsParam()){
+        if (inOutType.areDeclared() && inOutType.areEnums() && inOutType.isOutPutAsParam()) {
             key = new InOutType(inOutType, false);
-            if (mappingRegistry.containsKey(key.toString())){
+            if (mappingRegistry.containsKey(key.toString())) {
                 return mappingRegistry.get(key.toString());
             }
             mappingMethod = new MappingMethod(mappingMethod, key);
@@ -253,6 +249,18 @@ public class MapperGeneratorContext {
         return sources;
     }
 
+    public TypeElement getBoxedClass(PrimitiveType type) {
+        return processingEnv.getTypeUtils().boxedClass(type);
+    }
+
+    public MapperWrapper getWrapper() {
+        return wrapper;
+    }
+
+    public void setWrapper(MapperWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
+
     class StackElem {
         final MappingSourceNode lastNode;
         private final SourceNodeVars vars;
@@ -327,17 +335,5 @@ public class MapperGeneratorContext {
             return inOutType;
         }
     }
-
-	public TypeElement getBoxedClass(PrimitiveType type) {
-		return processingEnv.getTypeUtils().boxedClass(type);
-	}
-
-	public MapperWrapper getWrapper() {
-		return wrapper;
-	}
-
-	public void setWrapper(MapperWrapper wrapper) {
-		this.wrapper = wrapper;
-	}
 
 }

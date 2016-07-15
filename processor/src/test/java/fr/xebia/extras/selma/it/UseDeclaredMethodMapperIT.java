@@ -16,11 +16,6 @@
  */
 package fr.xebia.extras.selma.it;
 
-import java.util.Arrays;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
@@ -30,6 +25,10 @@ import fr.xebia.extras.selma.it.mappers.UseDeclaredMethodMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import junit.framework.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import java.util.Arrays;
 
 /**
  *
@@ -43,7 +42,7 @@ public class UseDeclaredMethodMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void s3lm4_should_use_interface_declared_method_name_to_map_nested_properties(){
+    public void s3lm4_should_use_interface_declared_method_name_to_map_nested_properties() {
 
         PersonIn in = new PersonIn();
         in.setAddress(new AddressIn());
@@ -60,9 +59,9 @@ public class UseDeclaredMethodMapperIT extends IntegrationTestBase {
 
         mapper = Mockito.spy(mapper);
 
-		PersonOut res = mapper.asPersonOut(in);
+        PersonOut res = mapper.asPersonOut(in);
 
-		Mockito.verify(mapper).asPersonOut(in);
+        Mockito.verify(mapper).asPersonOut(in);
         Mockito.verify(mapper).asAddressOut(in.getAddress());
         Mockito.verify(mapper).asAddressOut(in.getAddressBis());
 

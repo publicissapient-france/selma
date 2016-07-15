@@ -33,6 +33,7 @@ public class Product {
     private String label;
     private double price;
     private Set<String> tags;
+    private ProductType type;
 
     public ProductType getType() {
         return type;
@@ -41,8 +42,6 @@ public class Product {
     public void setType(ProductType type) {
         this.type = type;
     }
-
-    private ProductType type;
 
     public String getCode() {
         return code;

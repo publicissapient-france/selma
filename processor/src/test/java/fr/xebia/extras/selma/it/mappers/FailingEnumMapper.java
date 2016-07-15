@@ -18,7 +18,8 @@ package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.EnumMapper;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.*;
+import fr.xebia.extras.selma.beans.EnumA;
+import fr.xebia.extras.selma.beans.EnumB;
 
 /**
  * Created by slemesle on 12/03/2014.
@@ -26,7 +27,6 @@ import fr.xebia.extras.selma.beans.*;
 @Mapper
 public interface FailingEnumMapper {
 
-    @EnumMapper(defaultValue = "c")
-    EnumB asEnumB(EnumA in);
+    @EnumMapper(defaultValue = "c") EnumB asEnumB(EnumA in);
 
 }

@@ -41,9 +41,9 @@ public class MethodWrapper {
     private static final Pattern SETTER_PATTERN = Pattern.compile(SETTER_FORMAT);
     private final ExecutableElement method;
     private final ExecutableType executableType;
-    private DeclaredType parentType;
     private final MapperGeneratorContext context;
     boolean ignoreMissingProperties = false;
+    private DeclaredType parentType;
     private String fieldName;
 
     public MethodWrapper(ExecutableElement method, DeclaredType declaredType, MapperGeneratorContext context) {
@@ -51,7 +51,7 @@ public class MethodWrapper {
         this.parentType = declaredType;
         this.context = context;
         // Try to resolve any inherited or declared generic type using asMemberOf processed class
-        this.executableType = (ExecutableType)context.type.asMemberOf(parentType, method);
+        this.executableType = (ExecutableType) context.type.asMemberOf(parentType, method);
 
         AnnotationWrapper annotationWrapper = AnnotationWrapper.buildFor(context, method, Mapper.class);
         if (annotationWrapper != null) {
@@ -61,7 +61,7 @@ public class MethodWrapper {
 
     public TypeMirror firstParameterType() {
         if (method.getParameters().size() > 0) {
-                return executableType.getParameterTypes().get(0);
+            return executableType.getParameterTypes().get(0);
         } else {
             return null;
         }
@@ -137,7 +137,7 @@ public class MethodWrapper {
     public boolean isSetter() {
         boolean res = false;
         if (method.getParameters().size() == 1 && method.getModifiers().contains(Modifier.PUBLIC)
-            && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
+                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
             boolean validReturnType = method.getReturnType().getKind() == TypeKind.VOID;
             if (!validReturnType) {
                 // check method as a member of the actual parentType
@@ -230,11 +230,10 @@ public class MethodWrapper {
 
     public boolean isFactory() {
         boolean res = false;
-        if (hasReturnType()){
-            if (hasNoParameter()){
+        if (hasReturnType()) {
+            if (hasNoParameter()) {
                 res = true;
-            }
-            else if (hasOneParameter()) {
+            } else if (hasOneParameter()) {
                 VariableElement variableElement = method.getParameters().get(0);
                 TypeMirror typeMirror = variableElement.asType();
                 // TODO Validate is Class<T>

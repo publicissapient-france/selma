@@ -30,8 +30,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
 )
 public interface CustomMapperInMaps {
 
-    @Maps(withCustom = CustomImmutableMapper.class)
-    PersonOut mapWithCustom(PersonIn in);
+    @Maps(withCustom = CustomImmutableMapper.class) PersonOut mapWithCustom(PersonIn in);
 
     @Maps(withCustom = {CustomMutableMapper.class, NeverUsedCustomMapper.class})
     PersonOut mapWithCustom(PersonIn in, PersonOut out);

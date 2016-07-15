@@ -24,7 +24,7 @@ import fr.xebia.extras.selma.beans.AddressOut;
 /**
  * Created by slemesle on 25/03/15.
  */
-@Mapper(withIgnoreFields = "extras", withCustom =  CustomImmutableMapperClass.class, withIoC = IoC.SPRING,withIoCServiceName = "addressSelmaMapper")
+@Mapper(withIgnoreFields = "extras", withCustom = CustomImmutableMapperClass.class, withIoC = IoC.SPRING, withIoCServiceName = "addressSelmaMapper")
 public interface AddressMapperWithName {
 
     AddressOut asAddressOut(AddressIn in);

@@ -19,7 +19,6 @@ package fr.xebia.extras.selma.it;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
 import fr.xebia.extras.selma.it.mappers.FailingEnumMapper;
-import fr.xebia.extras.selma.it.mappers.MissingPropertyMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
@@ -37,8 +36,8 @@ public class FailingEnumMappersIT extends IntegrationTestBase {
         assertCompilationError(FailingEnumMapper.class,
                 "public interface FailingEnumMapper {",
                 String.format("Invalid default value for @EnumMapper(from=fr.xebia.extras.selma.beans.EnumA.class," +
-                        " to=fr.xebia.extras.selma.beans.EnumB.class, default=\"c\")" +
-                        " fr.xebia.extras.selma.beans.EnumB.c does not exist",
+                                " to=fr.xebia.extras.selma.beans.EnumB.class, default=\"c\")" +
+                                " fr.xebia.extras.selma.beans.EnumB.c does not exist",
                         PersonIn.class.getName(), PersonOut.class.getName()));
         Assert.assertEquals(1, compilationErrorCount());
     }

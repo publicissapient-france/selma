@@ -32,10 +32,11 @@ public class OrderService {
         this.orderMapper = Selma.getMapper(Order2OrderDto.class);
     }
 
-    public OrderDto process(Order order){
+    public OrderDto process(Order order) {
         return orderMapper.asDto(order);
     }
-    public Order update(OrderDto dto){
+
+    public Order update(OrderDto dto) {
         return orderMapper.asOrder(dto);
     }
 

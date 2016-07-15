@@ -19,7 +19,7 @@ package fr.xebia.extras.selma.it.generic;
 /**
  * Created by slemesle on 25/11/15.
  */
-public interface GenericMapper<A,B> {
+public interface GenericMapper<A, B> {
 
     B asEntity(A source);
 

@@ -31,7 +31,6 @@ public interface MappingInterceptorInMaps {
     @Maps(withCustom = {MappingInterceptorForImmutable.class, NeverUsedMappingInterceptorInMaps.class})
     PersonOut mapWithInterceptor(PersonIn in);
 
-    @Maps(withCustom = MappingInterceptorForMutable.class)
-    PersonOut mapWithInterceptor(PersonIn in, PersonOut out);
+    @Maps(withCustom = MappingInterceptorForMutable.class) PersonOut mapWithInterceptor(PersonIn in, PersonOut out);
 
 }

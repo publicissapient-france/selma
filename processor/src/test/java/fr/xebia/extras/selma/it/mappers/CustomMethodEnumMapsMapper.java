@@ -24,7 +24,7 @@ import fr.xebia.extras.selma.beans.*;
 /**
  * Created by slemesle on 12/03/2014.
  */
-@Mapper(withEnums = @EnumMapper(from= EnumA.class, to=EnumB.class, defaultValue = "A"))
+@Mapper(withEnums = @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "A"))
 public interface CustomMethodEnumMapsMapper {
 
     @Maps(withEnums = @EnumMapper(from = EnumA.class, to = EnumB.class, defaultValue = "C"))
@@ -40,7 +40,6 @@ public interface CustomMethodEnumMapsMapper {
     @Maps(withEnums = @EnumMapper(from = EnumA.class, to = EnumB.class))
     EnumBeanB asEnumBeanBNoDefault(EnumBeanA source, EnumBeanB dest);
 
-    @Maps(withEnums = @EnumMapper(from = EnumIn.class, to = EnumOut.class))
-    CityOut asCityOut(CityIn in, CityOut out);
+    @Maps(withEnums = @EnumMapper(from = EnumIn.class, to = EnumOut.class)) CityOut asCityOut(CityIn in, CityOut out);
 
 }

@@ -29,10 +29,11 @@ public class MappingInterceptorForImmutable {
 
     /**
      * Simply intercept in and out person after mapping process
+     *
      * @param in
      * @param out
      */
-    public void intercept(PersonIn in, PersonOut out){
+    public void intercept(PersonIn in, PersonOut out) {
 
         out.setBiography(in.getFirstName() + SALT);
     }

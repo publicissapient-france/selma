@@ -31,7 +31,7 @@ import java.util.Date;
  *
  */
 @Compile(withClasses = IgnoreFieldMapper.class)
-public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase{
+public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase {
 
     @Test
     public void given_explicit_ignore_fields_not_existing_for_class_compiler_should_report_warning() throws Exception {
@@ -46,7 +46,7 @@ public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase{
     }
 
     @Test
-    public void given_explicit_ignore_fields_for_method_generated_mapper_should_ignore_them(){
+    public void given_explicit_ignore_fields_for_method_generated_mapper_should_ignore_them() {
 
         PersonIn in = new PersonIn();
         in.setAge(11);
@@ -58,7 +58,7 @@ public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase{
         in.setLastName("Doe");
         in.setAddress(new AddressIn());
         in.getAddress().setCity(new CityIn());
-        in.getAddress().setExtras(Arrays.asList(new String []{"134", "1234", "543"}));
+        in.getAddress().setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
         in.getAddress().setPrincipal(false);
         in.getAddress().setNumber(42);
         in.getAddress().setStreet("Victor Hugo");
@@ -76,7 +76,7 @@ public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase{
     }
 
     @Test
-    public void given_explicit_ignore_fields_for_interface_generated_mapper_should_ignore_them(){
+    public void given_explicit_ignore_fields_for_interface_generated_mapper_should_ignore_them() {
 
         CityIn in = new CityIn();
         in.setName("Paris");

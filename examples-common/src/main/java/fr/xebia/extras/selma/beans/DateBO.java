@@ -23,7 +23,7 @@ public class DateBO {
 
     private String date;
 
-    public DateBO(String date){
+    public DateBO(String date) {
         this.date = date;
     }
 
@@ -31,7 +31,7 @@ public class DateBO {
         return date;
     }
 
-    public String getDate(){
+    public String getDate() {
         return date;
     }
 

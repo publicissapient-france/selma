@@ -19,7 +19,6 @@ package fr.xebia.extras.selma.it;
 import fr.xebia.extras.selma.beans.NoGetterBean;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
-import fr.xebia.extras.selma.it.mappers.MissingPropertyMapper;
 import fr.xebia.extras.selma.it.mappers.MissingPropertyMapsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
@@ -31,7 +30,6 @@ import org.junit.Test;
  */
 @Compile(withClasses = MissingPropertyMapsMapper.class, shouldFail = true)
 public class FailingMissingPropertyMapsMappersIT extends IntegrationTestBase {
-
 
 
     @Test

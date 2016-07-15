@@ -106,14 +106,14 @@ public class MappingInterceptorInMapsIT extends IntegrationTestBase {
 
     @Test
     public void given_mapping_interceptor_in_mapper_overriden_in_maps_then_it_should_be_reported_unused_in_warnings() throws Exception {
-        assertCompilationWarning(MappingInterceptorInMaps.class,"public interface MappingInterceptorInMaps {",
+        assertCompilationWarning(MappingInterceptorInMaps.class, "public interface MappingInterceptorInMaps {",
                 "Custom interceptor method \"fr.xebia.extras.selma.it.custom.interceptor.NeverUsedMappingInterceptorInMapper.intercept\" is never used");
         Assert.assertEquals(2, compilationWarningCount());
     }
 
     @Test
     public void given_mapping_interceptor_in_maps_never_used_then_it_should_be_reported_unused_in_warnings() throws Exception {
-        assertCompilationWarning(MappingInterceptorInMaps.class,"PersonOut mapWithInterceptor(PersonIn in);",
+        assertCompilationWarning(MappingInterceptorInMaps.class, "PersonOut mapWithInterceptor(PersonIn in);",
                 "Custom interceptor method \"fr.xebia.extras.selma.it.custom.interceptor.NeverUsedMappingInterceptorInMaps.intercept\" is never used");
         Assert.assertEquals(2, compilationWarningCount());
     }

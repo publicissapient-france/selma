@@ -28,7 +28,7 @@ public class CustomImmutableMapperInMapper {
     public static final String IMMUTABLY_MAPPED = " immutably mapped from mapper";
     public static final int POPULATION_INC = 5;
 
-    public CityOut mapCity(CityIn cityIn){
+    public CityOut mapCity(CityIn cityIn) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + IMMUTABLY_MAPPED);
         cityOut.setCapital(cityIn.isCapital());

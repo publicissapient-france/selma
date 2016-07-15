@@ -22,5 +22,4 @@ package fr.xebia.extras.selma.beans;
 public class DataSource {
 
 
-
 }

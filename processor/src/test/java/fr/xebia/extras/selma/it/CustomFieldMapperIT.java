@@ -32,7 +32,7 @@ import org.junit.Test;
 public class CustomFieldMapperIT extends IntegrationTestBase {
 
     @Test
-    public void given_a_mapper_with_custom_field_mapping_should_use_described_name_to_name_for_mapping(){
+    public void given_a_mapper_with_custom_field_mapping_should_use_described_name_to_name_for_mapping() {
         CustomFieldMapper mapper = Selma.mapper(CustomFieldMapper.class);
 
         SimplePerson person = new SimplePerson();
@@ -62,7 +62,7 @@ public class CustomFieldMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void given_a_mapper_with_custom_field_mapping_should_use_default_same_field_name_for_mapping(){
+    public void given_a_mapper_with_custom_field_mapping_should_use_default_same_field_name_for_mapping() {
         CustomFieldMapper mapper = Selma.mapper(CustomFieldMapper.class);
 
         SimplePerson person = new SimplePerson();
@@ -75,7 +75,7 @@ public class CustomFieldMapperIT extends IntegrationTestBase {
 
 
     @Test
-    public void given_a_mapper_with_custom_field_mapping_method_should_use_default_same_field_name_for_mapping(){
+    public void given_a_mapper_with_custom_field_mapping_method_should_use_default_same_field_name_for_mapping() {
         CustomFieldMapper mapper = Selma.mapper(CustomFieldMapper.class);
 
         SimplePerson person = new SimplePerson();

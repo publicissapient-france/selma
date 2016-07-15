@@ -21,6 +21,12 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 /**
+ * This enum is there only for default values on from and to in EnumMapper Annotation
+ */
+enum DefaultEnum {
+}
+
+/**
  * This annotation can be used inside the Mapper annotation to define global mapping properties for enumeration.
  * By default Selma, maps enum values considering that source enum and destination enum should have same values.
  * With this annotation, Selma will map identical values from one bean to the other and by default use the given default value.
@@ -32,7 +38,7 @@ public @interface EnumMapper {
     /**
      * Enumeration used as source of mapping. This parameter is needed only if used at class level.
      */
-    Class<? extends Enum> from() default DefaultEnum.class ;
+    Class<? extends Enum> from() default DefaultEnum.class;
 
     /**
      * Enumeration used as destination of mapping. This parameter is needed only if used at class level.
@@ -46,8 +52,3 @@ public @interface EnumMapper {
     String defaultValue() default "";
 
 }
-
-/**
- * This enum is there only for default values on from and to in EnumMapper Annotation
- */
-enum DefaultEnum{}

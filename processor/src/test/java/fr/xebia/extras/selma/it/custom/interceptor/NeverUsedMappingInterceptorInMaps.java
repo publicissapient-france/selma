@@ -18,8 +18,6 @@ package fr.xebia.extras.selma.it.custom.interceptor;
 
 import fr.xebia.extras.selma.beans.Book;
 import fr.xebia.extras.selma.beans.BookDTO;
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
 
 /**
  * Created by slemesle on 26/03/2014.
@@ -29,10 +27,11 @@ public class NeverUsedMappingInterceptorInMaps {
 
     /**
      * Simply intercept in and out person after mapping process
+     *
      * @param in
      * @param out
      */
-    public void intercept(Book in, BookDTO out){
+    public void intercept(Book in, BookDTO out) {
 
         throw new UnsupportedOperationException("This interceptor should never be called");
     }

@@ -25,6 +25,6 @@ import fr.xebia.extras.selma.beans.immutable.ImmutablePackageBean;
 @Mapper(withImmutablesPackages = "fr.xebia.extras.selma.beans.immutable")
 public interface ImmutablePackageMapper {
 
-	ImmutablePackageBean as(ImmutablePackageBean in);
+    ImmutablePackageBean as(ImmutablePackageBean in);
 
 }

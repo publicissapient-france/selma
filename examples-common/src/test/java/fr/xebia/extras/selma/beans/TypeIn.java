@@ -21,6 +21,8 @@ package fr.xebia.extras.selma.beans;
  */
 public class TypeIn {
 
+    String date;
+
     public TypeIn(String date) {
         this.date = date;
     }
@@ -32,7 +34,5 @@ public class TypeIn {
     public void setDate(String date) {
         this.date = date;
     }
-
-    String date;
 
 }

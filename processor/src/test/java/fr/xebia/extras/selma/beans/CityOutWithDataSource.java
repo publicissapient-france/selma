@@ -25,10 +25,10 @@ package fr.xebia.extras.selma.beans;
  */
 public class CityOutWithDataSource {
 
-    private  String name;
-    private  long population;
-    private  boolean capital;
     public final DataSource dataSource;
+    private String name;
+    private long population;
+    private boolean capital;
 
     public CityOutWithDataSource(DataSource dataSource) {
         this.dataSource = dataSource;

@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * Conveniance annotation wrapper class to retrieve easily annotation parameters
- *
+ * <p/>
  * User: slemesle
  * Date: 25/11/2013
  * Time: 13:40
@@ -76,9 +76,9 @@ public class AnnotationWrapper {
         if (myValue.getValue() instanceof List) {
             List<? extends AnnotationValue> values = (List<? extends AnnotationValue>) myValue.getValue();
             for (AnnotationValue value : values) {
-                if (value.getValue() instanceof String){
-                    res.add((String)value.getValue());
-                }else {
+                if (value.getValue() instanceof String) {
+                    res.add((String) value.getValue());
+                } else {
                     res.add(value.toString());
                 }
             }
@@ -94,7 +94,7 @@ public class AnnotationWrapper {
         if (myValue.getValue() instanceof List) {
             List<? extends AnnotationValue> values = (List<? extends AnnotationValue>) myValue.getValue();
             for (AnnotationValue value : values) {
-                if (value.getValue() instanceof AnnotationMirror){
+                if (value.getValue() instanceof AnnotationMirror) {
                     res.add(new AnnotationWrapper(context, (AnnotationMirror) value.getValue(), annotatedElement));
                 }
             }
@@ -109,14 +109,14 @@ public class AnnotationWrapper {
     }
 
     public TypeMirror getAsTypeMirror(String parameter) {
-        String classe =  map.get(parameter).getValue().toString();
+        String classe = map.get(parameter).getValue().toString();
         final TypeElement element = context.elements.getTypeElement(classe.replace(".class", ""));
 
         return element.asType();
     }
 
     public String getAsString(String parameter) {
-        return  map.get(parameter).getValue().toString();
+        return map.get(parameter).getValue().toString();
     }
 
     public <T> T getAs(String parameter) {

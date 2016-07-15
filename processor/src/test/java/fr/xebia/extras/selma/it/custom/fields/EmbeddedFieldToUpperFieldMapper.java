@@ -25,16 +25,14 @@ import fr.xebia.extras.selma.beans.ProposalDto;
 /**
  * Created by slemesle on 23/11/14.
  */
-@Mapper(withCustomFields = @Field({"passenger.date","passengerDate"}))
+@Mapper(withCustomFields = @Field({"passenger.date", "passengerDate"}))
 public interface EmbeddedFieldToUpperFieldMapper {
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.age", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
-    })
-    ProposalDto asProposalDto(Proposal proposal);
+    }) ProposalDto asProposalDto(Proposal proposal);
 
-    @Maps(withCustomFields ={
+    @Maps(withCustomFields = {
             @Field({"passenger.age", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
-    })
-    Proposal asProposal(ProposalDto proposal);
+    }) Proposal asProposal(ProposalDto proposal);
 }

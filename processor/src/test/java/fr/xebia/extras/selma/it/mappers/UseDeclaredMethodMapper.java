@@ -33,7 +33,7 @@ public interface UseDeclaredMethodMapper {
      *
      * @return
      */
-	PersonOut asPersonOut(PersonIn in);
+    PersonOut asPersonOut(PersonIn in);
 
     /**
      * Handles mapping of AddressIn to AddressOut.

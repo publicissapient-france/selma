@@ -16,7 +16,6 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
-import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.Library;
 import fr.xebia.extras.selma.beans.LibraryDTO;

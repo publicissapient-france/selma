@@ -27,7 +27,6 @@ import fr.xebia.extras.selma.beans.EnumB;
 @Mapper
 public interface CustomMethodNoDefaultEnumMapper {
 
-    @EnumMapper
-    EnumB asEnumB(EnumA in);
+    @EnumMapper EnumB asEnumB(EnumA in);
 
 }

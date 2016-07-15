@@ -256,9 +256,9 @@ public class FactoryWrapper {
 
     private class Factory {
 
-        private MapperGeneratorContext context;
         private final MethodWrapper method;
         private final String methodCall;
+        private MapperGeneratorContext context;
 
         public Factory(MapperGeneratorContext context, MethodWrapper method, String methodCall) {
             this.context = context;

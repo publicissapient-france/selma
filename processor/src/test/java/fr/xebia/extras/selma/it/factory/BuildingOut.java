@@ -4,15 +4,14 @@ package fr.xebia.extras.selma.it.factory;
  * Bean with no public constructor.
  */
 public class BuildingOut {
-    public static BuildingOut create() {
-        return new BuildingOut();
-    }
-
     private String name;
     private String street;
     private int number;
-
     private BuildingOut() {
+    }
+
+    public static BuildingOut create() {
+        return new BuildingOut();
     }
 
     public String getName() {

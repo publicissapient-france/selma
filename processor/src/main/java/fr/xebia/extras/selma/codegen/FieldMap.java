@@ -75,7 +75,7 @@ public class FieldMap {
     public List<Field> getStartingWith(String fieldName) {
 
         List<Field> res = findStartingWith(from, fieldName);
-        if (res.isEmpty()){
+        if (res.isEmpty()) {
             res = findStartingWith(to, fieldName);
         }
         return res;
@@ -85,7 +85,7 @@ public class FieldMap {
         List<Field> res = new ArrayList<Field>();
         for (String key : from.keySet()) {
             if ((key.startsWith(fieldName) && key.contains(fieldName + ".")) ||
-                    key.equals(fieldName)){
+                    key.equals(fieldName)) {
                 res.add(new Field(key, from.get(key), element));
             }
         }
@@ -96,8 +96,8 @@ public class FieldMap {
 class Field {
     public final String originalTo;
     public final String originalFrom;
-    public  String from;
-    public  String to;
+    public String from;
+    public String to;
     public Element element;
 
     public Field(String from, String to, Element element) {
@@ -118,14 +118,15 @@ class Field {
         from = removePrefixes(from, simpleName, fqcn);
     }
 
-    private String removePrefixes(String key, String simpleName, String fqcn){
-        key = key.replace(simpleName+".", "");
+    private String removePrefixes(String key, String simpleName, String fqcn) {
+        key = key.replace(simpleName + ".", "");
         return key.replace(fqcn + ".", "");
     }
 
     public boolean hasEmbedded() {
         return from.contains(".") || to.contains(".");
     }
+
     public boolean sourceEmbedded() {
         return from.contains(".");
     }

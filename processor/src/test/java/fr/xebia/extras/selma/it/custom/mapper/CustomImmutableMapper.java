@@ -32,7 +32,7 @@ public class CustomImmutableMapper {
     public static final String IMMUTABLY_MAPPED = " immutably mapped";
     public static final int POPULATION_INC = 10000;
 
-    public CityOut mapCity(CityIn cityIn){
+    public CityOut mapCity(CityIn cityIn) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + IMMUTABLY_MAPPED);
         cityOut.setCapital(cityIn.isCapital());
@@ -40,9 +40,9 @@ public class CustomImmutableMapper {
         return cityOut;
     }
 
-    public Collection<String> mapStringCollection(Collection<String> inCollection){
+    public Collection<String> mapStringCollection(Collection<String> inCollection) {
         Collection<String> res = Collections.EMPTY_LIST;
-        if (inCollection != null){
+        if (inCollection != null) {
             res = new ArrayList<String>(inCollection);
         }
         return res;

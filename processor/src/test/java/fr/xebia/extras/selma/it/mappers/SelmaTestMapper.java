@@ -24,6 +24,6 @@ import fr.xebia.extras.selma.Mapper;
 @Mapper
 public interface SelmaTestMapper {
 
-   String asString(String in);
+    String asString(String in);
 
 }

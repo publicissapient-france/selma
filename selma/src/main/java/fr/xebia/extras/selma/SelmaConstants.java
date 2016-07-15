@@ -26,7 +26,7 @@ public class SelmaConstants {
     public static final String MAPPER_CLASS_SUFFIX = "SelmaGeneratedClass";
     public static final String IN_VAR = "in";
     public static final String OUT_VAR = "out";
-	public static final String INSTANCE_CACHE = "instanceCache";
+    public static final String INSTANCE_CACHE = "instanceCache";
 
     public static final boolean DEFAULT_BOOLEAN = false;
     public static final byte DEFAULT_BYTE = 0;

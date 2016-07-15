@@ -24,14 +24,14 @@ import java.util.List;
  */
 public class PersonDto {
 
-        private String firstName;
-        private String lastName;
-        private Date birthDay;
-        private int age;
-        private Long[] indices;
-        private List<String> tags;
+    private String firstName;
+    private String lastName;
+    private Date birthDay;
+    private int age;
+    private Long[] indices;
+    private List<String> tags;
 
-        // + Getters and Setters
+    // + Getters and Setters
 
     public String getFirstName() {
         return firstName;

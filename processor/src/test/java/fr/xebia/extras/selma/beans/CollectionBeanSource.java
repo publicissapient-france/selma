@@ -31,7 +31,7 @@ public class CollectionBeanSource {
     }
 
     public List<String> getStrings() {
-        if(strings == null){
+        if (strings == null) {
             strings = new ArrayList<String>();
         }
         return strings;

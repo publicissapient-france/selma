@@ -27,13 +27,12 @@ import java.util.List;
  */
 public class AddressOutWithDataSource {
 
+    public final DataSource dataSource;
     CityOutWithDataSource city;
     String street;
     int number;
     List<String> extras;
     boolean principal;
-
-    public final DataSource dataSource;
 
     public AddressOutWithDataSource(DataSource dataSource) {
         this.dataSource = dataSource;

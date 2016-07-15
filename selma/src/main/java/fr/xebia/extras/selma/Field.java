@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 
 /**
  * Define a fieldname based mapping, @Field can only contain 2 string as values that will map names.
- * @Field({"name", "firstname"}) will map name to firstname and reverse.<br/>
  *
+ * @Field({"name", "firstname"}) will map name to firstname and reverse.<br/>
  */
 @Target({ElementType.ANNOTATION_TYPE})
 @Inherited

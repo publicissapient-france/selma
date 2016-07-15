@@ -27,10 +27,10 @@ public class BeanWrapperFactory {
 
     private final HashMap<TypeElement, BeanWrapper> beanWrapperMap = new HashMap<TypeElement, BeanWrapper>();
 
-    public final BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeElement typeElement){
+    public final BeanWrapper getBeanWrapperOrNew(MapperGeneratorContext context, TypeElement typeElement) {
 
         BeanWrapper beanWrapper = beanWrapperMap.get(typeElement);
-        if (beanWrapper == null){
+        if (beanWrapper == null) {
             beanWrapper = new BeanWrapper(context, typeElement);
             beanWrapperMap.put(typeElement, beanWrapper);
         }

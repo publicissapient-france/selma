@@ -32,15 +32,13 @@ public interface CustomFieldMappingsMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in, SimplePersonDto dest);
 
-    @Maps( withCustomFields = {
+    @Maps(withCustomFields = {
             @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
-    })
-    SimplePersonDto asPersonDtoReverseName(SimplePerson in);
+    }) SimplePersonDto asPersonDtoReverseName(SimplePerson in);
 
 
-    @Maps( withCustomFields = {
+    @Maps(withCustomFields = {
             @Field({"nom", "firstname"}), @Field({"prenom", "lastname"}), @Field({"methodFieldFrom", "methodFieldTo"})
-    })
-    SimplePersonDto asPersonDtoReverseName(SimplePerson in, SimplePersonDto dest);
+    }) SimplePersonDto asPersonDtoReverseName(SimplePerson in, SimplePersonDto dest);
 
 }

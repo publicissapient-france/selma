@@ -29,10 +29,10 @@ import org.junit.Test;
  *
  */
 @Compile(withClasses = InheritedMapper.class)
-public class InheritedMapperIT  extends IntegrationTestBase {
+public class InheritedMapperIT extends IntegrationTestBase {
 
     @Test
-    public void given_extended_bean_selma_should_map_inherited_fields(){
+    public void given_extended_bean_selma_should_map_inherited_fields() {
 
         ExtendedCityIn in = new ExtendedCityIn();
         in.setCapital(true);

@@ -24,8 +24,8 @@ import fr.xebia.extras.selma.beans.StringMap;
 @Mapper
 public interface CollectionInheritanceMapper {
 
-	StringMap as(StringMap map);
+    StringMap as(StringMap map);
 
-	StringList as(StringList list);
+    StringList as(StringList list);
 
 }

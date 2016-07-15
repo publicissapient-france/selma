@@ -29,7 +29,7 @@ import org.junit.Test;
 public class IncompleteEnumMapperIT extends IntegrationTestBase {
 
     @Test(expected = IllegalArgumentException.class)
-    public void given_a_mapper_for_2_enums_where_one_is_subset_of_the_other_compilation_should_fail(){
+    public void given_a_mapper_for_2_enums_where_one_is_subset_of_the_other_compilation_should_fail() {
         IncompleteEnumMatchingMapper mapper = Selma.mapper(IncompleteEnumMatchingMapper.class);
 
     }

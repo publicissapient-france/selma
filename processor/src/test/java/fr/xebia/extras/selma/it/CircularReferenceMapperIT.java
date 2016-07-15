@@ -16,36 +16,35 @@
  */
 package fr.xebia.extras.selma.it;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.CircularReference;
 import fr.xebia.extras.selma.it.mappers.CircularReferenceMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created by slemesle on 12/03/2014.
  */
-@Compile(withClasses = { CircularReferenceMapper.class })
+@Compile(withClasses = {CircularReferenceMapper.class})
 public class CircularReferenceMapperIT extends IntegrationTestBase {
 
     @Test
-	public void circularReferenceTest() throws Exception {
+    public void circularReferenceTest() throws Exception {
 
-		final CircularReferenceMapper mapper = Selma.mapper(CircularReferenceMapper.class);
+        final CircularReferenceMapper mapper = Selma.mapper(CircularReferenceMapper.class);
 
-		CircularReference in1 = new CircularReference("1");
-		CircularReference in2 = new CircularReference("2");
+        CircularReference in1 = new CircularReference("1");
+        CircularReference in2 = new CircularReference("2");
 
-		in1.setRef(in2);
-		in2.setRef(in1);
+        in1.setRef(in2);
+        in2.setRef(in1);
 
-		CircularReference out1 = mapper.as(in1);
-		Assert.assertEquals(in1.getValue(), out1.getValue());
-		Assert.assertEquals(in2.getValue(), out1.getRef().getValue());
-		Assert.assertEquals(out1, out1.getRef().getRef());
+        CircularReference out1 = mapper.as(in1);
+        Assert.assertEquals(in1.getValue(), out1.getValue());
+        Assert.assertEquals(in2.getValue(), out1.getRef().getValue());
+        Assert.assertEquals(out1, out1.getRef().getRef());
 
     }
 

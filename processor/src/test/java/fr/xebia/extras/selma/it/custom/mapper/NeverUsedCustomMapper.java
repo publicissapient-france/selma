@@ -24,7 +24,7 @@ import fr.xebia.extras.selma.beans.BookDTO;
  */
 public class NeverUsedCustomMapper {
 
-    public BookDTO asBookDTO(Book book){
+    public BookDTO asBookDTO(Book book) {
         return null;
     }
 

@@ -23,7 +23,7 @@ import fr.xebia.extras.selma.beans.AddressOut;
 /**
  * Created by slemesle on 25/03/15.
  */
-@Mapper(withIgnoreFields = "extras", withCustom =  CustomImmutableMapper.class)
+@Mapper(withIgnoreFields = "extras", withCustom = CustomImmutableMapper.class)
 public interface AddressMapper {
 
     AddressOut asAddressOut(AddressIn in);

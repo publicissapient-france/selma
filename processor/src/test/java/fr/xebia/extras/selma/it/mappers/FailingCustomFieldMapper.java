@@ -35,8 +35,7 @@ public interface FailingCustomFieldMapper {
 
 
     @Fields({
-      @Field({"nom"}), @Field({"prenom", "lastname"})
-    })
-    SimplePersonDto asPersonDtoReverseName(SimplePerson in);
+            @Field({"nom"}), @Field({"prenom", "lastname"})
+    }) SimplePersonDto asPersonDtoReverseName(SimplePerson in);
 
 }

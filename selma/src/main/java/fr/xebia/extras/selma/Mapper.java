@@ -16,12 +16,12 @@
  */
 package fr.xebia.extras.selma;
 
-import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-import static fr.xebia.extras.selma.IoC.NO;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
+
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
+import static fr.xebia.extras.selma.IoC.NO;
 
 /**
  * Mapper annotation used to denote interfaces that needs mappers implementation to be built.
@@ -108,7 +108,7 @@ public @interface Mapper {
      * This is used to declare custom immutable types. Selma will copy by reference any types inside this package,
      * when it meets same type for matching fields in source and destination bean.
      */
-	String[] withImmutablesPackages() default {};
+    String[] withImmutablesPackages() default {};
 
     /**
      * This is used to describe fields to be ignored in the generated mapping methods. This allows to skip specific properties
@@ -122,7 +122,6 @@ public @interface Mapper {
      * </ul>
      */
     String[] withIgnoreFields() default {};
-
 
 
     /**
@@ -157,12 +156,12 @@ public @interface Mapper {
      * By default Selma uses a setter to provide new mapped collections. Passing this attribute to ALLOW_GETTER will
      * make Selma use a getter to map collections if the setter does not exist.
      */
-	CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
+    CollectionMappingStrategy withCollectionStrategy() default CollectionMappingStrategy.DEFAULT;
 
-	/**
-	 * Instance cache is used to handle circular references in objects mapped by Selma
-	 */
-	boolean withInstanceCache() default true;
+    /**
+     * Instance cache is used to handle circular references in objects mapped by Selma
+     */
+    boolean withInstanceCache() default true;
 
 
 }

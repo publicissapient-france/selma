@@ -30,20 +30,20 @@ public class CustomMapper {
     private final DataSource dataSource;
     private String message = " Mapped by CustomMapper";
 
-    public CustomMapper(DataSource dataSource){
+    public CustomMapper(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public CustomMapper(){
+    public CustomMapper() {
         dataSource = null;
     }
 
-    public CustomMapper(String message){
+    public CustomMapper(String message) {
         this.message = message;
         dataSource = null;
     }
 
-    public CityOut mapCity(CityIn cityIn){
+    public CityOut mapCity(CityIn cityIn) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
@@ -51,7 +51,7 @@ public class CustomMapper {
         return cityOut;
     }
 
-    public CityOutWithDataSource asCityOutWithDataSource(CityIn cityIn){
+    public CityOutWithDataSource asCityOutWithDataSource(CityIn cityIn) {
         CityOutWithDataSource cityOut = new CityOutWithDataSource(dataSource);
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
@@ -59,7 +59,7 @@ public class CustomMapper {
         return cityOut;
     }
 
-    public CityOut asCityOut(CityIn cityIn){
+    public CityOut asCityOut(CityIn cityIn) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
@@ -67,7 +67,7 @@ public class CustomMapper {
         return cityOut;
     }
 
-    public CityOut mapCity(CityIn cityIn, CityOut out){
+    public CityOut mapCity(CityIn cityIn, CityOut out) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());
@@ -75,7 +75,7 @@ public class CustomMapper {
         return cityOut;
     }
 
-    public CityOutWithDataSource asCityOut(CityIn cityIn, CityOutWithDataSource out){
+    public CityOutWithDataSource asCityOut(CityIn cityIn, CityOutWithDataSource out) {
         CityOutWithDataSource cityOut = new CityOutWithDataSource(dataSource);
         cityOut.setName(cityIn.getName() + message);
         cityOut.setCapital(cityIn.isCapital());

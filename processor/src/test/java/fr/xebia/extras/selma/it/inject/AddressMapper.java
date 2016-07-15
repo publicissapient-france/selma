@@ -25,7 +25,7 @@ import fr.xebia.extras.selma.beans.AddressOut;
  * Created by slemesle on 25/03/15.
  */
 @Mapper(withIgnoreFields = "extras",
-        withCustom =  CustomImmutableMapperClass.class,
+        withCustom = CustomImmutableMapperClass.class,
         withFactories = BeanFactoryClass.class,
         withIoC = IoC.SPRING)
 public interface AddressMapper {

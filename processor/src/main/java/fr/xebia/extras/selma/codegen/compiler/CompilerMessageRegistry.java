@@ -32,10 +32,10 @@ public class CompilerMessageRegistry {
     }
 
 
-    public boolean hasMessageFor(Diagnostic.Kind kind, Element element){
+    public boolean hasMessageFor(Diagnostic.Kind kind, Element element) {
         KindElementPair pair = new KindElementPair(kind, element);
 
-        if (messageSet.contains(pair)){
+        if (messageSet.contains(pair)) {
             return true;
         } else {
             messageSet.add(pair);

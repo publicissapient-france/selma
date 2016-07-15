@@ -35,19 +35,16 @@ public class CustomMapperWrapper {
 
     public static final String CUSTOM_MAPPER_FIELD_TPL = "customMapper%s";
     public static final String WITH_CUSTOM = "withCustom";
-
-    private CustomMapperWrapper parent;
     private final AnnotationWrapper annotationWrapper;
     private final MapperGeneratorContext context;
     private final HashMap<InOutType, String> unusedCustomMappers;
     private final Map<InOutType, MappingBuilder> registryMap;
     private final Map<InOutType, MappingBuilder> interceptorMap;
-
-
     private final List<TypeElement> customMapperFields;
     private final HashMap<InOutType, String> unusedInterceptor;
     private final Element annotatedElement;
     private final IoC ioC;
+    private CustomMapperWrapper parent;
 
     public CustomMapperWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context) {
         this.annotatedElement = mapperAnnotation.getAnnotatedElement();
@@ -77,7 +74,7 @@ public class CustomMapperWrapper {
         this.context = context;
         this.ioC = parent.ioC;
 
-        if(annotationWrapper != null) {
+        if (annotationWrapper != null) {
             this.annotatedElement = annotationWrapper.getAnnotatedElement();
             collectCustomMappers();
         } else {
@@ -119,7 +116,8 @@ public class CustomMapperWrapper {
 
     /**
      * Adds a custom mapping method to the registry for later use at codegen.
-     *  @param method
+     *
+     * @param method
      * @param immutable
      * @param ignoreAbstract
      */
@@ -131,7 +129,7 @@ public class CustomMapperWrapper {
         InOutType inOutType = method.inOutType();
         String methodCall = String.format("%s.%s", customMapperFieldName, method.getSimpleName());
 
-        if (immutable == null){
+        if (immutable == null) {
             res = MappingBuilder.newCustomMapper(inOutType, methodCall);
             unusedCustomMappers.put(inOutType,
                     String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
@@ -202,7 +200,7 @@ public class CustomMapperWrapper {
         for (ExecutableElement method : methods) {
             MethodWrapper methodWrapper = new MethodWrapper(method, (DeclaredType) element.asType(), context);
             // We should ignore abstract methods if parsing an abstract mapper class
-            if (ignoreAbstract && methodWrapper.isAbstract()){
+            if (ignoreAbstract && methodWrapper.isAbstract()) {
                 continue;
             }
             if (isValidCustomMapping(methodWrapper)) {
@@ -237,10 +235,10 @@ public class CustomMapperWrapper {
                                     MethodWrapper methodWrapper) {
         CustomMapperKey key = new CustomMapperKey(methodWrapper.inOutType());
         CustomMapperEntry entry1 = customInOutTypes.get(key);
-        if (entry1 == null){
+        if (entry1 == null) {
             CustomMapperEntry entry = new CustomMapperEntry(methodWrapper.inOutType(), methodWrapper);
             customInOutTypes.put(key, entry);
-        }else {
+        } else {
             CustomMapperEntry entry = new CustomMapperEntry(entry1, methodWrapper);
             customInOutTypes.put(key, entry);
         }
@@ -296,7 +294,7 @@ public class CustomMapperWrapper {
         MappingBuilder res = interceptorMap.get(inOutType);
         if (res != null) {
             unusedInterceptor.remove(new InOutType(inOutType, true));
-        } else if (parent != null){
+        } else if (parent != null) {
             res = parent.getMappingInterceptor(inOutType);
         }
         return res;
@@ -321,12 +319,13 @@ public class CustomMapperWrapper {
             boolean found = false;
             for (TypeElement maperField : customMapperFields) {
 
-                if (childField.equals(maperField)){
-                    found = true; break;
+                if (childField.equals(maperField)) {
+                    found = true;
+                    break;
                 }
 
             }
-            if (!found){
+            if (!found) {
                 customMapperFields.add(childField);
             }
         }
@@ -340,7 +339,7 @@ public class CustomMapperWrapper {
         final TypeMirror in;
         final TypeMirror out;
 
-        public CustomMapperKey(InOutType inOutType){
+        public CustomMapperKey(InOutType inOutType) {
             in = inOutType.in();
             out = inOutType.out();
         }
@@ -362,21 +361,21 @@ public class CustomMapperWrapper {
         @Override
         public int hashCode() {
             // Here we use the string representation of types because hashCode is not consistent bw instances
-            int result = (""+in).hashCode();
-            result = 31 * result + (""+out).hashCode();
+            int result = ("" + in).hashCode();
+            result = 31 * result + ("" + out).hashCode();
             return result;
         }
     }
 
     class CustomMapperEntry {
-         final MethodWrapper updateGraphMethod;
-         final MethodWrapper immutableMethod;
+        final MethodWrapper updateGraphMethod;
+        final MethodWrapper immutableMethod;
 
         public CustomMapperEntry(InOutType inOutType, MethodWrapper customMethod) {
-            if (inOutType.isOutPutAsParam()){
+            if (inOutType.isOutPutAsParam()) {
                 this.updateGraphMethod = customMethod;
                 this.immutableMethod = null;
-            }else {
+            } else {
                 this.immutableMethod = customMethod;
                 this.updateGraphMethod = null;
             }
@@ -384,10 +383,10 @@ public class CustomMapperWrapper {
 
 
         public CustomMapperEntry(CustomMapperEntry entry1, MethodWrapper methodWrapper) {
-            if (entry1.immutableMethod != null){
+            if (entry1.immutableMethod != null) {
                 immutableMethod = entry1.immutableMethod;
                 updateGraphMethod = methodWrapper;
-            }else {
+            } else {
                 updateGraphMethod = entry1.updateGraphMethod;
                 immutableMethod = methodWrapper;
             }

@@ -21,7 +21,8 @@ import fr.xebia.extras.selma.beans.EnumA;
 import fr.xebia.extras.selma.beans.EnumB;
 import fr.xebia.extras.selma.beans.EnumBeanA;
 import fr.xebia.extras.selma.beans.EnumBeanB;
-import fr.xebia.extras.selma.it.mappers.*;
+import fr.xebia.extras.selma.it.mappers.CustomMethodEnumMapsMapper;
+import fr.xebia.extras.selma.it.mappers.CustomMethodEnumNoDefaultMapsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
@@ -64,7 +65,6 @@ public class CustomMethodEnumMapsMapperIT extends IntegrationTestBase {
 
         Assert.assertEquals(EnumB.C, res.getMyEnum());
     }
-
 
 
     @Test

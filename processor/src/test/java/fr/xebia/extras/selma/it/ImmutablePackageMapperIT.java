@@ -16,14 +16,13 @@
  */
 package fr.xebia.extras.selma.it;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.immutable.ImmutablePackageBean;
 import fr.xebia.extras.selma.it.mappers.ImmutablePackageMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -31,14 +30,14 @@ import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 @Compile(withClasses = ImmutablePackageMapper.class)
 public class ImmutablePackageMapperIT extends IntegrationTestBase {
 
-	@Test
-	public void testImmutablePackage() throws Exception {
+    @Test
+    public void testImmutablePackage() throws Exception {
 
-		ImmutablePackageBean bean = new ImmutablePackageBean();
+        ImmutablePackageBean bean = new ImmutablePackageBean();
 
-		ImmutablePackageMapper mapper = Selma.mapper(ImmutablePackageMapper.class);
-		bean.setValue("test");
-		Assert.assertSame(bean, mapper.as(bean));
-	}
+        ImmutablePackageMapper mapper = Selma.mapper(ImmutablePackageMapper.class);
+        bean.setValue("test");
+        Assert.assertSame(bean, mapper.as(bean));
+    }
 
 }

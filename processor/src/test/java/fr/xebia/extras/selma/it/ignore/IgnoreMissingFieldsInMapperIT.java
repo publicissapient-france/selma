@@ -32,12 +32,12 @@ import java.util.Date;
  * Created by slemesle on 27/11/14.
  */
 @Compile(withClasses = {
-        IgnoreMissingFieldsInMapperMapper.class,IgnoreMissingFieldsInMapsMapper.class
+        IgnoreMissingFieldsInMapperMapper.class, IgnoreMissingFieldsInMapsMapper.class
 })
 public class IgnoreMissingFieldsInMapperIT extends IntegrationTestBase {
 
     @Test
-    public void given_mapper_with_ignore_ALL_should_skip_silently_missing_fields(){
+    public void given_mapper_with_ignore_ALL_should_skip_silently_missing_fields() {
         IgnoreMissingFieldsInMapperMapper mapper = Selma.getMapper(IgnoreMissingFieldsInMapperMapper.class);
 
         PersonIn personIn = getPersonIn();
@@ -49,7 +49,7 @@ public class IgnoreMissingFieldsInMapperIT extends IntegrationTestBase {
     }
 
     @Test
-    public void given_maps_with_ignore_ALL_should_skip_silently_missing_fields(){
+    public void given_maps_with_ignore_ALL_should_skip_silently_missing_fields() {
         IgnoreMissingFieldsInMapsMapper mapper = Selma.getMapper(IgnoreMissingFieldsInMapsMapper.class);
 
         PersonIn personIn = getPersonIn();

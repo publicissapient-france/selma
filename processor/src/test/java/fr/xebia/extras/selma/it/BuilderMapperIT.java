@@ -16,7 +16,7 @@ import org.junit.Test;
 public class BuilderMapperIT extends IntegrationTestBase {
 
     @Test
-    public void builderMapper_should_map_properties()throws Exception{
+    public void builderMapper_should_map_properties() throws Exception {
         BuilderMapper mapper = Selma.getMapper(BuilderMapper.class);
 
         BuilderIn builderIn = new BuilderIn();

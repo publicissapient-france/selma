@@ -20,18 +20,13 @@ import fr.xebia.extras.selma.Selma;
 import fr.xebia.extras.selma.beans.CollectionBeanDefensiveDestination;
 import fr.xebia.extras.selma.beans.CollectionBeanDestination;
 import fr.xebia.extras.selma.beans.CollectionBeanSource;
-import fr.xebia.extras.selma.it.mappers.CollectionsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 

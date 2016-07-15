@@ -17,12 +17,9 @@
 package fr.xebia.extras.selma.it.custom.mapper;
 
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by slemesle on 19/11/14.
@@ -41,9 +38,9 @@ public abstract class AbstractMapperWithCustom {
     /**
      * Custom mapper inside the Mapper class
      */
-    public AddressOut mapAddress(AddressIn addressIn){
-        AddressOut res= null;
-        if (addressIn != null){
+    public AddressOut mapAddress(AddressIn addressIn) {
+        AddressOut res = null;
+        if (addressIn != null) {
             res = new AddressOut();
             res.setCity(this.asCityOut(addressIn.getCity()));
             res.setExtras(addressIn.getExtras() == null ? null : new ArrayList<String>(addressIn.getExtras()));

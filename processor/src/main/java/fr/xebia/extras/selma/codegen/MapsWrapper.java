@@ -16,17 +16,16 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
-
-import java.util.List;
+import fr.xebia.extras.selma.CollectionMappingStrategy;
+import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.Maps;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import java.util.List;
 
-import fr.xebia.extras.selma.CollectionMappingStrategy;
-import fr.xebia.extras.selma.IgnoreMissing;
-import fr.xebia.extras.selma.Maps;
+import static fr.xebia.extras.selma.IgnoreMissing.DEFAULT;
 
 /**
  * Created by slemesle on 10/11/14.
@@ -50,8 +49,8 @@ public class MapsWrapper {
     private final MapperGeneratorContext context;
     private final CustomMapperWrapper customMapper;
     private final IgnoreMissing ignoreMissing;
-    private boolean ignoreMissingProperties;
     private final CollectionMappingStrategy collectionMappingStrategy;
+    private boolean ignoreMissingProperties;
 
 
     public MapsWrapper(MethodWrapper method, MapperWrapper mapperWrapper) {
@@ -67,7 +66,7 @@ public class MapsWrapper {
 
         customFields = new FieldsWrapper(context, method, mapperWrapper.fields(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_CUSTOM_FIELDS));
 
-        enumMappers = new EnumMappersWrapper(registry.getEnumMappers(),  maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS), method.element());
+        enumMappers = new EnumMappersWrapper(registry.getEnumMappers(), maps == null ? null : maps.getAsAnnotationWrapper(WITH_ENUMS), method.element());
         registry.enumMappers(enumMappers);
 
         customMapper = new CustomMapperWrapper(mapperWrapper.customMappers(), maps, context);
@@ -80,7 +79,7 @@ public class MapsWrapper {
 
 
         IgnoreMissing missing = (maps == null ? DEFAULT : IgnoreMissing.valueOf(maps.getAsString(WITH_IGNORE_MISSING)));
-        if (missing == DEFAULT){
+        if (missing == DEFAULT) {
             ignoreMissing = mapperWrapper.ignoreMissing();
         } else {
             ignoreMissing = missing;
@@ -128,7 +127,7 @@ public class MapsWrapper {
         return customMapper.mapperFields();
     }
 
-    public IgnoreMissing ignoreMissing(){
+    public IgnoreMissing ignoreMissing() {
         return ignoreMissing;
     }
 
