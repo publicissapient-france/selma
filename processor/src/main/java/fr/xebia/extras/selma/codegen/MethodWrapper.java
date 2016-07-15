@@ -119,7 +119,8 @@ public class MethodWrapper {
         boolean res = false;
         if (hasNoParameter() && method.getReturnType().getKind() != TypeKind.VOID
                 && method.getModifiers().contains(Modifier.PUBLIC)
-                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
+                && !method.getModifiers().contains(Modifier.ABSTRACT)
+                && !method.getModifiers().contains(Modifier.STATIC)) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
             if (res) {
@@ -136,8 +137,10 @@ public class MethodWrapper {
      */
     public boolean isSetter() {
         boolean res = false;
-        if (method.getParameters().size() == 1 && method.getModifiers().contains(Modifier.PUBLIC)
-                && !method.getModifiers().containsAll(Arrays.asList(Modifier.ABSTRACT, Modifier.STATIC))) {
+        if (method.getParameters().size() == 1
+                && method.getModifiers().contains(Modifier.PUBLIC)
+                && !method.getModifiers().contains(Modifier.ABSTRACT)
+                && !method.getModifiers().contains(Modifier.STATIC)) {
             boolean validReturnType = method.getReturnType().getKind() == TypeKind.VOID;
             if (!validReturnType) {
                 // check method as a member of the actual parentType
