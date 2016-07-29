@@ -23,7 +23,8 @@
 # What is Selma ?
 
 S3lm4 say Selma, stands for ***Stupid Simple Statically Linked Mapper***.
-In fact it is on one side an Annotation Processor that generate Java code to handle the mapping from field to field at compile time. On the other side, it is a Runtime library to instantiate and invoke the generated Mapper.
+In fact it is on one side an Annotation Processor that generate Java code to handle the mapping from field to field at
+compile time. On the other side, it is a Runtime library to instantiate and invoke the generated Mapper.
 
 
 # How does it works ?
@@ -86,7 +87,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma-processor</artifactId>
-            <version>0.14</version>
+            <version>0.15</version>
             <scope>provided</scope>
         </dependency>
 
@@ -94,7 +95,7 @@ First add selma and selma-processor to your pom dependencies:
         <dependency>
             <groupId>fr.xebia.extras</groupId>
             <artifactId>selma</artifactId>
-            <version>0.14</version>
+            <version>0.15</version>
         </dependency>
 ```
 
