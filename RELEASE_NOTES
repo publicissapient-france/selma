@@ -9,7 +9,7 @@ This release fixes bugs in generic handling and factory methods. It also impleme
 * #97: Add support for mapping raw types and improve error handling Thanks to @facboy
 * #95: Add support for Builder-style setters Thanks to @facboy
 * #92: Fix using interceptor inside abstract mapper class Thanks to @vakoroteev
-
+* #104: Remove compiler warnings in custom mapper validation
 
 0.14 - 3/17/2015
 This release fixes bugs regarding generic types and adds support for factory methods.
