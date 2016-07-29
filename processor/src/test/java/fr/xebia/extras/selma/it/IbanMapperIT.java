@@ -6,7 +6,7 @@ import fr.xebia.extras.selma.beans.Rib;
 import fr.xebia.extras.selma.it.mappers.IbanMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 @Compile(withClasses = {IbanMapper.class})

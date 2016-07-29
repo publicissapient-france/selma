@@ -1,7 +1,14 @@
 0.15 -
-
-*
-*
+This release fixes bugs in generic handling and factory methods. It also implement a new cyclic mapping support using an
+ instance cache.
+* #2: Support for cyclic mapping with new @Mapper(withCyclicMapping = true) Thanks to Julien Audo
+* #101: Fix generic types resolving in source and destination bean
+* #81: Make a whole package immutable with new @Mapper(withImmutablesPackages = {"org.project.immutables"}) Thanks to Julien Audo
+* #90: Automatic conversion of primitives types to String
+* #80: Add factory support for beans without public constructor Thanks to @facboy
+* #97: Add support for mapping raw types and improve error handling Thanks to @facboy
+* #95: Add support for Builder-style setters Thanks to @facboy
+* #92: Fix using interceptor inside abstract mapper class Thanks to @vakoroteev
 
 
 0.14 - 3/17/2015
@@ -9,7 +16,7 @@ This release fixes bugs regarding generic types and adds support for factory met
 * #63: Support for generic type in mappers
 * #39: Add Factory method and class support
 * #78: Add WithIoCServiceName to name Spring service using annotation, Thanks to Benoit Charret
-* #75: Fix generic inherited type handling in collections and map, Thanks to @julaudo
+* #75: Fix generic inherited type handling in collections and map, Thanks to Julien Audo
 * #70: Handle custom mappers in a .class package, Thanks to Antoine Leveugle
 * #57: Improve error messages for failing custom field to field mapping
 

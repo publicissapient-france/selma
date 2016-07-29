@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.it.utils;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.matchers.JUnitMatchers;
@@ -125,7 +126,7 @@ public class IntegrationTestBase {
         }
 
         org.junit.Assert.assertNotNull(res);
-        org.junit.Assert.assertThat(res.getMessage(null), JUnitMatchers.containsString(message));
+        org.junit.Assert.assertThat(res.getMessage(null), CoreMatchers.containsString(message));
 
     }
 

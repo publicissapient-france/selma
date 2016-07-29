@@ -25,7 +25,7 @@ import fr.xebia.extras.selma.it.mappers.MappingInterceptor;
 import fr.xebia.extras.selma.it.mappers.MappingInterceptorSupport;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

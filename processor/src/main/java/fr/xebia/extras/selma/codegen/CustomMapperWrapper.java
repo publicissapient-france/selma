@@ -257,21 +257,14 @@ public class CustomMapperWrapper {
         }
 
         if (!methodWrapper.element().getModifiers().contains(javax.lang.model.element.Modifier.PUBLIC)) {
-            context.warn(methodWrapper.element(), "Custom mapping method should be *public* " +
-                    "(Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
             res = false;
         }
 
         if (methodWrapper.element().getModifiers().contains(Modifier.STATIC)) {
-            context.warn(methodWrapper.element(), "Custom mapping method can not be *static* " +
-                    "(Fix modifiers of the method) on %s", methodWrapper.getSimpleName());
             res = false;
         }
 
         if (!methodWrapper.isCustomMapper() && !methodWrapper.isMappingInterceptor()) {
-            context.warn(methodWrapper.element(), "Custom mapping method should have a return type and one or" +
-                    " two parameters and interceptor method should be void and have two parameters " +
-                    "(Fix method signature) on %s", methodWrapper.getSimpleName());
             res = false;
         }
 

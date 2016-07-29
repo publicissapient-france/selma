@@ -21,13 +21,13 @@ import fr.xebia.extras.selma.beans.*;
 import fr.xebia.extras.selma.it.mappers.BeanMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  *
