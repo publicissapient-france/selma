@@ -141,6 +141,11 @@ public class CustomMapperWrapper {
             inOutType = new InOutType(inOutType, false);
         }
 
+        if (registryMap.containsKey(inOutType)){
+            MappingBuilder mappingBuilder = registryMap.get(inOutType);
+            context.error(method.element(),"Conflicting custom mapper method "+
+                         "conflicts with '%s' For '%s' ", mappingBuilder.toString(), inOutType.toString());
+        }
         registryMap.put(inOutType, res);
     }
 

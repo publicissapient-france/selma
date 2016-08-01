@@ -59,14 +59,6 @@ public class CustomMapper {
         return cityOut;
     }
 
-    public CityOut asCityOut(CityIn cityIn) {
-        CityOut cityOut = new CityOut();
-        cityOut.setName(cityIn.getName() + message);
-        cityOut.setCapital(cityIn.isCapital());
-        cityOut.setPopulation(cityIn.getPopulation() + 10000);
-        return cityOut;
-    }
-
     public CityOut mapCity(CityIn cityIn, CityOut out) {
         CityOut cityOut = new CityOut();
         cityOut.setName(cityIn.getName() + message);
