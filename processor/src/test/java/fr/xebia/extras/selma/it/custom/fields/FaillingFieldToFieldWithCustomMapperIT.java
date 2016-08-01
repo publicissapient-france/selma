@@ -18,6 +18,8 @@ package fr.xebia.extras.selma.it.custom.fields;
 
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
+import fr.xebia.extras.selma.beans.PersonIn;
+import fr.xebia.extras.selma.it.custom.fields.FaillingFieldToFieldWithCustomMapper.CustomEmptyMapper;
 import fr.xebia.extras.selma.it.custom.fields.FaillingFieldToFieldWithCustomMapper.CustomStreetMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
@@ -72,5 +74,32 @@ public class FaillingFieldToFieldWithCustomMapperIT extends IntegrationTestBase 
                          " Mapping field in.getCity().getName() from source bean " +AddressOut.class.getCanonicalName()+
                          ", using field @fr.xebia.extras.selma.Field(value={\"city.name\", \"street\"}," +
                          " withCustom="+CustomStreetMapper.class.getCanonicalName()+".class)");
+    }
+
+    @Test
+    public void no_custom_mapping_method_for_direct_field_should_fail() throws Exception {
+        // Given
+        //      we use @Field with a direct field 'firstName'
+        //      on a mapper FaillingFieldToFieldWithCustomMapper
+        //      with a method 'PersonOut asPersonOut(PersonIn in);'
+        //      and a custom mapper CustomEmptyMapper.class
+        //      that contains no method
+        // When
+        //      we compile the mapper 'FaillingFieldToFieldWithCustomMapper.class'
+        // Then
+        //      the compilation fails
+        //      and raise an error for CustomEmptyMapper
+        //      and the error tells 'No valid mapping method found in CustomEmptyMapper'
+        //      Another compilation error reports no mapping method found when mapping the field
+         assertCompilationError(FaillingFieldToFieldWithCustomMapper.class,
+                 "PersonOut asPersonOut(PersonIn in);",
+                 "No valid mapping method found in custom selma class "+
+                         CustomEmptyMapper.class.getCanonicalName());
+         assertCompilationError(FaillingFieldToFieldWithCustomMapper.class,
+                 "PersonOut asPersonOut(PersonIn in);",
+                 "Custom mapping method not found:" +
+                 " Mapping field firstname from source bean " +PersonIn.class.getCanonicalName()+
+                 ", using field @fr.xebia.extras.selma.Field(value={\"firstName\"}," +
+                 " withCustom="+CustomEmptyMapper.class.getCanonicalName()+".class)");
     }
 }

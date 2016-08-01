@@ -21,6 +21,8 @@ import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
+import fr.xebia.extras.selma.beans.PersonIn;
+import fr.xebia.extras.selma.beans.PersonOut;
 
 /**
  * Created by slemesle on 01/08/2016.
@@ -39,6 +41,12 @@ public interface FaillingFieldToFieldWithCustomMapper {
     })
     AddressIn asAddressIn(AddressOut in);
 
+    @Maps(withCustomFields = {
+        // Custom direct field firstName expecting a custom mapper method for its type String to String
+        @Field(value = {"firstName"}, withCustom = CustomEmptyMapper.class)
+    })
+    PersonOut asPersonOut(PersonIn in);
+
     /**
      * Custom mapper providing a int to int method
      */
@@ -48,5 +56,12 @@ public interface FaillingFieldToFieldWithCustomMapper {
             return age + 1;
         }
 
+    }
+
+    /**
+     * Custom empty mapper
+     * This mapper contains no method
+     */
+    class CustomEmptyMapper {
     }
 }
