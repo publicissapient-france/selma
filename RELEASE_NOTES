@@ -1,3 +1,9 @@
+1.0 - ??/??/2016
+
+* #106: Add support for custom mapping method on per field basis
+*
+*
+
 0.15 - 7/29/2016
 This release fixes bugs in generic handling and factory methods. It also implement a new cyclic mapping support using an
  instance cache.

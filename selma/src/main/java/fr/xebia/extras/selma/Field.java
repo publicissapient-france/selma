@@ -21,21 +21,36 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 /**
- * Define a fieldname based mapping, @Field can only contain 2 string as values that will map names.
+ * Define a fieldname based mapping.
+ * A @Field link 2 property names in any order to map them.
  *
  * @Field({"name", "firstname"}) will map name to firstname and reverse.<br/>
+ * <p/>
+ * You can use a CustomMapper here using withCustom = CustomMapper.class. This mapper
+ * will be used to convert the defined field pair.
+ * @Field({"name", "firstname"}, withCustom = MyCustomMapper.class) will map name to firstname
+ * and reverse using the eligible custom mapper method.
+ * <p/>
+ * To simplify custom field to field mappers, Selma allows to define only one value when withCustom
+ * is declared. This can be usefull when you want to define a specific mapper for a property defined
+ * in both source and destination.
+ * @Field({"name"}, withCustom = MyCustomMapper.class) will map name to name using the eligible
+ * custom mapper method.
  */
 @Target({ElementType.ANNOTATION_TYPE})
 @Inherited
 public @interface Field {
 
     /**
-     * Value Should contain 2 values and its definition is mandatory.
-     * Compilation will fail on mis-configuration.
+     * Contains the target field names with potential embedded path.
+     * Should contain two values except when @withCustom is defined.
      */
     String[] value();
 
-
+    /**
+     * Contains the class of the custom mapper where Selma will search a corresponding
+     * mapping method. Default to Object.class to discover when withCustom is defined.
+     */
     Class<?> withCustom() default Object.class;
-}
 
+}

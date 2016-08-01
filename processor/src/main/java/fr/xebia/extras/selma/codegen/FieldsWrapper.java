@@ -86,27 +86,53 @@ public class FieldsWrapper {
     private void processFieldList(MapperGeneratorContext context, List<AnnotationWrapper> fields) {
         for (AnnotationWrapper field : fields) {
             List<String> fieldPair = field.getAsStrings("value");
+            String withCustom = field.getAsString("withCustom");
             FieldBuilder fieldBuilder = null;
-            if (fieldPair.size() != 2) {
-                context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
-            } else if (fieldPair.get(0).isEmpty() || fieldPair.get(1).isEmpty()) {
-                context.error(element, "Invalid @Field use, @Field can not have empty string \n" +
-                        "--> Fix @Field({\"%s\",\"%s\"})", fieldPair.get(0), fieldPair.get(1));
-            } else {
+
+            if (fieldPair.size() == 1 && !"java.lang.Object".equals(withCustom)) {
+                /**
+                 * We have only one field with a custom mapper so we use this one as both from and to
+                 * @Field(value = "myField", withCustom = MyCustomMapper.class)
+                 */
+                fieldBuilder = new FieldBuilder().forElement(element)
+                                                 .from(fieldPair.get(0).toLowerCase())
+                                                 .to(fieldPair.get(0).toLowerCase());
+
+                CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context);
+                fieldBuilder.withCustom(customMapperWrapper);
+                customMapperWrappers.add(customMapperWrapper);
+
+            } else if (fieldPair.size() == 2 && !fieldPair.get(0).isEmpty() && !fieldPair.get(1).isEmpty()){
+                /**
+                 * We have only two fields with a potential custom mapper
+                 * @Field(value = {"myFieldFrom", "myFieldTo"}, withCustom = MyCustomMapper.class)
+                 */
                 fieldBuilder = new FieldBuilder().forElement(element)
                                                  .from(fieldPair.get(0).toLowerCase())
                                                  .to(fieldPair.get(1).toLowerCase());
 
-                String withCustom = field.getAsString("withCustom");
                 if (!"java.lang.Object".equals(withCustom)) {
-                    final TypeElement element = context.elements.getTypeElement(withCustom.replaceAll("\\.class$", ""));
+                    // The custom mapper is only defined if it is not a Object.class
                     CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context);
                     fieldBuilder.withCustom(customMapperWrapper);
                     customMapperWrappers.add(customMapperWrapper);
                 }
-                fieldsRegistry.push(fieldBuilder.build());
+            } else if (fieldPair.size() == 2) {
+                // Fields should have 2 not empty values
+                context.error(element, "Invalid @Field signature, empty string for fields are forbidden: " +
+                        field.toString());
+            } else {
+                // Bad Field signature too many fields in value or to few
+                context.error(element, "Invalid @Field signature, bad value count in value array: " + field.toString() +
+                        " \n" +
+                        "One value is supported @Field(value = \"field\", withCustom = MyCustomMapper.class)" +
+                        " only when withCustom is defined\n" +
+                        "Otherwise you must provide 2 and only 2 values @Field({\"fieldFrom\", \"fieldTo\"}");
             }
 
+            if (fieldBuilder != null){
+                fieldsRegistry.push(fieldBuilder.build());
+            }
         }
     }
 

@@ -17,25 +17,29 @@
 package fr.xebia.extras.selma.it.mappers;
 
 import fr.xebia.extras.selma.Field;
-import fr.xebia.extras.selma.Fields;
 import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.Maps;
+import fr.xebia.extras.selma.beans.AddressIn;
+import fr.xebia.extras.selma.beans.AddressOut;
 import fr.xebia.extras.selma.beans.SimplePerson;
 import fr.xebia.extras.selma.beans.SimplePersonDto;
 
 /**
  *
  */
-@Mapper
-@Fields({
-        @Field({"nom", "lastname"}), @Field({"prenom", "firstname", "ddd"})
-})
+@Mapper(withCustomFields = {
+            @Field({"nom", "lastname"}),
+            @Field({"prenom", "firstname", "ddd"})}
+)
 public interface FailingCustomFieldMapper {
 
     SimplePersonDto asPersonDto(SimplePerson in);
 
 
-    @Fields({
+    @Maps(withCustomFields = {
             @Field({"nom"}), @Field({"prenom", "lastname"})
     }) SimplePersonDto asPersonDtoReverseName(SimplePerson in);
 
+    @Maps(withCustomFields = @Field({"empty",""}))
+    AddressOut asAdress(AddressIn in);
 }

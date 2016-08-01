@@ -30,8 +30,16 @@ public class FailingCustomFieldMapperIT extends IntegrationTestBase {
     @Test
     public void given_a_mapper_with_field_mapping_when_field_does_not_contains_2_string_then_should_raise_error() throws Exception {
 
-        assertCompilationError(FailingCustomFieldMapper.class, "public interface FailingCustomFieldMapper {", "Invalid @Field use, @Field should have 2 strings which link one field to another");
-        assertCompilationError(FailingCustomFieldMapper.class, "SimplePersonDto asPersonDtoReverseName(SimplePerson in);", "Invalid @Field use, @Field should have 2 strings which link one field to another");
+        assertCompilationError(FailingCustomFieldMapper.class,
+                "public interface FailingCustomFieldMapper {",
+                "Invalid @Field signature, bad value count in value array:" +
+                        " @fr.xebia.extras.selma.Field({\"prenom\", \"firstname\", \"ddd\"})");
+        assertCompilationError(FailingCustomFieldMapper.class,
+                "SimplePersonDto asPersonDtoReverseName(SimplePerson in);",
+                "Invalid @Field signature, bad value count in value array: @fr.xebia.extras.selma.Field({\"nom\"})");
+        assertCompilationError(FailingCustomFieldMapper.class,
+                "AddressOut asAdress(AddressIn in);",
+                "Invalid @Field signature, empty string for fields are forbidden: @fr.xebia.extras.selma.Field({\"empty\", \"\"})");
 
     }
 

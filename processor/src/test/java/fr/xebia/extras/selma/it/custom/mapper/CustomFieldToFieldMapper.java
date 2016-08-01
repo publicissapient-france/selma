@@ -28,8 +28,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
 @Mapper(
         withIgnoreFields = {"fr.xebia.extras.selma.beans.PersonIn.male", "fr.xebia.extras.selma.beans.PersonOut.biography"},
         withCustomFields = {
-                @Field( value = {"age", "age"},
-                        withCustom = CustomFieldToFieldMapper.CustomF2FMapper.class)
+                @Field( value = "age", withCustom = CustomFieldToFieldMapper.CustomF2FMapper.class)
         }
 )
 public interface CustomFieldToFieldMapper {
@@ -38,12 +37,12 @@ public interface CustomFieldToFieldMapper {
     int AGE_INCREMENT = 42;
 
     @Maps(withCustomFields = {
-            @Field(value = {"firstName", "firstName"}, withCustom = CustomF2FMapper.class)
+            @Field(value = "firstName", withCustom = CustomF2FMapper.class)
     })
     PersonOut mapWithCustom(PersonIn in);
 
     @Maps(withCustomFields = {
-            @Field(value = {"firstName", "firstName"}, withCustom = CustomF2FMapper.class)
+            @Field(value = "firstName", withCustom = CustomF2FMapper.class)
     })
     PersonIn mapWithCustom(PersonOut in);
 
