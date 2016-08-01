@@ -151,10 +151,10 @@ class Field {
 
 
     @Override public String toString() {
-        final StringBuilder sb = new StringBuilder("@Field{ \"");
+        final StringBuilder sb = new StringBuilder("@Field({\"");
         sb.append(originalTo).append("\"");
         sb.append(", \"").append(originalFrom).append("\"");
-        sb.append('}');
+        sb.append("})");
         return sb.toString();
     }
 

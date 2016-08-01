@@ -241,7 +241,7 @@ public class MapperMethodGenerator {
         for (String field : inBean.getGetterFields()) {
 
             String outFieldName = field;
-            CustomMapperWrapper fieldRegistry = null;
+            Field matchedFieldAnnotation = null;
             List<Field> customFieldsFor = maps.getFieldsFor(field, inOutType.inAsDeclaredType(), inOutType.outAsDeclaredType());
             if (!customFieldsFor.isEmpty()) {
                 boolean hasEmbedded = false;
@@ -250,14 +250,14 @@ public class MapperMethodGenerator {
                         outFields.remove(customField.to);
                         hasEmbedded = true;
                     }
-                    fieldRegistry = customField.mappingRegistry();
                 }
                 if (hasEmbedded) {
                     customFields.addAll(customFieldsFor);
                     continue;
                 } else {
                     // We can only have one field here, if not embedded because fields names are matched with equals
-                    outFieldName = customFieldsFor.get(0).to;
+                    matchedFieldAnnotation = customFieldsFor.get(0);
+                    outFieldName = matchedFieldAnnotation.to;
                 }
 
             }
@@ -307,7 +307,16 @@ public class MapperMethodGenerator {
 
             try {
                 InOutType inOutTypeForField = new InOutType(typeForInField, typeForOutField, inOutType.isOutPutAsParam());
-                MappingBuilder  mappingBuilder = fieldRegistry != null ? fieldRegistry.getMapper(inOutTypeForField): null;
+
+                MappingBuilder  mappingBuilder = null;
+                if (matchedFieldAnnotation != null && matchedFieldAnnotation.customMapperWrapper != null){
+                    mappingBuilder = matchedFieldAnnotation.customMapperWrapper.getMapper(inOutTypeForField);
+                    if (mappingBuilder == null){
+                        context.error(mapperMethod.element(), "Custom mapping method not found: " +
+                                "Mapping field %s from source bean %s, using field %s", field, inOutType.in(),
+                                matchedFieldAnnotation.customMapperWrapper);
+                    }
+                }
                 if (mappingBuilder == null){
                     mappingBuilder = findBuilderFor(inOutTypeForField);
                 }
@@ -455,8 +464,16 @@ public class MapperMethodGenerator {
         try {
 
 
-            MappingBuilder mappingBuilder = (customField.mappingRegistry() != null ?
-                    customField.mappingRegistry().getMapper(inOutType) : null);
+            MappingBuilder mappingBuilder = null;
+            if (customField.mappingRegistry() != null) {
+                mappingBuilder = customField.mappingRegistry().getMapper(inOutType);
+
+                if (mappingBuilder == null) {
+                    context.error(mapperMethod.element(), "Custom mapping method not found: " +
+                                    "Mapping field %s from source bean %s, using field %s", field, inBean.typeElement,
+                            customField.customMapperWrapper);
+                }
+            }
             if (mappingBuilder == null) {
                 mappingBuilder = findBuilderFor(inOutType);
             }

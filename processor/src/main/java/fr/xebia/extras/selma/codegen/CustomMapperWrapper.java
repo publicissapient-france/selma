@@ -324,6 +324,10 @@ public class CustomMapperWrapper {
         }
     }
 
+    public String toString(){
+        return this.annotationWrapper.toString();
+    }
+
     public void addMappersElementMethods(TypeElement mapperInterface) {
         collectCustomMethods(mapperInterface, true);
     }
