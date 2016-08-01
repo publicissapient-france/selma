@@ -36,6 +36,7 @@ public class FieldsWrapper {
     private FieldMap fieldsRegistry;
     private FieldMap unusedFields;
     private FieldsWrapper parent = null;
+    private List<CustomMapperWrapper> customMapperWrappers = new ArrayList<CustomMapperWrapper>();
 
     private FieldsWrapper(MapperGeneratorContext context, Element element) {
         this.context = context;
@@ -85,14 +86,27 @@ public class FieldsWrapper {
     private void processFieldList(MapperGeneratorContext context, List<AnnotationWrapper> fields) {
         for (AnnotationWrapper field : fields) {
             List<String> fieldPair = field.getAsStrings("value");
+            FieldBuilder fieldBuilder = null;
             if (fieldPair.size() != 2) {
                 context.error(element, "Invalid @Field use, @Field should have 2 strings which link one field to another");
             } else if (fieldPair.get(0).isEmpty() || fieldPair.get(1).isEmpty()) {
                 context.error(element, "Invalid @Field use, @Field can not have empty string \n" +
                         "--> Fix @Field({\"%s\",\"%s\"})", fieldPair.get(0), fieldPair.get(1));
             } else {
-                fieldsRegistry.push(fieldPair.get(0).toLowerCase(), fieldPair.get(1).toLowerCase());
+                fieldBuilder = new FieldBuilder().forElement(element)
+                                                 .from(fieldPair.get(0).toLowerCase())
+                                                 .to(fieldPair.get(1).toLowerCase());
+
+                String withCustom = field.getAsString("withCustom");
+                if (!"java.lang.Object".equals(withCustom)) {
+                    final TypeElement element = context.elements.getTypeElement(withCustom.replaceAll("\\.class$", ""));
+                    CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context);
+                    fieldBuilder.withCustom(customMapperWrapper);
+                    customMapperWrappers.add(customMapperWrapper);
+                }
+                fieldsRegistry.push(fieldBuilder.build());
             }
+
         }
     }
 
@@ -131,8 +145,16 @@ public class FieldsWrapper {
 
 
     public void reportUnused() {
-        for (Map.Entry<String, String> unusedPair : unusedFields.entrySet()) {
-            context.warn(element, "Custom @Field({\"%s\",\"%s\"}) mapping is never used !", unusedPair.getKey(), unusedPair.getValue());
+        for (Map.Entry<String, Field> unusedPair : unusedFields.entrySet()) {
+            context.warn(element, "Custom @Field({\"%s\",\"%s\"}) mapping is never used !", unusedPair.getKey(), unusedPair.getValue().to);
         }
+    }
+
+    public List<TypeElement> mapperFields() {
+        List<TypeElement> res = new ArrayList<TypeElement>();
+        for (CustomMapperWrapper custom : customMapperWrappers) {
+            res.addAll(custom.mapperFields());
+        }
+        return res;
     }
 }

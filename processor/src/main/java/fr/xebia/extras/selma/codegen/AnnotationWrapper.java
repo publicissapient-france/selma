@@ -82,6 +82,8 @@ public class AnnotationWrapper {
                     res.add(value.toString());
                 }
             }
+        } else {
+            res.add(myValue.getValue().toString());
         }
 
         return res;
@@ -116,7 +118,11 @@ public class AnnotationWrapper {
     }
 
     public String getAsString(String parameter) {
-        return map.get(parameter).getValue().toString();
+        AnnotationValue parameterValue = map.get(parameter);
+        if (parameterValue != null){
+            return parameterValue.getValue().toString();
+        }
+        return null;
     }
 
     public <T> T getAs(String parameter) {

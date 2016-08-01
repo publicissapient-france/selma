@@ -190,6 +190,9 @@ public class MapperWrapper {
      */
     public void collectMaps(MapsWrapper maps) {
         customMappers.addFields(maps.customMapperFields());
+        customMappers.addFields(maps.customF2FMapperFields());
+        customMappers.addFields(fields.mapperFields());
+
 
     }
 

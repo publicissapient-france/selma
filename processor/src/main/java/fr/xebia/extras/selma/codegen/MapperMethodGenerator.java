@@ -241,6 +241,7 @@ public class MapperMethodGenerator {
         for (String field : inBean.getGetterFields()) {
 
             String outFieldName = field;
+            CustomMapperWrapper fieldRegistry = null;
             List<Field> customFieldsFor = maps.getFieldsFor(field, inOutType.inAsDeclaredType(), inOutType.outAsDeclaredType());
             if (!customFieldsFor.isEmpty()) {
                 boolean hasEmbedded = false;
@@ -249,6 +250,7 @@ public class MapperMethodGenerator {
                         outFields.remove(customField.to);
                         hasEmbedded = true;
                     }
+                    fieldRegistry = customField.mappingRegistry();
                 }
                 if (hasEmbedded) {
                     customFields.addAll(customFieldsFor);
@@ -257,6 +259,7 @@ public class MapperMethodGenerator {
                     // We can only have one field here, if not embedded because fields names are matched with equals
                     outFieldName = customFieldsFor.get(0).to;
                 }
+
             }
 
             TypeMirror typeForInField = inBean.getTypeForGetter(field);
@@ -304,7 +307,10 @@ public class MapperMethodGenerator {
 
             try {
                 InOutType inOutTypeForField = new InOutType(typeForInField, typeForOutField, inOutType.isOutPutAsParam());
-                MappingBuilder mappingBuilder = findBuilderFor(inOutTypeForField);
+                MappingBuilder  mappingBuilder = fieldRegistry != null ? fieldRegistry.getMapper(inOutTypeForField): null;
+                if (mappingBuilder == null){
+                    mappingBuilder = findBuilderFor(inOutTypeForField);
+                }
                 if (mappingBuilder != null) {
                     ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
                             .withInOutType(inOutTypeForField).withAssign(false).withUseGetterForDestination(useGetterForDestination)));
@@ -447,7 +453,13 @@ public class MapperMethodGenerator {
             inOutType = new InOutType(inBean.getTypeForGetter(customField.from), beanPtr.getTypeForSetter(lastVisitedField), outPutAsParam);
         }
         try {
-            MappingBuilder mappingBuilder = findBuilderFor(inOutType);
+
+
+            MappingBuilder mappingBuilder = (customField.mappingRegistry() != null ?
+                    customField.mappingRegistry().getMapper(inOutType) : null);
+            if (mappingBuilder == null) {
+                mappingBuilder = findBuilderFor(inOutType);
+            }
             if (mappingBuilder != null) {
 
                 ptr = sourceEmbedded ?

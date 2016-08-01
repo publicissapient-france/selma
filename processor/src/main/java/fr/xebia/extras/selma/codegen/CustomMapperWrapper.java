@@ -56,8 +56,8 @@ public class CustomMapperWrapper {
         this.unusedInterceptor = new HashMap<InOutType, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
         this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
-        ioC = IoC.valueOf(annotationWrapper.getAsString(MapperWrapper.WITH_IOC));
-
+        ioC = IoC.valueOf((annotationWrapper.getAsString(MapperWrapper.WITH_IOC) != null ?
+                annotationWrapper.getAsString(MapperWrapper.WITH_IOC) : IoC.NO.toString()));
         collectCustomMappers();
     }
 

@@ -24,51 +24,55 @@ import java.util.*;
  */
 public class FieldMap {
 
-    private final Map<String, String> from;
-    private final Map<String, String> to;
+    private final Map<String, Field> from;
+    private final Map<String, Field> to;
     private Element element;
 
 
     public FieldMap(FieldMap clone) {
-        from = new HashMap<String, String>(clone.from);
-        to = new HashMap<String, String>(clone.to);
+        from = new HashMap<String, Field>(clone.from);
+        to = new HashMap<String, Field>(clone.to);
         element = clone.element;
     }
 
     public FieldMap(Element element) {
         this.element = element;
-        from = new HashMap<String, String>();
-        to = new HashMap<String, String>();
+        from = new HashMap<String, Field>();
+        to = new HashMap<String, Field>();
     }
 
-    public void push(String _from, String _to) {
-        from.put(_from, _to);
-        to.put(_to, _from);
+    public void push(Field mappingfield) {
+        from.put(mappingfield.from, mappingfield);
+        to.put(mappingfield.to, mappingfield.invert());
     }
 
     public String get(String key) {
-        String val = from.get(key);
+        Field val = from.get(key);
+        String res= null;
         if (val == null) {
             val = to.get(key);
+            res = val != null ? val.originalFrom : null;
+        }else {
+            res = val.originalTo;
         }
-        return val;
+        return res;
     }
 
     public void remove(String field) {
-        String val = from.get(field);
+        Field val = from.get(field);
         if (val == null) {
             val = to.get(field);
             if (val != null) {
                 to.remove(field);
-                from.remove(val);
+                from.remove(val.originalFrom);
             }
         } else {
             from.remove(field);
-            to.remove(val);
+            to.remove(val.originalTo);
         }
     }
 
-    public Set<Map.Entry<String, String>> entrySet() {
+    public Set<Map.Entry<String, Field>> entrySet() {
         return from.entrySet();
     }
 
@@ -81,12 +85,12 @@ public class FieldMap {
         return res;
     }
 
-    private List<Field> findStartingWith(Map<String, String> from, String fieldName) {
+    private List<Field> findStartingWith(Map<String, Field> from, String fieldName) {
         List<Field> res = new ArrayList<Field>();
         for (String key : from.keySet()) {
             if ((key.startsWith(fieldName) && key.contains(fieldName + ".")) ||
                     key.equals(fieldName)) {
-                res.add(new Field(key, from.get(key), element));
+                res.add(from.get(key));
             }
         }
         return res;
@@ -96,17 +100,23 @@ public class FieldMap {
 class Field {
     public final String originalTo;
     public final String originalFrom;
-    public String from;
-    public String to;
-    public Element element;
+    public final Element element;
+    public final CustomMapperWrapper customMapperWrapper;
+    public  String from;
+    public  String to;
 
-    public Field(String from, String to, Element element) {
+    public Field(String from, String to, Element element, CustomMapperWrapper customMapperWrapper) {
         this.from = from;
         this.to = to;
         this.originalFrom = from;
         this.originalTo = to;
 
         this.element = element;
+        this.customMapperWrapper = customMapperWrapper;
+    }
+
+    public Field invert(){
+        return new FieldBuilder().forElement(element).from(to).to(from).withCustom(customMapperWrapper).build();
     }
 
     public void removeDestinationPrefix(String simpleName, String fqcn) {
@@ -174,5 +184,40 @@ class Field {
 
     public boolean hasOneFieldMatching(Field field) {
         return to.equals(field.to) || to.equals(field.from) || from.equals(field.from);
+    }
+
+    public CustomMapperWrapper mappingRegistry() {
+        return customMapperWrapper;
+    }
+}
+
+class FieldBuilder {
+    private String from;
+    private String to;
+    private Element element;
+    private CustomMapperWrapper customMapperWrapper;
+
+    public FieldBuilder from(String from){
+        this.from = from;
+        return this;
+    }
+
+    public FieldBuilder to(String to){
+        this.to = to;
+        return this;
+    }
+
+    public FieldBuilder withCustom(CustomMapperWrapper customMapperWrapper){
+        this.customMapperWrapper = customMapperWrapper;
+        return this;
+    }
+
+    public FieldBuilder forElement(Element element){
+        this.element = element;
+        return this;
+    }
+
+    public Field build(){
+        return new Field(from, to, element, customMapperWrapper);
     }
 }

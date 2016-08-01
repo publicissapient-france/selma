@@ -35,5 +35,7 @@ public @interface Field {
      */
     String[] value();
 
+
+    Class<?> withCustom() default Object.class;
 }
 

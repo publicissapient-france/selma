@@ -143,4 +143,8 @@ public class MapsWrapper {
     public boolean hasFactory(TypeMirror typeMirror) {
         return mapperWrapper.hasFactory(typeMirror);
     }
+
+    public List<TypeElement> customF2FMapperFields() {
+        return customFields.mapperFields();
+    }
 }
