@@ -19,8 +19,9 @@ package fr.xebia.extras.selma.it.custom.fields;
 import fr.xebia.extras.selma.Field;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
+import fr.xebia.extras.selma.beans.*;
+
+import java.util.List;
 
 /**
  * Created by slemesle on 30/07/16.
@@ -36,6 +37,7 @@ public interface CustomFieldToFieldMapper {
     String FROM_CUSTOM_FIELD2FIELD_MAPPING = " from custom field2field mapping";
     int AGE_INCREMENT = 42;
     String STRING_TEMPLATE_FOR_STREET = " %s from %s  with @Field(value = \"street\", withCustom = CustomStreetMapper.class)";
+    String INTERCEPTED_BY_CUSTOM_INTERCEPTOR = "intercepted by CustomInterceptor";
 
     @Maps(withCustomFields = {
             @Field(value = "firstName", withCustom = CustomAgeAndNamesMapper.class),
@@ -48,6 +50,22 @@ public interface CustomFieldToFieldMapper {
     })
     PersonIn asPersonInInvertingNames(PersonOut in);
 
+    /**
+     * Test the use of an interceptor against a field
+     */
+    @Maps(withIgnoreFields = "Library.name",
+            withCustomFields = {
+        @Field(value = "books", withCustom = CustomBookInterceptor.class)
+    }) LibraryDTO asBookDTO(Library in);
+
+
+
+/* TODO Add a test for interceptor on embedded field mapping
+    @Maps(withIgnoreFields = "Library.name",
+            withCustomFields = {
+        @Field(value = "books", withCustom = CustomBookInterceptor.class)
+    }) ProposalDto asProposalDTO(Proposal in);
+*/
 
     /**
      * This mapper is called to map the firstname field
@@ -67,6 +85,22 @@ public interface CustomFieldToFieldMapper {
         public String mapStreet(String street){
             return String.format(STRING_TEMPLATE_FOR_STREET,
                     street, CustomStreetMapper.class);
+        }
+    }
+
+    class CustomBookInterceptor {
+
+        public void intercept(List<Book> in, List<BookDTO> out){
+            for (BookDTO book : out)
+                book.setAuthor(INTERCEPTED_BY_CUSTOM_INTERCEPTOR);
+        }
+    }
+
+    class CustomInterceptor {
+
+        public void intercept(List<Book> in, List<BookDTO> out){
+            for (BookDTO book : out)
+                book.setAuthor(INTERCEPTED_BY_CUSTOM_INTERCEPTOR);
         }
     }
 }

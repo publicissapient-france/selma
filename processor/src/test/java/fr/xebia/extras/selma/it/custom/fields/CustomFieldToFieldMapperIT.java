@@ -22,6 +22,8 @@ import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static fr.xebia.extras.selma.it.custom.fields.CustomFieldToFieldMapper.AGE_INCREMENT;
 import static fr.xebia.extras.selma.it.custom.fields.CustomFieldToFieldMapper.FROM_CUSTOM_FIELD2FIELD_MAPPING;
 import static fr.xebia.extras.selma.it.custom.fields.CustomFieldToFieldMapper.STRING_TEMPLATE_FOR_STREET;
@@ -33,6 +35,8 @@ import static org.junit.Assert.assertNotNull;
  */
 @Compile(withClasses = CustomFieldToFieldMapper.class)
 public class CustomFieldToFieldMapperIT extends IntegrationTestBase {
+
+    public static final String DOC_API = "Doc API";
 
     @Test
     public void should_map_field_with_custom_mapper() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
@@ -108,6 +112,29 @@ public class CustomFieldToFieldMapperIT extends IntegrationTestBase {
         assertEquals(personOut.getAddress().getCity().getName(), res.getAddress().getCity().getName());
         assertEquals(personOut.getAddress().getCity().getPopulation(), res.getAddress().getCity().getPopulation());
         assertEquals(personOut.getAddress().getCity().isCapital(), res.getAddress().getCity().isCapital());
+    }
+
+    @Test
+    public void should_call_interceptor_on_custom_field() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        // GIVEN
+        CustomFieldToFieldMapper mapper = Selma.getMapper(CustomFieldToFieldMapper.class);
+        Library lib = new Library();
+        lib.setName("Selma documentation");
+        lib.setBooks(new ArrayList<Book>());
+        Book book = new Book();
+        book.setName(DOC_API);
+        book.setAuthor("slemesle");
+        lib.getBooks().add(book);
+
+        //When
+        LibraryDTO res = mapper.asBookDTO(lib);
+
+        // THEN
+        assertNotNull(res);
+        assertNotNull(res.getBooks());
+        assertEquals(1, res.getBooks().size());
+        assertEquals(DOC_API, res.getBooks().get(0).getName());
+        assertEquals(CustomFieldToFieldMapper.INTERCEPTED_BY_CUSTOM_INTERCEPTOR, res.getBooks().get(0).getAuthor());
     }
 
 

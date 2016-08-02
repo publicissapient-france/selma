@@ -308,23 +308,34 @@ public class MapperMethodGenerator {
             try {
                 InOutType inOutTypeForField = new InOutType(typeForInField, typeForOutField, inOutType.isOutPutAsParam());
 
-                MappingBuilder  mappingBuilder = null;
-                if (matchedFieldAnnotation != null && matchedFieldAnnotation.customMapperWrapper != null){
+                MappingBuilder mappingBuilder = null, interceptor = null;
+                if (matchedFieldAnnotation != null && matchedFieldAnnotation.customMapperWrapper != null) {
                     mappingBuilder = matchedFieldAnnotation.customMapperWrapper.getMapper(inOutTypeForField);
-                    if (mappingBuilder == null){
+                    interceptor = matchedFieldAnnotation.mappingRegistry().getMappingInterceptor(inOutTypeForField);
+                    if (mappingBuilder == null && interceptor == null) {
                         context.error(mapperMethod.element(), "Custom mapping method not found: " +
-                                "Mapping field %s from source bean %s, using field %s", field, inOutType.in(),
+                                        "Mapping field %s from source bean %s, using field %s", field, inOutType.in(),
                                 matchedFieldAnnotation.customMapperWrapper);
                     }
                 }
-                if (mappingBuilder == null){
+                if (mappingBuilder == null) {
                     mappingBuilder = findBuilderFor(inOutTypeForField);
                 }
                 if (mappingBuilder != null) {
-                    ptr = ptr.child(mappingBuilder.build(context, new SourceNodeVars(field, outFieldName, inBean, outBean)
-                            .withInOutType(inOutTypeForField).withAssign(false).withUseGetterForDestination(useGetterForDestination)));
+                    ptr = ptr.child(mappingBuilder.build(context,
+                            new SourceNodeVars(field, outFieldName, inBean, outBean)
+                                    .withInOutType(inOutTypeForField)
+                                    .withAssign(false)
+                                    .withUseGetterForDestination(useGetterForDestination)));
 
                     generateStack(context);
+                    if (interceptor != null) { // Call custom interceptor after mapping
+                        ptr = ptr.child(interceptor.build(context,
+                                new SourceNodeVars(field, outFieldName, inBean, outBean)
+                                        .withInOutType(inOutTypeForField)
+                                        .withAssign(false)
+                                        .withUseGetterForDestination(useGetterForDestination)));
+                    }
                 } else {
                     handleNotSupported(inOutTypeForField, ptr);
                 }
@@ -464,7 +475,7 @@ public class MapperMethodGenerator {
         try {
 
 
-            MappingBuilder mappingBuilder = null;
+            MappingBuilder mappingBuilder = null, interceptor = null;
             if (customField.mappingRegistry() != null) {
                 mappingBuilder = customField.mappingRegistry().getMapper(inOutType);
 
@@ -473,17 +484,29 @@ public class MapperMethodGenerator {
                                     "Mapping field %s from source bean %s, using field %s", field, inBean.typeElement,
                             customField.customMapperWrapper);
                 }
+
+
             }
             if (mappingBuilder == null) {
                 mappingBuilder = findBuilderFor(inOutType);
             }
             if (mappingBuilder != null) {
 
+                SourceNodeVars vars = sourceEmbedded ?  new SourceNodeVars(field.toString(), customField.to, outBean)
+                                                            .withInOutType(inOutType)
+                                                            .withAssign(false)
+                                                            .withUseGetterForDestination(useGetterForDestination) :
+                                                        new SourceNodeVars("in." + inBean.getGetterFor(customField.from) + "()", field.toString())
+                                                                .withInOutType(inOutType)
+                                                                .withAssign(false)
+                                                                .withUseGetterForDestination(useGetterForDestination);
                 ptr = sourceEmbedded ?
-                        ptr.body(mappingBuilder.build(context, new SourceNodeVars(field.toString(), customField.to, outBean).withInOutType(inOutType).withAssign(false).withUseGetterForDestination(useGetterForDestination))) :
-                        ptr.child(mappingBuilder.build(context, new SourceNodeVars("in." + inBean.getGetterFor(customField.from) + "()", field.toString()).withInOutType(inOutType).withAssign(false).withUseGetterForDestination(useGetterForDestination)));
-
+                        ptr.body(mappingBuilder.build(context, vars)) :
+                        ptr.child(mappingBuilder.build(context, vars));
                 generateStack(context);
+                if (interceptor != null) { // Call custom interceptor after mapping
+                    ptr = ptr.child(interceptor.build(context, vars));
+                }
             } else {
                 handleNotSupported(inOutType, ptr);
             }
