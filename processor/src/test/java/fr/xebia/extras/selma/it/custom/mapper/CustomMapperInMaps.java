@@ -32,7 +32,11 @@ public interface CustomMapperInMaps {
 
     @Maps(withCustom = CustomImmutableMapper.class) PersonOut mapWithCustom(PersonIn in);
 
-    @Maps(withCustom = {CustomMutableMapper.class, NeverUsedCustomMapper.class})
+    @Maps(withCustom = {CustomMutableMapper.class, NeverUsedCustomMapper.class, AbstractMapper.class})
     PersonOut mapWithCustom(PersonIn in, PersonOut out);
+
+    abstract class AbstractMapper{
+        abstract Long toLong(String in);
+    }
 
 }

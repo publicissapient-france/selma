@@ -87,7 +87,9 @@ public class CustomMapperWrapper {
         for (TypeElement customMapperField : customMapperFields) {
             final String field = String.format(CUSTOM_MAPPER_FIELD_TPL, customMapperField.getSimpleName().toString());
             if (assign) {
-                if (customMapperField.getKind() != ElementKind.INTERFACE) {
+                if (customMapperField.getKind() != ElementKind.INTERFACE
+                        && !(customMapperField.getKind() == ElementKind.CLASS
+                            && customMapperField.getModifiers().contains(ABSTRACT))) {
                     TypeConstructorWrapper constructorWrapper = new TypeConstructorWrapper(context, customMapperField);
                     // assign the customMapper field to a newly created instance passing to it the declared source params
                     writer.emitStatement("this.%s = new %s(%s)", field, customMapperField.getQualifiedName().toString(),
