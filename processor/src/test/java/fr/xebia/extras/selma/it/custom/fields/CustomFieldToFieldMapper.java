@@ -58,14 +58,7 @@ public interface CustomFieldToFieldMapper {
         @Field(value = "books", withCustom = CustomBookInterceptor.class)
     }) LibraryDTO asBookDTO(Library in);
 
-
-
-/* TODO Add a test for interceptor on embedded field mapping
-    @Maps(withIgnoreFields = "Library.name",
-            withCustomFields = {
-        @Field(value = "books", withCustom = CustomBookInterceptor.class)
-    }) ProposalDto asProposalDTO(Proposal in);
-*/
+/* TODO Add a test for interceptor on embedded field mapping */
 
     /**
      * This mapper is called to map the firstname field
@@ -81,6 +74,10 @@ public interface CustomFieldToFieldMapper {
         }
     }
 
+    /**
+     * This mapper is called to map the Street field for
+     * PersonOut mapWithCustom(PersonIn in);
+     */
     class CustomStreetMapper {
         public String mapStreet(String street){
             return String.format(STRING_TEMPLATE_FOR_STREET,
@@ -88,16 +85,11 @@ public interface CustomFieldToFieldMapper {
         }
     }
 
+    /**
+     * This interceptor is called after the books to books mapping in
+     * LibraryDTO asBookDTO(Library in);
+     */
     class CustomBookInterceptor {
-
-        public void intercept(List<Book> in, List<BookDTO> out){
-            for (BookDTO book : out)
-                book.setAuthor(INTERCEPTED_BY_CUSTOM_INTERCEPTOR);
-        }
-    }
-
-    class CustomInterceptor {
-
         public void intercept(List<Book> in, List<BookDTO> out){
             for (BookDTO book : out)
                 book.setAuthor(INTERCEPTED_BY_CUSTOM_INTERCEPTOR);
