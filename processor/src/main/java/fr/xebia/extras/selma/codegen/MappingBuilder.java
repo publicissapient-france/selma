@@ -311,7 +311,7 @@ public abstract class MappingBuilder {
                 final TypeMirror genericInValue = getTypeArgument(context, inOutType.inAsDeclaredType(), 1);
                 if (genericInKey == null || genericInValue == null) {
                     // can't meaningfully map a raw Map
-                    return null;
+                    throw new IllegalStateException("input map has no defined arguments");
                 }
 
                 final TypeMirror genericOutKey = getTypeArgument(context, inOutType.outAsDeclaredType(), 0);
@@ -604,7 +604,7 @@ public abstract class MappingBuilder {
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
                 context.mappingMethod(inOutType, name);
-                if (vars.field != null && vars.outFieldGetter != null){
+                if (vars.field != null && vars.outFieldGetter != null) {
                     root.body(statement(String.format("%s(%s,%s())", name, vars.inField, vars.outFieldGetter)));
                 } else {
                     root.body(statement(String.format("%s(in,out)", name)));
@@ -669,7 +669,12 @@ public abstract class MappingBuilder {
             @Override
             public TypeMirror visitDeclared(DeclaredType t, Void p) {
                 if (t.getTypeArguments().size() > 0) {
-                    return t.getTypeArguments().get(index);
+                    TypeMirror type = t.getTypeArguments().get(index);
+                    if (type.getKind() == TypeKind.TYPEVAR) {
+                        TypeMirror typeVar = ((TypeVariable) type).getLowerBound();
+                        type = typeVar.getKind().equals(TypeKind.NULL) ? ((TypeVariable) type).getUpperBound() : typeVar;
+                    }
+                    return type;
                 }
                 TypeMirror superclass = ((TypeElement) t.asElement()).getSuperclass();
                 return getTypeArgument(context, superclass, index);

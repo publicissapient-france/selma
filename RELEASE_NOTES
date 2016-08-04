@@ -1,7 +1,7 @@
 1.0 - ??/??/2016
 
 * #106: Add support for custom mapping method on per field basis
-*
+* #108: Add support for abstract custom mappers
 *
 
 0.15 - 7/29/2016
