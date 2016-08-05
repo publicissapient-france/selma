@@ -39,26 +39,27 @@ public class FailingRawBeanMapperIT extends IntegrationTestBase {
                 String.format("Failed to generate mapping method for type java.lang.Object to java.lang.Object not " +
                         "supported on fr.xebia.extras.selma.it.collection.RawBeanMapper.clone(%s) !",
                         RawBean.class.getName()));
-        assertThat(compilationErrorCount(), equalTo(3));
+        assertThat(compilationErrorCount(), equalTo(4));
     }
 
     @Test
     public void compilation_should_fail_on_raw_collection() throws Exception {
         assertCompilationError(RawBeanMapper.class,
                 "RawListBean clone(RawListBean rawBean);",
-                String.format("Failed to generate mapping method for type java.util.List to java.util.List not supported " +
+                String.format("Failed to generate mapping method for type java.lang.Object to java.lang.Object not supported " +
                         "on fr.xebia.extras.selma.it.collection.RawBeanMapper.clone(%s) !",
                         RawListBean.class.getName()));
-        assertThat(compilationErrorCount(), equalTo(3));
+        assertThat(compilationErrorCount(), equalTo(4));
     }
 
     @Test
     public void compilation_should_fail_on_raw_map() throws Exception {
         assertCompilationError(RawBeanMapper.class,
                 "RawMapBean clone(RawMapBean rawBean);",
-                String.format("Failed to generate mapping method for type java.util.Map to java.util.Map not supported " +
+                String.format("Failed to generate mapping method for type java.lang.Object to java.lang.Object not supported " +
                                 "on fr.xebia.extras.selma.it.collection.RawBeanMapper.clone(%s) !",
                         RawMapBean.class.getName()));
-        assertThat(compilationErrorCount(), equalTo(3));
+        assertThat(compilationErrorCount(), equalTo(4));
     }
+
 }

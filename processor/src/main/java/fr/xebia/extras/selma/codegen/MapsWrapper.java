@@ -18,6 +18,7 @@ package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.CollectionMappingStrategy;
 import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.InherittMaps;
 import fr.xebia.extras.selma.Maps;
 
 import javax.lang.model.element.TypeElement;
@@ -61,6 +62,8 @@ public class MapsWrapper {
         this.context = mapperWrapper.context();
 
         maps = AnnotationWrapper.buildFor(context, method.element(), Maps.class);
+        AnnotationWrapper inheritMaps = AnnotationWrapper.buildFor(context, method.element(), InherittMaps.class);
+
 
         ignoreFields = new IgnoreFieldsWrapper(context, method.element(), mapperWrapper.ignoredFields(), maps == null ? null : maps.getAsStrings(WITH_IGNORE_FIELDS));
 

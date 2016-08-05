@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
+import static fr.xebia.extras.selma.codegen.CollectionsRegistry.findImplementationForType;
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
 /**
@@ -251,7 +252,7 @@ public abstract class MappingBuilder {
                     // Use given class for collection
                     impl = inOutType.out().toString();
                 } else {
-                    impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) +
+                    impl = findImplementationForType(inOutType.outAsTypeElement()) +
                             (genericOut == null ? "" : "<" + genericOut.toString() + ">");
                 }
                 final String implementation = impl;
@@ -327,7 +328,7 @@ public abstract class MappingBuilder {
                     impl = inOutType.out().toString();
 
                 } else {
-                    impl = CollectionsRegistry.findImplementationForType(inOutType.outAsTypeElement()) +
+                    impl = findImplementationForType(inOutType.outAsTypeElement()) +
                             (genericOutKey == null ? "" : "<" + genericOutKey.toString() + ", " + genericOutValue.toString() + ">");
                 }
                 final String implementation = impl;

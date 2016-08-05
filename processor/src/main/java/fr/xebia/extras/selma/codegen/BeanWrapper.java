@@ -195,7 +195,15 @@ public class BeanWrapper {
         FieldItem item = fieldsGraph.get(field);
 
         if (item != null && item.getter != null) {
-            result = item.getter.returnType();
+            // Resolves the returnType using an element to grab default type arguments if this is a raw class
+            // By default the returnType does not provide type arguments ex : Map getMap() => Return a type Map
+            // without any type arguments while we expect Map<Object, Object>
+            if (item.getter.returnType().getKind() == TypeKind.DECLARED
+                    && ((DeclaredType)item.getter.returnType()).getTypeArguments().size() == 0) {
+                result = context.type.asElement(item.getter.returnType()).asType();
+            } else {
+                result = item.getter.returnType();
+            }
         }
 
         return result;
@@ -206,7 +214,16 @@ public class BeanWrapper {
         FieldItem item = fieldsGraph.get(field);
 
         if (item != null && item.setter != null) {
-            result = item.setter.firstParameterType();
+            // Resolves the returnType using an element to grab default type arguments if this is a raw class
+            // By default the returnType does not provide type arguments ex : Map getMap() => Return a type Map
+            // without any type arguments while we expect Map<Object, Object>
+            if (item.setter.firstParameterType().getKind() == TypeKind.DECLARED
+                    && ((DeclaredType)item.setter.firstParameterType()).getTypeArguments().size() == 0) {
+                result = context.type.asElement(item.setter.firstParameterType()).asType();
+            } else {
+
+                result = item.setter.firstParameterType();
+            }
         }
 
         return result;

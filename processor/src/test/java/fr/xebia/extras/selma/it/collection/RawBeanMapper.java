@@ -27,6 +27,7 @@ import fr.xebia.extras.selma.beans.RawMapBean;
  */
 @Mapper
 public interface RawBeanMapper {
+
     RawBean clone(RawBean rawBean);
 
     RawListBean clone(RawListBean rawBean);
