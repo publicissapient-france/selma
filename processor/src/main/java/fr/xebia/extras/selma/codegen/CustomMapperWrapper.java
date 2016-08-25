@@ -106,8 +106,12 @@ public class CustomMapperWrapper {
 
                 writer.emitEmptyLine();
                 writer.emitJavadoc("Custom Mapper setter for " + field);
-                writer.beginMethod("void", "setCustomMapper" + customMapperField.getSimpleName(),
-                        EnumSet.of(PUBLIC, FINAL), customMapperField.asType().toString(), "mapper");
+                
+                EnumSet<Modifier> modifiers = EnumSet.of(PUBLIC, FINAL);
+                if (ioC == IoC.CDI) {
+                	modifiers = EnumSet.of(PUBLIC);	
+                }
+                writer.beginMethod("void", "setCustomMapper" + customMapperField.getSimpleName(),modifiers, customMapperField.asType().toString(), "mapper");
                 writer.emitStatement("this.%s = mapper", field);
                 writer.endMethod();
                 writer.emitEmptyLine();
