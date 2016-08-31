@@ -110,13 +110,22 @@ public class MapperClassGenerator {
                 writer.emitSingleLineComment(GENERATED_BY_SELMA);
                 writer.emitPackage(packageName);
                 writer.emitEmptyLine();
-                if (mapper.ioC == IoC.SPRING) {
-                    if (mapper.ioCServiceName != "") {
-                        writer.emitAnnotation("org.springframework.stereotype.Service", "\"" + mapper.ioCServiceName + "\"");
-                    } else {
-                        writer.emitAnnotation("org.springframework.stereotype.Service");
-                    }
-                }
+                
+                switch (mapper.ioC) {
+					case SPRING:
+	                    if (mapper.ioCServiceName != "") {
+	                        writer.emitAnnotation("org.springframework.stereotype.Service", "\"" + mapper.ioCServiceName + "\"");
+	                    } else {
+	                        writer.emitAnnotation("org.springframework.stereotype.Service");
+	                    }
+						break;
+					case CDI:
+						writer.emitAnnotation("javax.enterprise.context.ApplicationScoped");
+						break;
+					default:
+						break;
+				}
+
                 openClassBlock(writer, adapterName, strippedTypeName);
                 writer.emitEmptyLine();
                 firstMethod = false;

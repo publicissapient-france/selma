@@ -195,8 +195,12 @@ public class FactoryWrapper {
 
                 writer.emitEmptyLine();
                 writer.emitJavadoc("Factory setter for " + field);
-                writer.beginMethod("void", "setFactory" + factoryField.getSimpleName(),
-                        EnumSet.of(PUBLIC, FINAL), factoryField.asType().toString(), "_factory");
+                
+                EnumSet<Modifier> modifiers = EnumSet.of(PUBLIC, FINAL);
+                if (ioC == IoC.CDI) {
+                	modifiers = EnumSet.of(PUBLIC);	
+                }
+                writer.beginMethod("void", "setFactory" + factoryField.getSimpleName(), modifiers, factoryField.asType().toString(), "_factory");
                 writer.emitStatement("this.%s = _factory", field);
                 writer.endMethod();
                 writer.emitEmptyLine();

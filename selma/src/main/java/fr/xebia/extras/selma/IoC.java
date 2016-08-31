@@ -20,5 +20,5 @@ package fr.xebia.extras.selma;
  * Created by slemesle on 27/03/15.
  */
 public enum IoC {
-    NO, SPRING
+    NO, SPRING, CDI
 }
