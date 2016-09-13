@@ -27,7 +27,7 @@ In fact it is on one side an Annotation Processor that generate Java code to han
 compile time. On the other side, it is a Runtime library to instantiate and invoke the generated Mapper.
 
 
-# How does it works ?
+# How does it work ?
 
 First add selma-processor as a provided dependency and selma as a compile dependency to your build.
 Then, define a Mapper interface describing the mapping you want:
