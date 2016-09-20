@@ -96,14 +96,17 @@ public class MapperClassGenerator {
         JavaFileObject sourceFile = null;
 
         final TypeElement type = processingEnv.getElementUtils().getTypeElement(origClasse);
-        final String adapterName = new StringBuilder(type.toString()).append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();
+        final String packageName = getPackage(type).getQualifiedName().toString();
+        final String strippedTypeName = strippedTypeName(type.getQualifiedName().toString(), packageName);
+
+        final String adapterName = new StringBuilder(packageName)
+                .append('.')
+                .append(strippedTypeName.replace('.', '_'))
+                .append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();
 
         for (MethodWrapper mapperMethod : methodWrappers) {
 
             if (firstMethod) {
-                String packageName = getPackage(mapperMethod.element()).getQualifiedName().toString();
-                String strippedTypeName = strippedTypeName(type.getQualifiedName().toString(), packageName);
-
                 sourceFile = processingEnv.getFiler().createSourceFile(adapterName, type);
                 writer = new JavaWriter(sourceFile.openWriter());
 
