@@ -528,7 +528,7 @@ public abstract class MappingBuilder {
 
         final List<? extends Element> elementInList = typeElement.getEnclosedElements();
         for (Element field : ElementFilter.fieldsIn(elementInList)) {
-            if (field.getKind() == ElementKind.ENUM_CONSTANT) {
+            if (field.getKind() == ElementKind.ENUM_CONSTANT && !field.getModifiers().contains(Modifier.PRIVATE)) {
                 res.add(field.getSimpleName().toString());
             }
         }
