@@ -119,7 +119,6 @@ public class MethodWrapper {
         boolean res = false;
         if (hasNoParameter() && method.getReturnType().getKind() != TypeKind.VOID
                 && method.getModifiers().contains(Modifier.PUBLIC)
-                && !method.getModifiers().contains(Modifier.ABSTRACT)
                 && !method.getModifiers().contains(Modifier.STATIC)) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
