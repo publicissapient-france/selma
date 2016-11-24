@@ -83,7 +83,7 @@ public abstract class MappingBuilder {
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
                         if (context.depth > 0) {
-                            root.body(set(vars.outSetterPath(), vars.inGetter() + "\"\""));
+                            root.body(set(vars.outSetterPath(), vars.inGetter() + " + \"\""));
                         } else {
                             root.body(assignOutToString());
                         }
