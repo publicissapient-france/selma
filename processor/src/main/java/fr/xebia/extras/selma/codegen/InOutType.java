@@ -129,7 +129,7 @@ public class InOutType {
         return outAsArrayType().getComponentType();
     }
 
-    private ArrayType outAsArrayType() {
+    public ArrayType outAsArrayType() {
         return (ArrayType) out;
     }
 

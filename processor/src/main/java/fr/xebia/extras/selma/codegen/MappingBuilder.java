@@ -402,7 +402,7 @@ public abstract class MappingBuilder {
                         final String indexVar = vars.indexVar();
                         final String tmpVar = vars.tmpVar("Array");
 
-                        Map.Entry<TypeMirror, Integer> dims = getArrayDimensionsAndType(inOutType.inAsArrayType());
+                        Map.Entry<TypeMirror, Integer> dims = getArrayDimensionsAndType(inOutType.outAsArrayType());
 
                         String totalCountVar = vars.totalCountVar();
                         String totalCountVal = String.format("%s.length", vars.inGetter());
@@ -428,7 +428,7 @@ public abstract class MappingBuilder {
             }
 
             @Override boolean match(MapperGeneratorContext context, InOutType inOutType) {
-                return !inOutType.differs() && inOutType.inIsArray() && inOutType.isInArrayComponentDeclaredOrArray();
+                return inOutType.inIsArray() && inOutType.isInArrayComponentDeclaredOrArray();
             }
         });
 
