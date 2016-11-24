@@ -119,7 +119,6 @@ public class MethodWrapper {
         boolean res = false;
         if (hasNoParameter() && method.getReturnType().getKind() != TypeKind.VOID
                 && method.getModifiers().contains(Modifier.PUBLIC)
-                && !method.getModifiers().contains(Modifier.ABSTRACT)
                 && !method.getModifiers().contains(Modifier.STATIC)) {
             Matcher getterMatcher = GETTER_PATTERN.matcher(method.getSimpleName());
             res = getterMatcher.matches();
@@ -139,7 +138,6 @@ public class MethodWrapper {
         boolean res = false;
         if (method.getParameters().size() == 1
                 && method.getModifiers().contains(Modifier.PUBLIC)
-                && !method.getModifiers().contains(Modifier.ABSTRACT)
                 && !method.getModifiers().contains(Modifier.STATIC)) {
             boolean validReturnType = method.getReturnType().getKind() == TypeKind.VOID;
             if (!validReturnType) {
