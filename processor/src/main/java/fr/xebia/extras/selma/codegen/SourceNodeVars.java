@@ -122,7 +122,8 @@ public class SourceNodeVars {
 
     public MappingSourceNode setOrAssignWithOutPut(String value) {
 
-        String formattedValue = inFieldPrefix + String.format(value, inGetter(), outFieldGetter + "()");
+        String formattedValue = inFieldPrefix + String.format(value, inGetter(), outFieldGetter +
+                ( outFieldGetter.contains(".") ? "()" : ""));
 
         return (assign ? MappingSourceNode.assign(outField, formattedValue) : MappingSourceNode.set(outField, formattedValue));
     }
