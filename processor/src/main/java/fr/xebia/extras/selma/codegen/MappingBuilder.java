@@ -380,7 +380,7 @@ public abstract class MappingBuilder {
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
                         root.body(vars.setOrAssign(String.format("new %s[%%s.length]", inOutType.inArrayComponentType())))
-                            .child(arrayCopy(vars.inGetter(), vars.outSetterPath()));
+                            .child(arrayCopy(vars.inGetter(), vars.outGetter()));
 
                         return root.body;
                     }

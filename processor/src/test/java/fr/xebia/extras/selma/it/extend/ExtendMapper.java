@@ -17,7 +17,7 @@
 package fr.xebia.extras.selma.it.extend;
 
 import fr.xebia.extras.selma.Field;
-import fr.xebia.extras.selma.InherittMaps;
+import fr.xebia.extras.selma.InheritMaps;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.Proposal;
@@ -34,9 +34,9 @@ public interface ExtendMapper {
             @Field({"passenger.age", "passengerAge"}), @Field({"passenger.card", "passengerCard"})
     }) ProposalDto asProposalDto(Proposal proposal);
 
-    @InherittMaps
+    @InheritMaps
     Proposal asProposal(ProposalDto proposal);
 
-    @InherittMaps
+    @InheritMaps
     Proposal asProposal(ProposalDto proposal, Proposal out);
 }

@@ -24,20 +24,26 @@ import java.util.Date;
  */
 public class PersonOut {
 
+    public byte[] keyStore;
     private String firstName;
     private String lastName;
     private Date birthDay;
     private int age;
     private Long[] indices;
     private Collection<String> tags;
-
     private EnumOut enumIn;
     private AddressOut address;
     private AddressOut addressBis;
-
     private Boolean natural;
-
     private String biography;
+
+    public byte[] getKeyStore() {
+        return keyStore;
+    }
+
+    public void setKeyStore(byte[] keyStore) {
+        this.keyStore = keyStore;
+    }
 
     public String getBiography() {
         return biography;

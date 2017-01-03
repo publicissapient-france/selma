@@ -25,6 +25,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Inherited
-public @interface InherittMaps {
+public @interface InheritMaps {
     String method() default "";
 }

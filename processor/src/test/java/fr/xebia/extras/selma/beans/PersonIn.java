@@ -25,23 +25,26 @@ import java.util.Date;
 public class PersonIn {
 
 
+    public byte[] keyStore;
     private String firstName;
     private String lastName;
     private Date birthDay;
-
     private int age;
-
-
     private boolean male;
-
     private Long[] indices;
-
     private Collection<String> tags;
-
     private EnumIn enumIn;
     private AddressIn address;
     private AddressIn addressBis;
     private Boolean natural;
+
+    public byte[] getKeyStore() {
+        return keyStore;
+    }
+
+    public void setKeyStore(byte[] keyStore) {
+        this.keyStore = keyStore;
+    }
 
     public EnumIn getEnumIn() {
         return enumIn;

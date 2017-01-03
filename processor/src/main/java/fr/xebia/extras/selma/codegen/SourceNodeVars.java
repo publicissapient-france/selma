@@ -175,4 +175,8 @@ public class SourceNodeVars {
         this.useGetterForDestination = useGetterForDestination;
         return this;
     }
+
+    public String outGetter() {
+        return  outFieldGetter + ( outFieldGetter.contains(".") ? "()" : "");
+    }
 }
