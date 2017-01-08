@@ -48,6 +48,8 @@ public class InOutType {
         }
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,6 +61,18 @@ public class InOutType {
         if (!MapperProcessor.types.isSameType(out, inOutType.out)) return false;
 
         return inOutType.outPutAsParam == outPutAsParam;
+    }
+
+    public boolean equalsWithoutOutputAsParam(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InOutType inOutType = (InOutType) o;
+
+        if (!MapperProcessor.types.isSameType(in, inOutType.in)) return false;
+        if (!MapperProcessor.types.isSameType(out, inOutType.out)) return false;
+
+        return true;
     }
 
     @Override
@@ -189,4 +203,7 @@ public class InOutType {
         return outPutAsParam;
     }
 
+    public InOutType invert() {
+        return new InOutType(this.out, this.in, this.outPutAsParam);
+    }
 }

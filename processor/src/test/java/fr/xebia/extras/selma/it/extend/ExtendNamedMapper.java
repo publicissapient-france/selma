@@ -27,7 +27,7 @@ import fr.xebia.extras.selma.beans.ProposalDto;
  * Created by slemesle on 05/08/2016.
  */
 @Mapper
-public interface ExtendMapper {
+public interface ExtendNamedMapper {
 
 
     @Maps(withCustomFields = {
@@ -35,9 +35,12 @@ public interface ExtendMapper {
             @Field({"Proposal.passenger.date", "ProposalDto.passengerDate"})
     }) ProposalDto asProposalDto(Proposal proposal);
 
-    @InheritMaps
+    @Maps(withIgnoreFields = {"passengerAge", "passengerDate", "passenger", "passengerCard"})
+    ProposalDto asReducedProposalDto(Proposal proposal);
+
+    @InheritMaps(method = "asReducedProposalDto")
     Proposal asProposal(ProposalDto proposal);
 
-    @InheritMaps
+    @InheritMaps(method = "asReducedProposalDto")
     Proposal asProposal(ProposalDto proposal, Proposal out);
 }

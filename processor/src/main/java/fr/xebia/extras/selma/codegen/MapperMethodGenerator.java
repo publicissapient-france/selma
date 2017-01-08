@@ -40,8 +40,8 @@ public class MapperMethodGenerator {
 
 
     private static final Pattern STANDARD_JAVA_PACKAGE = Pattern.compile("^(java|javax)\\.+$");
+    public final MethodWrapper mapperMethod;
     private final JavaWriter writer;
-    private final MethodWrapper mapperMethod;
     private final MapperGeneratorContext context;
     private final SourceConfiguration configuration;
     private final MapsWrapper maps;
@@ -58,7 +58,11 @@ public class MapperMethodGenerator {
         this.mapperWrapper = mapperWrapper;
     }
 
-    public void build() throws IOException {
+    public void build(List<MapperMethodGenerator> methodGenerators) throws IOException {
+
+        if (maps.hasInheritMaps()){
+            maps.resolveInheritMaps(methodGenerators, mapperMethod);
+        }
 
         buildMappingMethod(writer, mapperMethod.inOutType(), mapperMethod.getSimpleName(), true);
 
@@ -70,6 +74,7 @@ public class MapperMethodGenerator {
         // Report unused custom fields mapping
         maps.reportUnused();
     }
+
 
     private void buildMappingMethods(JavaWriter writer) throws IOException {
 

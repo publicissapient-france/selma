@@ -192,8 +192,6 @@ public class MapperWrapper {
         customMappers.addFields(maps.customMapperFields());
         customMappers.addFields(maps.customF2FMapperFields());
         customMappers.addFields(fields.mapperFields());
-
-
     }
 
     public void emitSourceFields(JavaWriter writer) throws IOException {

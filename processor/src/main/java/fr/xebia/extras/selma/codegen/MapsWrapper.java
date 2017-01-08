@@ -21,6 +21,7 @@ import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.InheritMaps;
 import fr.xebia.extras.selma.Maps;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -38,6 +39,7 @@ public class MapsWrapper {
     public static final String WITH_ENUMS = "withEnums";
     public static final String WITH_IGNORE_MISSING = "withIgnoreMissing";
     public static final String WITH_COLLECTION_STRATEGY = "withCollectionStrategy";
+    public static final String METHOD = "method";
 
 
     private final FieldsWrapper customFields;
@@ -51,7 +53,9 @@ public class MapsWrapper {
     private final CustomMapperWrapper customMapper;
     private final IgnoreMissing ignoreMissing;
     private final CollectionMappingStrategy collectionMappingStrategy;
+    private final AnnotationWrapper inheritMaps;
     private boolean ignoreMissingProperties;
+    private MapsWrapper _this = this;
 
 
     public MapsWrapper(MethodWrapper method, MapperWrapper mapperWrapper) {
@@ -62,7 +66,7 @@ public class MapsWrapper {
         this.context = mapperWrapper.context();
 
         maps = AnnotationWrapper.buildFor(context, method.element(), Maps.class);
-        AnnotationWrapper inheritMaps = AnnotationWrapper.buildFor(context, method.element(), InheritMaps.class);
+        inheritMaps = AnnotationWrapper.buildFor(context, method.element(), InheritMaps.class);
 
 
         ignoreFields = new IgnoreFieldsWrapper(context, method.element(), mapperWrapper.ignoredFields(), maps == null ? null : maps.getAsStrings(WITH_IGNORE_FIELDS));
@@ -91,52 +95,101 @@ public class MapsWrapper {
     }
 
     public void reportUnused() {
+
         // Report unused ignore fields
-        ignoreFields.reportUnusedFields();
+        _this.ignoreFields.reportUnusedFields();
 
         // Report unused custom field to field
-        customFields.reportUnused();
+        _this.customFields.reportUnused();
 
         // Report unused custom enum mappers
-        enumMappers.reportUnused();
+        _this.enumMappers.reportUnused();
 
         // Report unused custom mappers
-        customMapper.reportUnused();
+        _this.customMapper.reportUnused();
 
         // Report unused interceptors
     }
 
+    /**
+     * Retrieve the inherited map or fail
+     * @param methodGenerators
+     */
+    public void resolveInheritMaps(List<MapperMethodGenerator> methodGenerators, MethodWrapper mapperMethod) {
+        InOutType inOutType = mapperMethod.inOutType();
+        MapperMethodGenerator foundTarget = null;
+        String methodName = this.getInheritMapsMethod();
+        for (MapperMethodGenerator mapperMethodGenerator : methodGenerators){
+            // Skip the current running method generator
+            if (mapperMethodGenerator.mapperMethod == mapperMethod){
+                continue;
+            }
+
+            // only consider generator having a Map
+            if (mapperMethodGenerator.maps().hasMaps()){
+                InOutType ioType = mapperMethodGenerator.mapperMethod.inOutType();
+                if (ioType.equalsWithoutOutputAsParam(inOutType) ||
+                        ioType.invert().equalsWithoutOutputAsParam(inOutType)){
+                    if ((!isEmptyOrNull(methodName) && methodName.equals(mapperMethodGenerator.mapperMethod.getSimpleName()))
+                            || isEmptyOrNull(methodName)) {
+                        if (foundTarget == null) {
+                            foundTarget = mapperMethodGenerator;
+                        } else {
+                            context.error(this.getInheritMaps(),
+                                    "Multiple elligible @Maps method found for @InheritMaps found : %s - %s",
+                                    foundTarget.mapperMethod.element(), mapperMethodGenerator.mapperMethod.element());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        // Do inheritance of the current mapsWrapper from the foundTarget one
+        if (foundTarget != null){
+            inheritFromMaps(foundTarget.maps());
+        }
+    }
+
+    private boolean isEmptyOrNull(String in){
+        if (in == null || in.isEmpty()){
+            return true;
+        }
+        return false;
+    }
+
+
+
     public List<Field> getFieldsFor(String field, DeclaredType sourceType, DeclaredType destinationType) {
-        return customFields.getFieldFor(field, sourceType, destinationType);
+        return _this.customFields.getFieldFor(field, sourceType, destinationType);
     }
 
     public MappingBuilder mappingInterceptor(InOutType inOutType) {
-        return registry.mappingInterceptor(inOutType);
+        return _this.registry.mappingInterceptor(inOutType);
     }
 
     public MappingBuilder findMappingFor(InOutType inOutType) {
-        return registry.findMappingFor(inOutType);
+        return _this.registry.findMappingFor(inOutType);
     }
 
     public boolean isIgnoredField(String field, DeclaredType declaredType) {
-        return ignoreFields.isIgnoredField(field, declaredType);
+        return _this.ignoreFields.isIgnoredField(field, declaredType);
     }
 
     public boolean isIgnoreMissingProperties() {
-        return ignoreMissingProperties;
+        return _this.ignoreMissingProperties;
     }
 
     public List<TypeElement> customMapperFields() {
-        return customMapper.mapperFields();
+        return _this.customMapper.mapperFields();
     }
 
     public IgnoreMissing ignoreMissing() {
-        return ignoreMissing;
+        return _this.ignoreMissing;
     }
 
     public boolean allowCollectionGetter() {
 
-        return collectionMappingStrategy == CollectionMappingStrategy.DEFAULT ? mapperWrapper.allowCollectionGetter() : collectionMappingStrategy == CollectionMappingStrategy.ALLOW_GETTER;
+        return _this.collectionMappingStrategy == CollectionMappingStrategy.DEFAULT ? mapperWrapper.allowCollectionGetter() : _this.collectionMappingStrategy == CollectionMappingStrategy.ALLOW_GETTER;
     }
 
     public MappingSourceNode generateNewInstanceSourceNodes(InOutType inOutType, BeanWrapper outBeanWrapper) {
@@ -148,6 +201,26 @@ public class MapsWrapper {
     }
 
     public List<TypeElement> customF2FMapperFields() {
-        return customFields.mapperFields();
+        return _this.customFields.mapperFields();
+    }
+
+    public boolean hasInheritMaps() {
+        return inheritMaps == null ? false : true;
+    }
+
+    public boolean hasMaps() {
+        return maps == null ? false : true;
+    }
+
+    public Element getInheritMaps() {
+        return inheritMaps.asElement();
+    }
+
+    public void inheritFromMaps(MapsWrapper maps) {
+        this._this = maps;
+    }
+
+    public String getInheritMapsMethod() {
+        return hasInheritMaps() ? inheritMaps.getAsString(METHOD) : null;
     }
 }

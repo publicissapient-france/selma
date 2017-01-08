@@ -16,28 +16,26 @@
  */
 package fr.xebia.extras.selma.it.extend;
 
-import fr.xebia.extras.selma.Field;
-import fr.xebia.extras.selma.InheritMaps;
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
+import fr.xebia.extras.selma.Selma;
+import fr.xebia.extras.selma.beans.Passenger;
 import fr.xebia.extras.selma.beans.Proposal;
 import fr.xebia.extras.selma.beans.ProposalDto;
+import fr.xebia.extras.selma.it.utils.Compile;
+import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Date;
 
 /**
- * Created by slemesle on 05/08/2016.
+ * Created by slemesle on 08/01/2017.
  */
-@Mapper
-public interface ExtendMapper {
+@Compile(withClasses = {FailingExtendMapper.class}, shouldFail = true)
+public class FailingExtendMapperIT extends IntegrationTestBase {
 
+    @Test
+    public void given_inheritMaps_on_mapping_with_multiple_maps_method_should_fail(){
 
-    @Maps(withCustomFields = {
-            @Field({"Proposal.passenger.age", "ProposalDto.passengerAge"}), @Field({"passenger.card", "passengerCard"}),
-            @Field({"Proposal.passenger.date", "ProposalDto.passengerDate"})
-    }) ProposalDto asProposalDto(Proposal proposal);
+    }
 
-    @InheritMaps
-    Proposal asProposal(ProposalDto proposal);
-
-    @InheritMaps
-    Proposal asProposal(ProposalDto proposal, Proposal out);
 }

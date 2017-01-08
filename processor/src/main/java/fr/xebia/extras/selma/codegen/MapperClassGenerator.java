@@ -17,7 +17,6 @@
 package fr.xebia.extras.selma.codegen;
 
 import com.squareup.javawriter.JavaWriter;
-import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.SelmaConstants;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -60,6 +59,7 @@ public class MapperClassGenerator {
         context.setWrapper(mapper);
 
         methodWrappers = validateTypes();
+
     }
 
 
@@ -103,6 +103,8 @@ public class MapperClassGenerator {
                 .append('.')
                 .append(strippedTypeName.replace('.', '_'))
                 .append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();
+        final List<MapperMethodGenerator> methodGenerators = new ArrayList<MapperMethodGenerator>();
+
 
         for (MethodWrapper mapperMethod : methodWrappers) {
 
@@ -113,29 +115,33 @@ public class MapperClassGenerator {
                 writer.emitSingleLineComment(GENERATED_BY_SELMA);
                 writer.emitPackage(packageName);
                 writer.emitEmptyLine();
-                
+
                 switch (mapper.ioC) {
-					case SPRING:
-	                    if (mapper.ioCServiceName != "") {
-	                        writer.emitAnnotation("org.springframework.stereotype.Service", "\"" + mapper.ioCServiceName + "\"");
-	                    } else {
-	                        writer.emitAnnotation("org.springframework.stereotype.Service");
-	                    }
-						break;
-					case CDI:
-						writer.emitAnnotation("javax.enterprise.context.ApplicationScoped");
-						break;
-					default:
-						break;
-				}
+                    case SPRING:
+                        if (mapper.ioCServiceName != "") {
+                            writer.emitAnnotation("org.springframework.stereotype.Service", "\"" + mapper.ioCServiceName + "\"");
+                        } else {
+                            writer.emitAnnotation("org.springframework.stereotype.Service");
+                        }
+                        break;
+                    case CDI:
+                        writer.emitAnnotation("javax.enterprise.context.ApplicationScoped");
+                        break;
+                    default:
+                        break;
+                }
 
                 openClassBlock(writer, adapterName, strippedTypeName);
                 writer.emitEmptyLine();
                 firstMethod = false;
             }
-            // Write mapping method
-            MapperMethodGenerator mapperMethodGenerator = new MapperMethodGenerator(writer, mapperMethod, mapper);
-            mapperMethodGenerator.build();
+            // Prepare mapping method
+            methodGenerators.add(new MapperMethodGenerator(writer, mapperMethod, mapper));
+        }
+
+        // Build mapping methods
+        for (MapperMethodGenerator mapperMethodGenerator : methodGenerators) {
+            mapperMethodGenerator.build(methodGenerators);
 
             mapper.collectMaps(mapperMethodGenerator.maps());
 
