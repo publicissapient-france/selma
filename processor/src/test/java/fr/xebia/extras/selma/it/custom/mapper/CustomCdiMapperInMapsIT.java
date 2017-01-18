@@ -23,6 +23,6 @@ public class CustomCdiMapperInMapsIT extends IntegrationTestBase {
 	public void given_cdi_mapper_should_be_annotated_with_Inject() {
 		
 		final CustomCdiMapperInMaps mapper = Selma.getMapper(CustomCdiMapperInMaps.class);
-		assertThat(mapper.getClass().getDeclaredAnnotation(javax.inject.Named.class), notNullValue());
+		assertThat(mapper.getClass().getAnnotation(javax.inject.Named.class), notNullValue());
 	}
 }
