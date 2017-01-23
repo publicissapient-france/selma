@@ -1,5 +1,5 @@
-/*
- * Copyright 2013  Séven Le Mesle
+/*-
+ * Copyright 2013 Xebia and Séven Le Mesle
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  *
  */
-package fr.xebia.extras.selma.it.inject;
+package fr.xebia.extras.selma.it.custom.mapper;
 
 import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.AddressIn;
-import fr.xebia.extras.selma.beans.AddressOut;
+import fr.xebia.extras.selma.beans.Book;
+import fr.xebia.extras.selma.beans.BookDTO;
 
-/**
- * Created by slemesle on 25/03/15.
- */
-@Mapper(withIgnoreFields = "extras", withCustom = CustomImmutableMapperClass.class, withFactories = BeanFactoryClass.class, withIoC = IoC.CDI_APPLICATION_SCOPED, withFinalMappers = false)
-public interface AddressMapperCDI {
-
-	AddressOut asAddressOut(AddressIn in);
-
+@Mapper(withIoC = IoC.CDI)
+public interface CustomCdiMapperInMaps {
+    
+    public Book asBook(BookDTO source);
+    
+    public BookDTO asBookDto(Book source);
+    
 }

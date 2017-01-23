@@ -1,4 +1,4 @@
-/*
+/*-
  * Copyright 2013  Séven Le Mesle
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,5 +20,14 @@ package fr.xebia.extras.selma;
  * Created by slemesle on 27/03/15.
  */
 public enum IoC {
-    NO, SPRING, CDI
+    /** Adds no annotation for IoC */
+    NO,
+    /** Adds @Service annotation to the generated mapper */
+    SPRING,
+    /** Adds @Inject annotation to the generated mapper */
+    CDI,
+    /** Adds @Inject and @Singleton annotations to the generated mapper */
+    CDI_SINGLETON,
+    /** Adds @ApplicationScoped annotation to the generated mapper */
+    CDI_APPLICATION_SCOPED
 }
