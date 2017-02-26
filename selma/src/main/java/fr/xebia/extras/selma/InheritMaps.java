@@ -21,10 +21,20 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 
 /**
- * Created by slemesle on 05/08/2016.
+ * The InheritMaps annotation is used on a mapping method to specify that it should inherit the complete @Maps
+ * configuration of another mapping method.
+ *
+ * By default the Maps annotation is inherited from the mapping method with the same type pair in and out or reverse.
+ * But you can specify a specific method from which you want to inherit.
  */
 @Target({ElementType.METHOD})
 @Inherited
 public @interface InheritMaps {
+
+    /**
+     * This optional parameter may be used to specify the method name from which you want to inherit the Maps
+     * configuration.
+     * @return
+     */
     String method() default "";
 }
