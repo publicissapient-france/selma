@@ -71,7 +71,7 @@ public class FaillingFieldToFieldWithCustomMapperIT extends IntegrationTestBase 
          assertCompilationError(FaillingFieldToFieldWithCustomMapper.class,
                  "AddressIn asAddressIn(AddressOut in);",
                  "Custom mapping method not found:" +
-                         " Mapping field in.getCity().getName() from source bean " +AddressOut.class.getCanonicalName()+
+                         " Mapping field inAddressOut.getCity().getName() from source bean " +AddressOut.class.getCanonicalName()+
                          ", using field @fr.xebia.extras.selma.Field(value={\"city.name\", \"street\"}," +
                          " withCustom="+CustomStreetMapper.class.getCanonicalName()+".class)");
     }

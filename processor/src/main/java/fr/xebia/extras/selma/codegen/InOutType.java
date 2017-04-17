@@ -16,6 +16,9 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import fr.xebia.extras.selma.Selma;
+import fr.xebia.extras.selma.SelmaConstants;
+
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;

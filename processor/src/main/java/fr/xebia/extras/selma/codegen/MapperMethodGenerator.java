@@ -26,11 +26,13 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static fr.xebia.extras.selma.codegen.ProcessorUtils.getInVar;
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 
 /**
@@ -64,7 +66,7 @@ public class MapperMethodGenerator {
             maps.resolveInheritMaps(methodGenerators, mapperMethod);
         }
 
-        buildMappingMethod(writer, mapperMethod.inOutType(), mapperMethod.getSimpleName(), true);
+        buildMappingMethod(writer, mapperMethod.inOutTypes(), mapperMethod.getSimpleName(), true);
 
         // Do we need to build other methods for this mapping ?
         if (context.hasMappingMethods()) {
@@ -80,72 +82,103 @@ public class MapperMethodGenerator {
 
         MapperGeneratorContext.MappingMethod method;
         while ((method = context.popMappingMethod()) != null) {
-            buildMappingMethod(writer, method.inOutType(), method.name(), false);
+            buildMappingMethod(writer, Arrays.asList(method.inOutType()), method.name(), false);
         }
 
     }
 
-    private void buildMappingMethod(JavaWriter writer, InOutType inOutType, String name, boolean override) throws IOException {
+    private void buildMappingMethod(JavaWriter writer, List<InOutType> inOutTypes, String name, boolean override) throws IOException {
 
         boolean isPrimitiveOrImmutable = false;
-        final MappingSourceNode methodRoot = mapMethod(context, inOutType, name, override, configuration.isFinalMappers());
-
+        final MappingSourceNode methodRoot = mapMethod(context, inOutTypes, name, override, configuration.isFinalMappers());
+        final InOutType firstIOType = inOutTypes.get(0);
+        final boolean outputAsParam = firstIOType.isOutPutAsParam();
+        final TypeMirror outType = firstIOType.out();
 
         MappingSourceNode ptr = blank(), blankRoot = ptr;
 
-        MappingSourceNode methodNode = (inOutType.isOutPutAsParam() ? methodRoot.body(blank()) : methodRoot.body(declareOut(inOutType.out())));
+        MappingSourceNode methodNode = (outputAsParam ? methodRoot.body(blank()) : methodRoot.body(declareOut(outType)));
 
         if (mapperWrapper.isUseCyclicMapping()) {
             String out;
-            if (inOutType.outIsPrimitive()) {
-                out = context.getBoxedClass((PrimitiveType) inOutType.out()).toString();
+            if (firstIOType.outIsPrimitive()) {
+                out = context.getBoxedClass((PrimitiveType) outType).toString();
             } else {
-                out = inOutType.out().toString();
+                out = outType.toString();
             }
-            methodNode = methodNode.child(controlInCache(SelmaConstants.IN_VAR, out));
+            methodNode = methodNode.child(controlInCache(getInVar(firstIOType.in()), out));
             methodNode = methodNode.child(pushInCache());
         }
 
-        MappingBuilder mappingBuilder = findBuilderFor(inOutType);
-        if (mappingBuilder != null) {
+        MappingSourceNode tryBlockPtr = null;
 
-            ptr.body(mappingBuilder.build(context, new SourceNodeVars().withInOutType(inOutType).withAssign(true)));
-            generateStack(context);
-            // set isPrimitiveOrImmutable so we can skip the null check
-            isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
+        BeanWrapper outBeanWrapper = null;
+        Set<String> outFields = null;
 
-        } else {
-            if (inOutType.areDeclared() && isSupported(inOutType.out())) {
-                // TODO Use factory, source or default constructor to instantiate out
-                final BeanWrapper outBeanWrapper = getBeanWrapperOrNew(context, inOutType.out());
-                ptr = ptr.body(maps.generateNewInstanceSourceNodes(inOutType, outBeanWrapper));
-                context.depth++;
-                ptr.child(generate(inOutType));
-                context.depth--;
+        int inId = 0;
+        for (InOutType inOutTypeOrigin : inOutTypes) {
+            MappingSourceNode root = blank(), topRoot = root;
+            ptr = root;
+            InOutType inOutType = inOutTypeOrigin;
+            if (inId > 0){
+                inOutType = new InOutType(inOutType, true);
+            }
+            MappingBuilder mappingBuilder = findBuilderFor(inOutType);
+            if (mappingBuilder != null) {
+
+                ptr.body(mappingBuilder.build(context, new SourceNodeVars().withInField(getInVar(inOutType.in()))
+                                                                           .withInOutType(inOutType).withAssign(true)));
+                generateStack(context);
+                // set isPrimitiveOrImmutable so we can skip the null check
+                isPrimitiveOrImmutable = !inOutType.differs() && mappingBuilder.isNullSafe();
+
             } else {
-                handleNotSupported(inOutType, ptr);
+                if (inOutType.areDeclared() && isSupported(inOutType.out())) {
+                    outBeanWrapper = outBeanWrapper == null ? getBeanWrapperOrNew(context, firstIOType.out()) : outBeanWrapper;
+                    outFields = outFields == null ? outBeanWrapper.getSetterFields() : outFields;
+                    ptr = ptr.body(maps.generateNewInstanceSourceNodes(inOutType, outBeanWrapper));
+                    context.depth++;
+                    ptr.child(generate(inOutType, outFields));
+                    context.depth--;
+                } else {
+                    handleNotSupported(inOutType, ptr);
+                }
+            }
+
+            isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
+            if (!isPrimitiveOrImmutable) {
+                root = root.child(controlNotNull(getInVar(inOutType.in()), inOutTypeOrigin.isOutPutAsParam()));
+                root.body(topRoot.body);
+            } else {
+                root = root.child(topRoot.body);
+            }
+            methodNode.lastChild().child(topRoot);
+
+            inId++;
+        }
+
+        tryBlockPtr = null;
+        if (mapperWrapper.isUseCyclicMapping()) {
+            ptr = methodNode.child;
+            methodNode = methodNode.child(tryBlock());
+            tryBlockPtr = methodNode;
+            methodNode = methodNode.body(ptr);
+        }
+
+        if (!maps.ignoreMissing().isIgnoreSource() && outFields != null) { // Report destination bean fields not mapped
+            for (String outField : outFields) {
+
+                if (!maps.isIgnoredField(outField, (DeclaredType)outType)) {
+                    context.error(mapperMethod.element(), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
+                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing setter or specify corresponding @Field to customize field to field mapping", outField, outType, "????", outType, outField, outType, outField);
+                }
             }
         }
 
-        MappingSourceNode tryBlockPtr = null;
-        if (mapperWrapper.isUseCyclicMapping()) {
-            methodNode = methodNode.child(tryBlock());
-            tryBlockPtr = methodNode;
-            methodNode = methodNode.body(blank());
-        }
-
-        isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
-        if (!isPrimitiveOrImmutable) {
-            methodNode = methodNode.child(controlNotNull(SelmaConstants.IN_VAR, inOutType.isOutPutAsParam()));
-            methodNode.body(blankRoot.body);
-        } else {
-            methodNode = methodNode.child(blankRoot.body);
-        }
-
         // Call the interceptor if it exist
-        MappingBuilder interceptor = maps.mappingInterceptor(inOutType);
+        MappingBuilder interceptor = maps.mappingInterceptor(firstIOType); // TODO : Fix With all types
         if (interceptor != null) {
-            methodNode = methodNode.child(interceptor.build(context, new SourceNodeVars()));
+            methodNode = methodNode.lastChild().child(interceptor.build(context, new SourceNodeVars().withInField(getInVar(firstIOType.in()))));
         }
 
         if (mapperWrapper.isUseCyclicMapping()) {
@@ -229,19 +262,15 @@ public class MapperMethodGenerator {
         return maps.findMappingFor(inOutType);
     }
 
-    private MappingSourceNode generate(InOutType inOutType) throws IOException {
+    private MappingSourceNode generate(InOutType inOutType, Set<String> outFields) throws IOException {
 
         MappingSourceNode root = blank();
         MappingSourceNode ptr = root;
 
 
-        TypeElement outTypeElement = (TypeElement) context.type.asElement(inOutType.out());
-
-
         BeanWrapper outBean = getBeanWrapperOrNew(context, inOutType.out());
         BeanWrapper inBean = getBeanWrapperOrNew(context, inOutType.in());
 
-        Set<String> outFields = outBean.getSetterFields();
         List<Field> customFields = new ArrayList<Field>();
         for (String field : inBean.getGetterFields()) {
 
@@ -363,15 +392,6 @@ public class MapperMethodGenerator {
             ptr = ptr.lastChild();
         }
 
-        if (!maps.ignoreMissing().isIgnoreSource()) { // Report destination bean fields not mapped
-            for (String outField : outFields) {
-
-                if (!maps.isIgnoredField(outField, inOutType.outAsDeclaredType())) {
-                    context.error(mapperMethod.element(), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
-                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing setter or specify corresponding @Field to customize field to field mapping", outField, inOutType.out(), inOutType.in(), inOutType.out(), outField, inOutType.out(), outField);
-                }
-            }
-        }
         return root.child;
     }
 
@@ -418,7 +438,7 @@ public class MapperMethodGenerator {
             return root;
         }
         String[] fields = sourceEmbedded ? customField.fromFields() : customField.toFields();
-        String previousFieldPath = sourceEmbedded ? SelmaConstants.IN_VAR : SelmaConstants.OUT_VAR;
+        String previousFieldPath = sourceEmbedded ? getInVar(inBean.typeElement.asType()) : SelmaConstants.OUT_VAR;
         StringBuilder field = new StringBuilder(previousFieldPath);
         for (int id = 0; id < fields.length - 1; id++) {
             lastVisitedField = fields[id];
@@ -501,7 +521,7 @@ public class MapperMethodGenerator {
                                                             .withInOutType(inOutType)
                                                             .withAssign(false)
                                                             .withUseGetterForDestination(useGetterForDestination) :
-                                                        new SourceNodeVars("in." + inBean.getGetterFor(customField.from) + "()", field.toString())
+                                                        new SourceNodeVars(getInVar(inBean.typeMirror) + "." + inBean.getGetterFor(customField.from) + "()", field.toString())
                                                                 .withInOutType(inOutType)
                                                                 .withAssign(false)
                                                                 .withUseGetterForDestination(useGetterForDestination);
@@ -523,7 +543,7 @@ public class MapperMethodGenerator {
         }
 
         if (!sourceEmbedded && inBean.getTypeForGetter(customField.from).getKind() == TypeKind.DECLARED) { // Ensure we do not map if source is null
-            MappingSourceNode ifNode = controlNotNull("in." + inBean.getGetterFor(customField.from) + "()", false);
+            MappingSourceNode ifNode = controlNotNull(getInVar(inBean.typeMirror) + "." + inBean.getGetterFor(customField.from) + "()", false);
             ifNode.body(ptrRoot.child);
             ptrRoot.child = ifNode;
         }

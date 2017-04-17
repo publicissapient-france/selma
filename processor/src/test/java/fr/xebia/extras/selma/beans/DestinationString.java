@@ -14,20 +14,19 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.aggregation;
-
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.AggregatedBean;
-import fr.xebia.extras.selma.beans.FirstBean;
-import fr.xebia.extras.selma.beans.SecondBean;
+package fr.xebia.extras.selma.beans;
 
 /**
- * This mapper interface demonstrate the use of Bean Aggregation.
+ * Created by slemesle on 15/04/2017.
  */
-@Mapper
-public interface AggregationMapper {
+public class DestinationString {
 
-    AggregatedBean mapFromAggregate(FirstBean first, SecondBean second);
+    private String id;
 
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
 }

@@ -46,13 +46,13 @@ public class FailingEmbeddedFieldToUpperFieldInMapsIT extends IntegrationTestBas
 
     @Test
     public void given_a_mapper_with_custom_embeded_bad_last_field_to_upper_field_compilation_should_fail() throws Exception {
-        assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "ProposalDto asProposalDto3(Proposal proposal);", "Bad custom field to field mapping: field in.getPassenger().ager from source bean fr.xebia.extras.selma.beans.Proposal has no getter !");
+        assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "ProposalDto asProposalDto3(Proposal proposal);", "Bad custom field to field mapping: field inProposal.getPassenger().ager from source bean fr.xebia.extras.selma.beans.Proposal has no getter !");
         // Assert.assertEquals(EXPECTED_ERROR_COUNT, compilationErrorCount());
     }
 
     @Test
     public void given_a_mapper_with_custom_embeded_bad_middle_field_to_upper_field_compilation_should_fail() throws Exception {
-        assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "ProposalDto asProposalDto4(Proposal proposal);", "Bad custom field to field mapping: field in.getPassenger().ager from source bean fr.xebia.extras.selma.beans.Proposal has no getter !");
+        assertCompilationError(FailingEmbeddedFieldToUpperFieldMapper.class, "ProposalDto asProposalDto4(Proposal proposal);", "Bad custom field to field mapping: field inProposal.getPassenger().ager from source bean fr.xebia.extras.selma.beans.Proposal has no getter !");
         //  Assert.assertEquals(EXPECTED_ERROR_COUNT, compilationErrorCount());
     }
 

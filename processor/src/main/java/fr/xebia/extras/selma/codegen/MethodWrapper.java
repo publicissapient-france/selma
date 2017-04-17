@@ -26,7 +26,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,6 +79,31 @@ public class MethodWrapper {
 
     public InOutType inOutType() {
         return new InOutType(firstParameterType(), returnType(), parameterCount() == 2);
+    }
+
+    /**
+     * retrieves all kind of InOutTypes for a single method with aggregation or not
+     * @return
+     */
+    public List<InOutType> inOutTypes() {
+        List<InOutType> res = new ArrayList<InOutType>();
+        int paramsCount = parameterCount();
+        if(paramsCount > 1){
+            boolean outputAsParam = context.types().isSameType(returnType(),
+                        executableType.getParameterTypes().get(paramsCount - 1));
+            for (int id = 0; id < paramsCount; id++) {
+
+                TypeMirror type = executableType.getParameterTypes().get(id);
+                if (!context.types().isSameType(type, returnType()) || id != paramsCount -1) {
+                    // do not add last argument if we are in outputAsParam
+                    res.add(new InOutType(type, returnType(),
+                            outputAsParam));
+                }
+            }
+        } else {
+            res.add(new InOutType(firstParameterType(), returnType(), false));
+        }
+        return res;
     }
 
 

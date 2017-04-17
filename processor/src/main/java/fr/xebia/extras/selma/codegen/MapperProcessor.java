@@ -136,17 +136,18 @@ public final class MapperProcessor extends AbstractProcessor {
                     executableElement.getSimpleName());
             return false;
         }
-        if (executableElement.getParameters().size() > 2) {
+/*        if (executableElement.getParameters().size() > 2) {
             error(executableElement, "@Mapper method %s can not have more than two parameters",
                     executableElement.getSimpleName());
             return false;
-        }
+        }*/
 
         if (executableElement.getReturnType().getKind() == TypeKind.VOID) {
             error(executableElement, "@Mapper method %s can not return void", executableElement.getSimpleName());
             return false;
         }
 
+/*
         if (executableElement.getParameters().size() == 2) {
             TypeMirror returnType = executableElement.getReturnType();
             VariableElement variableElement = executableElement.getParameters().get(1);
@@ -156,6 +157,7 @@ public final class MapperProcessor extends AbstractProcessor {
                 return false;
             }
         }
+*/
 
         return true;
     }

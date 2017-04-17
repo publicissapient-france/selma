@@ -16,6 +16,8 @@
  */
 package fr.xebia.extras.selma.codegen;
 
+import fr.xebia.extras.selma.SelmaConstants;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -25,6 +27,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.util.*;
 
+import static fr.xebia.extras.selma.codegen.ProcessorUtils.getInVar;
+
 /**
  * Wrapper for specific type
  * builds a graph of fields and getter/setter methods for a type.
@@ -33,12 +37,11 @@ public class BeanWrapper {
 
 
     private static final Set<String> exclusions = new TreeSet<String>(Arrays.asList("getClass"));
-
+    public final TypeMirror typeMirror;
     final MapperGeneratorContext context;
     final TypeElement typeElement;
     final Map<String, FieldItem> fieldsGraph;
     private final TypeConstructorWrapper constructors;
-    private final TypeMirror typeMirror;
 
 
     public BeanWrapper(MapperGeneratorContext context, TypeMirror typeMirror) {
@@ -157,7 +160,7 @@ public class BeanWrapper {
 
 
     public String getInGetterFor(String field) {
-        return String.format("in.%s()", getGetterFor(field));
+        return String.format("%s.%s()", getInVar(this.typeMirror), getGetterFor(field));
     }
 
 

@@ -175,10 +175,6 @@ public class MapsWrapper {
         return _this.ignoreFields.isIgnoredField(field, declaredType);
     }
 
-    public boolean isIgnoreMissingProperties() {
-        return _this.ignoreMissingProperties;
-    }
-
     public List<TypeElement> customMapperFields() {
         return _this.customMapper.mapperFields();
     }

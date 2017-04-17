@@ -14,20 +14,26 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.aggregation;
-
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.AggregatedBean;
-import fr.xebia.extras.selma.beans.FirstBean;
-import fr.xebia.extras.selma.beans.SecondBean;
+package fr.xebia.extras.selma;
 
 /**
- * This mapper interface demonstrate the use of Bean Aggregation.
+ * Created by slemesle on 17/04/2017.
  */
-@Mapper
-public interface AggregationMapper {
+public class SelmaUtils {
 
-    AggregatedBean mapFromAggregate(FirstBean first, SecondBean second);
-
+    /**
+     * Checks if all given objects are null
+     * @param vars
+     * @return
+     */
+    public static boolean areNull(Object ... vars){
+        boolean res = true;
+        for (Object obj : vars) {
+            if (obj != null){
+                res = false;
+                break;
+            }
+        }
+        return res;
+    }
 }

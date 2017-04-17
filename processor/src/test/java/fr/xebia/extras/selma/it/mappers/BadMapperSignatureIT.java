@@ -27,16 +27,16 @@ import org.junit.Test;
 public class BadMapperSignatureIT extends IntegrationTestBase {
 
     @Test
-    public void bad_mapper_signature_compilation_should_fail_on_3_in_parameters() throws Exception {
+    public void bad_mapper_signature_compilation_should_fail_on_no_in_parameters() throws Exception {
 
-        assertCompilationError(BadMapperSignature.class, "String mapThreeParameters (String in, String inBis, String inTer);", "@Mapper method mapThreeParameters can not have more than two parameters");
+        assertCompilationError(BadMapperSignature.class, "String mapString();", "@Mapper method mapString can not have less than one parameter");
 
     }
 
     @Test
-    public void bad_mapper_signature_compilation_should_fail_on_parameters_type_differs() throws Exception {
+    public void bad_mapper_signature_compilation_should_fail_on_void() throws Exception {
 
-        assertCompilationError(BadMapperSignature.class, "String mapDifferentTypes (boolean in);", "@Mapper method mapTwoParametersDifferentTypes second parameter type should be java.lang.String as the return type is");
+        assertCompilationError(BadMapperSignature.class, "void mapTutu(String in);", "@Mapper method mapTutu can not return void");
 
     }
 

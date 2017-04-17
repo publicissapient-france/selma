@@ -14,20 +14,19 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.aggregation;
+package fr.xebia.extras.selma.codegen;
 
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.AggregatedBean;
-import fr.xebia.extras.selma.beans.FirstBean;
-import fr.xebia.extras.selma.beans.SecondBean;
+import fr.xebia.extras.selma.SelmaConstants;
+
+import javax.lang.model.type.TypeMirror;
 
 /**
- * This mapper interface demonstrate the use of Bean Aggregation.
+ * Created by slemesle on 17/04/2017.
  */
-@Mapper
-public interface AggregationMapper {
+public class ProcessorUtils {
 
-    AggregatedBean mapFromAggregate(FirstBean first, SecondBean second);
-
+    public static final String getInVar(TypeMirror inTypeMirror) {
+        String[] type = inTypeMirror.toString().split("\\.");
+        return SelmaConstants.IN_VAR + type[type.length - 1].replace("[]","").replace(">", "");
+    }
 }

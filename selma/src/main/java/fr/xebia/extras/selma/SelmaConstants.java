@@ -17,6 +17,8 @@
 
 package fr.xebia.extras.selma;
 
+import javax.lang.model.type.TypeMirror;
+
 /**
  *
  *
@@ -36,4 +38,5 @@ public class SelmaConstants {
     public static final char DEFAULT_CHAR = '\0';
     public static final float DEFAULT_FLOAT = 0;
     public static final double DEFAULT_DOUBLE = 0;
+
 }

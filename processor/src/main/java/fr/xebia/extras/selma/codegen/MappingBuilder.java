@@ -29,6 +29,7 @@ import java.util.*;
 
 import static fr.xebia.extras.selma.codegen.CollectionsRegistry.findImplementationForType;
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
+import static fr.xebia.extras.selma.codegen.ProcessorUtils.getInVar;
 
 /**
  *
@@ -60,7 +61,7 @@ public abstract class MappingBuilder {
                         if (context.depth > 0) {
                             root.body(set(vars.outSetterPath(), vars.inGetter()));
                         } else {
-                            root.body(assignOutPrime());
+                            root.body(assignOutPrime(vars.inField));
                         }
                         return root.body;
                     }
@@ -85,7 +86,7 @@ public abstract class MappingBuilder {
                         if (context.depth > 0) {
                             root.body(set(vars.outSetterPath(), vars.inGetter() + " + \"\""));
                         } else {
-                            root.body(assignOutToString());
+                            root.body(assignOutToString(vars.inField));
                         }
                         return root.body;
                     }
@@ -608,7 +609,7 @@ public abstract class MappingBuilder {
                 if (vars.field != null && vars.outFieldGetter != null) {
                     root.body(statement(String.format("%s(%s,%s())", name, vars.inField, vars.outFieldGetter)));
                 } else {
-                    root.body(statement(String.format("%s(in,out)", name)));
+                    root.body(statement(String.format("%s(%s,out)", name, getInVar(inOutType.in()))));
                 }
                 return root.body;
             }

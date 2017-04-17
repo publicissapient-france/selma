@@ -36,4 +36,8 @@ public interface BadMapperSignature {
 
     String mapTwoParametersDifferentTypes(String in, boolean out);
 
+    void mapTutu(String in);
+
+    String mapString();
+
 }
