@@ -39,9 +39,9 @@ public class CustomMapperWrapper {
     private final MapperGeneratorContext context;
     private final HashMap<InOutType, String> unusedCustomMappers;
     private final Map<InOutType, MappingBuilder> registryMap;
-    private final Map<InOutType, MappingBuilder> interceptorMap;
+    private final Map<List<InOutType>, MappingBuilder> interceptorMap;
     private final List<TypeElement> customMapperFields;
-    private final HashMap<InOutType, String> unusedInterceptor;
+    private final HashMap<List<InOutType>, String> unusedInterceptor;
     private final Element annotatedElement;
     private final IoC ioC;
     private CustomMapperWrapper parent;
@@ -53,9 +53,9 @@ public class CustomMapperWrapper {
         this.context = context;
         this.customMapperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
-        this.unusedInterceptor = new HashMap<InOutType, String>();
+        this.unusedInterceptor = new HashMap<List<InOutType>, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
-        this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
+        this.interceptorMap = new HashMap<List<InOutType>, MappingBuilder>();
         ioC = IoC.valueOf((annotationWrapper.getAsString(MapperWrapper.WITH_IOC) != null ?
                 annotationWrapper.getAsString(MapperWrapper.WITH_IOC) : IoC.NO.toString()));
         collectCustomMappers();
@@ -67,9 +67,9 @@ public class CustomMapperWrapper {
         this.annotationWrapper = annotationWrapper;
         this.customMapperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
-        this.unusedInterceptor = new HashMap<InOutType, String>();
+        this.unusedInterceptor = new HashMap<List<InOutType>, String>();
         this.registryMap = new HashMap<InOutType, MappingBuilder>();
-        this.interceptorMap = new HashMap<InOutType, MappingBuilder>();
+        this.interceptorMap = new HashMap<List<InOutType>, MappingBuilder>();
 
         this.context = context;
         this.ioC = parent.ioC;
@@ -159,14 +159,19 @@ public class CustomMapperWrapper {
     private void pushMappingInterceptor(TypeElement element, MethodWrapper method, boolean ignoreAbstract) {
 
         String customMapperFieldName = ignoreAbstract ? "this" : buildMapperFieldName(element);
-        InOutType inOutType = method.inOutArgs();
-        MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutType,
+        List<InOutType> inOutTypes = method.allInOutArgs();
+
+        MappingBuilder res = MappingBuilder.newMappingInterceptor(inOutTypes,
                 String.format("%s.%s", customMapperFieldName, method.getSimpleName()));
 
         // Push IOType for both mutable and immutable mapping
-        interceptorMap.put(inOutType, res);
-        interceptorMap.put(new InOutType(inOutType.in(), inOutType.out(), false), res);
-        unusedInterceptor.put(inOutType, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
+        interceptorMap.put(inOutTypes, res);
+        List<InOutType> noUpdate = new ArrayList<InOutType>();
+        for (InOutType inOutType : inOutTypes){
+            noUpdate.add(new InOutType(inOutType.in(), inOutType.out(), false));
+        }
+        interceptorMap.put(noUpdate, res);
+        unusedInterceptor.put(inOutTypes, String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
     }
 
     private void collectCustomMappers() {
@@ -294,12 +299,16 @@ public class CustomMapperWrapper {
         return res;
     }
 
-    public MappingBuilder getMappingInterceptor(InOutType inOutType) {
-        MappingBuilder res = interceptorMap.get(inOutType);
+    public MappingBuilder getMappingInterceptor(List<InOutType> inOutTypes) {
+        MappingBuilder res = interceptorMap.get(inOutTypes);
         if (res != null) {
-            unusedInterceptor.remove(new InOutType(inOutType, true));
+            List<InOutType> noUpdate = new ArrayList<InOutType>();
+            for (InOutType inOutType : inOutTypes){
+                noUpdate.add(new InOutType(inOutType.in(), inOutType.out(), true));
+            }
+            unusedInterceptor.remove(noUpdate);
         } else if (parent != null) {
-            res = parent.getMappingInterceptor(inOutType);
+            res = parent.getMappingInterceptor(inOutTypes);
         }
         return res;
     }

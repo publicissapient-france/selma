@@ -16,22 +16,22 @@
  */
 package fr.xebia.extras.selma.it.aggregation;
 
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.AggregatedBean;
-import fr.xebia.extras.selma.beans.FirstBean;
-import fr.xebia.extras.selma.beans.SecondBean;
+import fr.xebia.extras.selma.beans.*;
 
 /**
- * This mapper interface demonstrate the use of Bean Aggregation.
+ * Created by slemesle on 24/04/2017.
  */
-@Mapper
-public interface AggregationMapper {
-
-    AggregatedBean mapFromAggregate(FirstBean first, SecondBean second);
+public class AggregatedInterceptor {
 
 
-    @Maps(withCustom = AggregatedInterceptor.class)
-    AggregatedBean mapFromAggregateWithInterceptor(FirstBean first, SecondBean second);
+    public static final int SALARY_INC = 10000;
 
+    /**
+     * Simply intercept in and out person after mapping process
+     *
+     */
+    public void intercept(FirstBean first, SecondBean second, AggregatedBean aggregatedBean) {
+
+        aggregatedBean.setSalary(second.getSalary() + SALARY_INC);
+    }
 }

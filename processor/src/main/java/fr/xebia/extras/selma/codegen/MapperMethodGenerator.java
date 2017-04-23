@@ -176,7 +176,7 @@ public class MapperMethodGenerator {
         }
 
         // Call the interceptor if it exist
-        MappingBuilder interceptor = maps.mappingInterceptor(firstIOType); // TODO : Fix With all types
+        MappingBuilder interceptor = maps.mappingInterceptor(inOutTypes);
         if (interceptor != null) {
             methodNode = methodNode.lastChild().child(interceptor.build(context, new SourceNodeVars().withInField(getInVar(firstIOType.in()))));
         }
@@ -345,7 +345,7 @@ public class MapperMethodGenerator {
                 MappingBuilder mappingBuilder = null, interceptor = null;
                 if (matchedFieldAnnotation != null && matchedFieldAnnotation.customMapperWrapper != null) {
                     mappingBuilder = matchedFieldAnnotation.customMapperWrapper.getMapper(inOutTypeForField);
-                    interceptor = matchedFieldAnnotation.mappingRegistry().getMappingInterceptor(inOutTypeForField);
+                    interceptor = matchedFieldAnnotation.mappingRegistry().getMappingInterceptor(Arrays.asList(inOutTypeForField));
                     if (mappingBuilder == null && interceptor == null) {
                         context.error(mapperMethod.element(), "Custom mapping method not found: " +
                                         "Mapping field %s from source bean %s, using field %s", field, inOutType.in(),

@@ -111,6 +111,29 @@ public class MethodWrapper {
         return new InOutType(firstParameterType(), secondParameterType(), parameterCount() == 2);
     }
 
+    public List<InOutType> allInOutArgs() {
+        List<InOutType> res = new ArrayList<InOutType>();
+        TypeMirror out = lastParameterType();
+
+        for (int i = 0; i < this.parameterCount() - 1 ; i++){
+            res.add(new InOutType(getParameterType(i), out, parameterCount() >= 2));
+        }
+
+        return res;
+    }
+
+    private TypeMirror getParameterType(int i) {
+         if (method.getParameters().size() > i) {
+            return executableType.getParameterTypes().get(i);
+        } else {
+            return null;
+        }
+    }
+
+    private TypeMirror lastParameterType() {
+        return executableType.getParameterTypes().get(parameterCount() -1);
+    }
+
     private TypeMirror secondParameterType() {
         if (method.getParameters().size() > 1) {
             return executableType.getParameterTypes().get(1);
@@ -240,11 +263,15 @@ public class MethodWrapper {
      * @return
      */
     public boolean isMappingInterceptor() {
-        return !hasReturnType() && hasTwoParameter();
+        return !hasReturnType() && hasMoreThanParameters(2);
     }
 
     private boolean hasTwoParameter() {
         return method.getParameters().size() == 2;
+    }
+
+    private boolean hasMoreThanParameters(int count) {
+        return method.getParameters().size() >= count;
     }
 
     public boolean hasFields() {

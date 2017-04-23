@@ -17,6 +17,7 @@
 package fr.xebia.extras.selma.codegen;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -77,7 +78,7 @@ public class MappingRegistry {
         return res;
     }
 
-    public MappingBuilder mappingInterceptor(InOutType inOutType) {
+    public MappingBuilder mappingInterceptor(List<InOutType> inOutType) {
         return customMappers.getMappingInterceptor(inOutType);
     }
 

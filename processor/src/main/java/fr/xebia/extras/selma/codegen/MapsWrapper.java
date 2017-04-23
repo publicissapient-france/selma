@@ -163,7 +163,7 @@ public class MapsWrapper {
         return _this.customFields.getFieldFor(field, sourceType, destinationType);
     }
 
-    public MappingBuilder mappingInterceptor(InOutType inOutType) {
+    public MappingBuilder mappingInterceptor(List<InOutType> inOutType) {
         return _this.registry.mappingInterceptor(inOutType);
     }
 

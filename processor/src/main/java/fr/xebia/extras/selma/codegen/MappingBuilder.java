@@ -600,16 +600,21 @@ public abstract class MappingBuilder {
         };
     }
 
-    public static MappingBuilder newMappingInterceptor(final InOutType inOutType, final String name) {
+    public static MappingBuilder newMappingInterceptor(final List<InOutType> inOutTypes, final String name) {
         return new MappingBuilder() {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
 
-                context.mappingMethod(inOutType, name);
+                StringBuilder buff = new StringBuilder(name).append('(');
+                if (inOutTypes.size() >= 1 && vars.field == null) {
+                    for (InOutType inOutType : inOutTypes) {
+                        buff.append(getInVar(inOutType.in())).append(", ");
+                    }
+                }
                 if (vars.field != null && vars.outFieldGetter != null) {
-                    root.body(statement(String.format("%s(%s,%s())", name, vars.inField, vars.outFieldGetter)));
+                    root.body(statement(String.format(buff.append("%s, %s())").toString(), vars.inField, vars.outFieldGetter)));
                 } else {
-                    root.body(statement(String.format("%s(%s,out)", name, getInVar(inOutType.in()))));
+                    root.body(statement(buff.append("out)").toString()));
                 }
                 return root.body;
             }

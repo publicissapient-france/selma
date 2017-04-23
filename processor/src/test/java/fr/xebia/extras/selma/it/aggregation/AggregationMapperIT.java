@@ -30,7 +30,7 @@ import java.util.Date;
 /**
  * Created by slemesle on 27/02/2017.
  */
-@Compile(withClasses = AggregationMapper.class)
+@Compile(withClasses = { AggregationMapper.class, AggregatedInterceptor.class })
 public class AggregationMapperIT extends IntegrationTestBase {
 
     @Test
@@ -57,6 +57,33 @@ public class AggregationMapperIT extends IntegrationTestBase {
         Assert.assertEquals(first.getAge(), res.getAge());
         Assert.assertEquals(second.getJobTitle(), res.getJobTitle());
         Assert.assertEquals(second.getSalary(), res.getSalary());
+        Assert.assertEquals(second.getStartDate(), res.getStartDate());
+    }
+
+    @Test
+    public void given_2_aggregated_beans_should_call_interceptor(){
+        // Given
+        FirstBean first = new FirstBean();
+        first.setFirstName("Toto");
+        first.setLastName("de toor");
+        first.setAge(35l);
+
+        SecondBean second = new SecondBean();
+        second.setJobTitle("CFO");
+        second.setSalary(150000l);
+        second.setStartDate(new Date());
+
+        AggregationMapper mapper = Selma.builder(AggregationMapper.class).build();
+
+        // When
+        AggregatedBean res = mapper.mapFromAggregateWithInterceptor(first, second);
+
+        // Then
+        Assert.assertEquals(first.getFirstName(), res.getFirstName());
+        Assert.assertEquals(first.getLastName(), res.getLastName());
+        Assert.assertEquals(first.getAge(), res.getAge());
+        Assert.assertEquals(second.getJobTitle(), res.getJobTitle());
+        Assert.assertEquals(second.getSalary() + AggregatedInterceptor.SALARY_INC, res.getSalary());
         Assert.assertEquals(second.getStartDate(), res.getStartDate());
     }
 }
