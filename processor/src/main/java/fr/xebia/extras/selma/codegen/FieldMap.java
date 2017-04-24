@@ -130,7 +130,7 @@ class Field {
 
     private String removePrefixes(String key, String simpleName, String fqcn) {
         key = key.replace(simpleName + ".", "");
-        return key.replace(fqcn + ".", "");
+        return key.replaceFirst("^" + fqcn + "\\.", "");
     }
 
     public boolean hasEmbedded() {
