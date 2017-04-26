@@ -30,8 +30,8 @@ public interface AggregationMapper {
 
     AggregatedBean mapFromAggregate(FirstBean first, SecondBean second);
 
-
     @Maps(withCustom = AggregatedInterceptor.class)
     AggregatedBean mapFromAggregateWithInterceptor(FirstBean first, SecondBean second);
 
+    AggregatedBean mapFromAggregateInUpdate(FirstBean first, SecondBean second, AggregatedBean out);
 }

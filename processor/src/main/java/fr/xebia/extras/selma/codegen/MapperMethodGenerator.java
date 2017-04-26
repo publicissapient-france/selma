@@ -147,7 +147,7 @@ public class MapperMethodGenerator {
 
             isPrimitiveOrImmutable = isPrimitiveOrImmutable || inOutType.inIsPrimitive();
             if (!isPrimitiveOrImmutable) {
-                root = root.child(controlNotNull(getInVar(inOutType.in()), inOutTypeOrigin.isOutPutAsParam()));
+                root = root.child(controlNotNull(getInVar(inOutType.in())));
                 root.body(topRoot.body);
             } else {
                 root = root.child(topRoot.body);
@@ -155,6 +155,11 @@ public class MapperMethodGenerator {
             methodNode.lastChild().child(topRoot);
 
             inId++;
+        }
+
+        if (outputAsParam){
+            // Set out to null if all in types are null
+            methodNode.lastChild().child(setOutNullAllBlocks(inOutTypes));
         }
 
         tryBlockPtr = null;
@@ -459,7 +464,7 @@ public class MapperMethodGenerator {
             field.append('.').append(beanPtr.getGetterFor(lastVisitedField)).append("()");
 
             if (sourceEmbedded) {
-                ptr = ptr.body(controlNotNull(field.toString(), false));
+                ptr = ptr.body(controlNotNull(field.toString()));
             } else {
                 ptr = ptr.child(controlNull(field.toString()));
                 ptr.body(set(previousFieldPath + '.' + beanPtr.getSetterFor(lastVisitedField), "new " + beanPtr.getTypeForGetter(lastVisitedField) + "(" + context.newParams() + ")"));
@@ -500,7 +505,7 @@ public class MapperMethodGenerator {
         try {
 
 
-            MappingBuilder mappingBuilder = null, interceptor = null;
+            MappingBuilder mappingBuilder = null;
             if (customField.mappingRegistry() != null) {
                 mappingBuilder = customField.mappingRegistry().getMapper(inOutType);
 
@@ -529,9 +534,7 @@ public class MapperMethodGenerator {
                         ptr.body(mappingBuilder.build(context, vars)) :
                         ptr.child(mappingBuilder.build(context, vars));
                 generateStack(context);
-                if (interceptor != null) { // Call custom interceptor after mapping
-                    ptr = ptr.child(interceptor.build(context, vars));
-                }
+
             } else {
                 handleNotSupported(inOutType, ptr);
             }
@@ -543,7 +546,7 @@ public class MapperMethodGenerator {
         }
 
         if (!sourceEmbedded && inBean.getTypeForGetter(customField.from).getKind() == TypeKind.DECLARED) { // Ensure we do not map if source is null
-            MappingSourceNode ifNode = controlNotNull(getInVar(inBean.typeMirror) + "." + inBean.getGetterFor(customField.from) + "()", false);
+            MappingSourceNode ifNode = controlNotNull(getInVar(inBean.typeMirror) + "." + inBean.getGetterFor(customField.from) + "()");
             ifNode.body(ptrRoot.child);
             ptrRoot.child = ifNode;
         }

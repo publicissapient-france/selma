@@ -86,4 +86,48 @@ public class AggregationMapperIT extends IntegrationTestBase {
         Assert.assertEquals(second.getSalary() + AggregatedInterceptor.SALARY_INC, res.getSalary());
         Assert.assertEquals(second.getStartDate(), res.getStartDate());
     }
+
+
+    @Test
+    public void given_2_aggregated_beans_in_update_should_update_with_aggregate(){
+        // Given
+        FirstBean first = new FirstBean();
+        first.setFirstName("Toto");
+        first.setLastName("de toor");
+        first.setAge(35l);
+
+        SecondBean second = new SecondBean();
+        second.setJobTitle("CFO");
+        second.setSalary(150000l);
+        second.setStartDate(new Date());
+
+        AggregatedBean out = new AggregatedBean();
+
+        AggregationMapper mapper = Selma.builder(AggregationMapper.class).build();
+
+        // When
+        AggregatedBean res = mapper.mapFromAggregateInUpdate(first, second, out);
+
+        // Then
+        Assert.assertEquals(first.getFirstName(), res.getFirstName());
+        Assert.assertEquals(first.getLastName(), res.getLastName());
+        Assert.assertEquals(first.getAge(), res.getAge());
+        Assert.assertEquals(second.getJobTitle(), res.getJobTitle());
+        Assert.assertEquals(second.getSalary(), res.getSalary());
+        Assert.assertEquals(second.getStartDate(), res.getStartDate());
+    }
+
+    @Test
+    public void given_null_beans_in_update_should_return_null(){
+        // Given
+        AggregatedBean out = new AggregatedBean();
+
+        AggregationMapper mapper = Selma.builder(AggregationMapper.class).build();
+
+        // When
+        AggregatedBean res = mapper.mapFromAggregateInUpdate(null, null, out);
+
+        // Then
+        Assert.assertNull(res);
+    }
 }

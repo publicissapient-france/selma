@@ -19,6 +19,7 @@ package fr.xebia.extras.selma.codegen;
 import com.squareup.javawriter.JavaWriter;
 import fr.xebia.extras.selma.InstanceCache;
 import fr.xebia.extras.selma.SelmaConstants;
+import fr.xebia.extras.selma.SelmaUtils;
 import fr.xebia.extras.selma.SimpleInstanceCache;
 
 import javax.lang.model.type.TypeMirror;
@@ -99,6 +100,29 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode setOutNullAllBlocks(final List<InOutType> inOutTypes) {
+
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+                StringBuilder sbIns = new StringBuilder();
+                sbIns.append(SelmaUtils.class.getCanonicalName()).append(".areNull(");
+                int id = 0;
+                for (InOutType inOutType : inOutTypes) {
+                    if (id > 0){
+                        sbIns.append(", ");
+                    }
+                    sbIns.append(getInVar(inOutType.in()));
+                    id++;
+                }
+                sbIns.append(")");
+
+                writer.beginControlFlow("if (" + sbIns.toString() + ")");
+                writer.emitStatement("out = null");
+                writer.endControlFlow();
+            }
+        };
+    }
+
     public static MappingSourceNode controlInCache(final String field, final String outType) {
         return new MappingSourceNode() {
             @Override void writeNode(JavaWriter writer) throws IOException {
@@ -126,16 +150,12 @@ public abstract class MappingSourceNode {
         };
     }
 
-    public static MappingSourceNode controlNotNull(final String field, final boolean outPutAsParam) {
+    public static MappingSourceNode controlNotNull(final String field) {
         return new MappingSourceNode() {
             @Override void writeNode(JavaWriter writer) throws IOException {
                 writer.beginControlFlow(String.format("if (%s != null)", field));
                 // body is Mandatory here
                 writeBody(writer);
-                if (outPutAsParam) {
-                    writer.nextControlFlow("else");
-                    writer.emitStatement("out = null");
-                }
                 writer.endControlFlow();
             }
         };
@@ -228,8 +248,7 @@ public abstract class MappingSourceNode {
 
     public static MappingSourceNode notSupported(final String message) {
         return new MappingSourceNode() {
-            @Override
-            void writeNode(JavaWriter writer) throws IOException {
+            @Override void writeNode(JavaWriter writer) throws IOException {
                 writer.emitJavadoc("Throw UnsupportedOperationException because we failed to generate the mapping code:\n" + message);
                 // new lines in message result in uncompilable code.
                 writer.emitStatement("throw new UnsupportedOperationException(\"%s\")", message.replace("\n", " "));
@@ -455,4 +474,5 @@ public abstract class MappingSourceNode {
         this.child = child;
         return child;
     }
+
 }
