@@ -174,8 +174,12 @@ public class MapperMethodGenerator {
             for (String outField : outFields) {
 
                 if (!maps.isIgnoredField(outField, (DeclaredType)outType)) {
-                    context.error(mapperMethod.element(), "setter for field %s from destination bean %s has no getter in source bean %s !\n" +
-                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper interface / method or add missing setter or specify corresponding @Field to customize field to field mapping", outField, outType, "????", outType, outField, outType, outField);
+                    context.error(mapperMethod.element(), "setter for field %s from destination bean %s has no getter in %s !\n" +
+                            " --> Add @Mapper(withIgnoreFields=\"%s.%s\") / @Maps(withIgnoreFields=\"%s.%s\") to mapper " +
+                            "interface / method or add missing setter or specify corresponding @Field to customize field" +
+                            " to field mapping", outField, outType,
+                            inOutTypes.size() == 1 ? "source bean "+ firstIOType.in() : "one of source beans", outType,
+                            outField, outType, outField);
                 }
             }
         }

@@ -20,18 +20,15 @@ import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.AggregatedBean;
 import fr.xebia.extras.selma.beans.FirstBean;
+import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.SecondBean;
 
 /**
  * This mapper interface demonstrate the use of Bean Aggregation.
  */
-@Mapper(withIgnoreFields = "missingProperty")
-public interface AggregationMapper {
+@Mapper
+public interface FailingAggregationMapper {
 
     AggregatedBean mapFromAggregate(FirstBean first, SecondBean second);
 
-    @Maps(withCustom = AggregatedInterceptor.class)
-    AggregatedBean mapFromAggregateWithInterceptor(FirstBean first, SecondBean second);
-
-    AggregatedBean mapFromAggregateInUpdate(FirstBean first, SecondBean second, AggregatedBean out);
 }

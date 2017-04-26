@@ -46,7 +46,7 @@ public class FailingMappersIT extends IntegrationTestBase {
 
         assertCompilationError(MissingPropertyMapper.class,
                 "PersonOut map(PersonIn in);",
-                String.format("setter for field biography from destination bean %s has no getter in source bean ???? !",
+                String.format("setter for field biography from destination bean %s has no getter in source bean %s !",
                         PersonOut.class.getName(), PersonIn.class.getName()));
         Assert.assertEquals(2, compilationErrorCount());
     }

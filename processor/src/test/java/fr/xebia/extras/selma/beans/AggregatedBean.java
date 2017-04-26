@@ -29,6 +29,7 @@ public class AggregatedBean {
     private String jobTitle;
     private long salary;
     private Date startDate;
+    private String missingProperty;
 
     public String getFirstName() {
         return firstName;
@@ -76,5 +77,13 @@ public class AggregatedBean {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public String getMissingProperty() {
+        return missingProperty;
+    }
+
+    public void setMissingProperty(String missingProperty) {
+        this.missingProperty = missingProperty;
     }
 }

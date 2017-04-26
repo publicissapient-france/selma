@@ -47,7 +47,8 @@ public class FailingMissingPropertyMapsMappersIT extends IntegrationTestBase {
 
         assertCompilationError(MissingPropertyMapsMapper.class,
                 "PersonOut map(PersonIn in);",
-                String.format("setter for field biography from destination bean %s has no getter in source bean ???? !", PersonOut.class.getName()));
+                String.format("setter for field biography from destination bean %s has no getter in source bean %s !",
+                        PersonOut.class.getName(), PersonIn.class.getName()));
         Assert.assertEquals(3, compilationErrorCount());
 
     }
@@ -58,7 +59,8 @@ public class FailingMissingPropertyMapsMappersIT extends IntegrationTestBase {
 
         assertCompilationError(MissingPropertyMapsMapper.class,
                 " NoGetterBean clone(NoGetterBean in);",
-                String.format("setter for field field from destination bean %s has no getter in source bean ???? !", NoGetterBean.class.getName()));
+                String.format("setter for field field from destination bean %s has no getter in source bean %s !",
+                        NoGetterBean.class.getName(), NoGetterBean.class.getName()));
         Assert.assertEquals(3, compilationErrorCount());
 
     }
