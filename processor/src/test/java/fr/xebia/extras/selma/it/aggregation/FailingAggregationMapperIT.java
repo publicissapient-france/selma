@@ -16,15 +16,11 @@
  */
 package fr.xebia.extras.selma.it.aggregation;
 
-import fr.xebia.extras.selma.Selma;
-import fr.xebia.extras.selma.beans.*;
-import fr.xebia.extras.selma.it.mappers.MissingPropertyMapsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Date;
 
 /**
  * Created by slemesle on 27/02/2017.
