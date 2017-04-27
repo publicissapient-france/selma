@@ -1,8 +1,23 @@
-1.0 - ??/??/2016
+1.0 - ??/04/2016
+
+This is the first 1.0 release of Selma coming with bug fixes and many new features.
+Like custom field to field mapping, Maps inheritance, Bean Aggregation and CDI support.
 
 * #106: Add support for custom mapping method on per field basis
 * #108: Add support for abstract custom mappers
-*
+* #100: Add support for aggregated bean mapping
+* #102: Fix default lower bound type resolution for generic types
+* #109: Fix custom mapper call with out parameter
+* #111: Add support for inner mapper interface
+* #115: Add support for CDI injection
+* #118: Filter enum private members to avoid
+* #119: Add support for mapping interfaces instead of beans
+* #120: Add support for abstract getters and setters in mapped beans
+* #126: Fix declared bean array mapping
+* #127: Fix any type to String default mapping
+* #133: Fix mapping embedded array of prime
+* #137: Improve CDI support with CDI and CDI_SINGLETON
+* #138: Add @InheritMaps to avoid @Maps duplication
 
 0.15 - 7/29/2016
 This release fixes bugs in generic handling and factory methods. It also implement a new cyclic mapping support using an
