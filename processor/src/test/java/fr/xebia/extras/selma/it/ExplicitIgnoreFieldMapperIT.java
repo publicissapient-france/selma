@@ -58,7 +58,7 @@ public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase {
         in.setLastName("Doe");
         in.setAddress(new AddressIn());
         in.getAddress().setCity(new CityIn());
-        in.getAddress().setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
+        in.getAddress().setExtras(Arrays.asList("134", "1234", "543"));
         in.getAddress().setPrincipal(false);
         in.getAddress().setNumber(42);
         in.getAddress().setStreet("Victor Hugo");
@@ -103,7 +103,7 @@ public class ExplicitIgnoreFieldMapperIT extends IntegrationTestBase {
         in.setLastName("Doe");
         in.setAddress(new AddressIn());
         in.getAddress().setCity(new CityIn());
-        in.getAddress().setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
+        in.getAddress().setExtras(Arrays.asList("134", "1234", "543"));
         in.getAddress().setPrincipal(false);
         in.getAddress().setNumber(42);
         in.getAddress().setStreet("Victor Hugo");

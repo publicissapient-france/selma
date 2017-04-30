@@ -151,10 +151,7 @@ public class MapsWrapper {
     }
 
     private boolean isEmptyOrNull(String in){
-        if (in == null || in.isEmpty()){
-            return true;
-        }
-        return false;
+        return in == null || in.isEmpty();
     }
 
 

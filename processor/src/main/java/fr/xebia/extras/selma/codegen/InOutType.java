@@ -73,9 +73,8 @@ public class InOutType {
         InOutType inOutType = (InOutType) o;
 
         if (!MapperProcessor.types.isSameType(in, inOutType.in)) return false;
-        if (!MapperProcessor.types.isSameType(out, inOutType.out)) return false;
+        return MapperProcessor.types.isSameType(out, inOutType.out);
 
-        return true;
     }
 
     @Override

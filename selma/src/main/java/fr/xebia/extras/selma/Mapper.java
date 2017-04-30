@@ -143,6 +143,9 @@ public @interface Mapper {
      * Defines the dependency injection model to be used. Supported models are :<br/>
      * NO used by default to disable dependency injection.
      * SPRING will use Spring annotations to expose the implemented mapper in Spring and injects its dependencies.
+     * CDI will add the @Named CDI annotation to the generated mapper class
+     * CDI_SINGLETON will add @Named and @Singleton CDI annotations to the generated mapper
+     * CDI_APPLICATION_SCOPED Will define the mapper as an ApplicationScoped bean
      */
     IoC withIoC() default NO;
 

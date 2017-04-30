@@ -370,9 +370,8 @@ public class CustomMapperWrapper {
             CustomMapperKey key = (CustomMapperKey) o;
 
             if (!MapperProcessor.types.isSameType(in, key.in)) return false;
-            if (!MapperProcessor.types.isSameType(out, key.out)) return false;
+            return MapperProcessor.types.isSameType(out, key.out);
 
-            return true;
         }
 
         @Override

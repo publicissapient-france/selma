@@ -52,7 +52,7 @@ public class FactoryMapperIT extends IntegrationTestBase {
 
         AddressIn address = new AddressIn();
         address.setCity(new CityIn());
-        address.setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
+        address.setExtras(Arrays.asList("134", "1234", "543"));
         address.setPrincipal(false);
         address.setNumber(42);
         address.setStreet("Victor Hugo");
@@ -81,7 +81,7 @@ public class FactoryMapperIT extends IntegrationTestBase {
 
         ExtendedAddressIn address = new ExtendedAddressIn();
         address.setCity(new CityIn());
-        address.setExtras(Arrays.asList(new String[]{"134", "1234", "543"}));
+        address.setExtras(Arrays.asList("134", "1234", "543"));
         address.setPrincipal(false);
         address.setNumber(42);
         address.setStreet("Victor Hugo");

@@ -62,9 +62,8 @@ public class CompilerMessageRegistry {
             KindElementPair that = (KindElementPair) o;
 
             if (!element.equals(that.element)) return false;
-            if (kind != that.kind) return false;
+            return kind == that.kind;
 
-            return true;
         }
 
         @Override

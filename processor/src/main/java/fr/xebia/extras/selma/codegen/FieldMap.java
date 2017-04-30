@@ -170,9 +170,8 @@ class Field {
         Field field = (Field) o;
 
         if (originalFrom != null ? !originalFrom.equals(field.originalFrom) : field.originalFrom != null) return false;
-        if (originalTo != null ? !originalTo.equals(field.originalTo) : field.originalTo != null) return false;
+        return originalTo != null ? originalTo.equals(field.originalTo) : field.originalTo == null;
 
-        return true;
     }
 
     @Override

@@ -42,9 +42,8 @@ public class DateBO {
 
         DateBO dateBO = (DateBO) o;
 
-        if (date != null ? !date.equals(dateBO.date) : dateBO.date != null) return false;
+        return date != null ? date.equals(dateBO.date) : dateBO.date == null;
 
-        return true;
     }
 
     @Override

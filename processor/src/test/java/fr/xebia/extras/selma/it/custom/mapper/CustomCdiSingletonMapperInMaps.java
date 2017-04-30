@@ -24,8 +24,8 @@ import fr.xebia.extras.selma.beans.BookDTO;
 @Mapper(withIoC = IoC.CDI_SINGLETON)
 public interface CustomCdiSingletonMapperInMaps {
     
-    public Book asBook(BookDTO source);
+    Book asBook(BookDTO source);
     
-    public BookDTO asBookDto(Book source);
+    BookDTO asBookDto(Book source);
     
 }
