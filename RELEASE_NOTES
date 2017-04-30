@@ -1,4 +1,4 @@
-1.0 - ??/04/2016
+1.0 - 01/05/2016
 
 This is the first 1.0 release of Selma coming with bug fixes and many new features.
 Like custom field to field mapping, Maps inheritance, Bean Aggregation and CDI support.
