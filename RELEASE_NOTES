@@ -8,15 +8,16 @@ Like custom field to field mapping, Maps inheritance, Bean Aggregation and CDI s
 * #100: Add support for aggregated bean mapping
 * #102: Fix default lower bound type resolution for generic types
 * #109: Fix custom mapper call with out parameter
+* #110: Properly match the fieldname when it ends with the name of the class thanks to Fanilo Randria
 * #111: Add support for inner mapper interface
-* #115: Add support for CDI injection
+* #115: Add support for CDI injection thanks to Semiao Marco
 * #118: Filter enum private members to avoid
 * #119: Add support for mapping interfaces instead of beans
-* #120: Add support for abstract getters and setters in mapped beans
+* #120: Add support for abstract getters and setters in mapped beans thanks to @facboy
 * #126: Fix declared bean array mapping
 * #127: Fix any type to String default mapping
 * #133: Fix mapping embedded array of prime
-* #137: Improve CDI support with CDI and CDI_SINGLETON
+* #137: Improve CDI support with CDI and CDI_SINGLETON thanks to @Musikolo
 * #138: Add @InheritMaps to avoid @Maps duplication
 
 0.15 - 7/29/2016
