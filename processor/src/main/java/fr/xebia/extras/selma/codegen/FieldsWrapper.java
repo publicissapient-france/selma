@@ -16,8 +16,6 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import fr.xebia.extras.selma.Fields;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -47,10 +45,6 @@ public class FieldsWrapper {
     public FieldsWrapper(MapperGeneratorContext context, MethodWrapper mapperMethod, FieldsWrapper parent, List<AnnotationWrapper> withCustomFields) {
         this(context, mapperMethod.element());
 
-        if (mapperMethod.hasFields()) {
-            processFields(context, element);
-        }
-
         if (withCustomFields != null && withCustomFields.size() > 0) {
             processFieldList(context, withCustomFields);
         }
@@ -63,7 +57,6 @@ public class FieldsWrapper {
     public FieldsWrapper(MapperGeneratorContext context, TypeElement type, AnnotationWrapper mapper) {
         this(context, type);
 
-        processFields(context, type);
         processFieldsFromMapper(context, mapper);
 
         this.unusedFields = new FieldMap(fieldsRegistry);
@@ -73,14 +66,6 @@ public class FieldsWrapper {
     private void processFieldsFromMapper(MapperGeneratorContext context, AnnotationWrapper mapper) {
         List<AnnotationWrapper> withCustomFields = mapper.getAsAnnotationWrapper("withCustomFields");
         processFieldList(context, withCustomFields);
-    }
-
-    private void processFields(MapperGeneratorContext context, Element type) {
-        AnnotationWrapper fields = AnnotationWrapper.buildFor(context, type, Fields.class);
-        if (fields != null) {
-            processFieldList(context, fields.getAsAnnotationWrapper("value"));
-        }
-
     }
 
     private void processFieldList(MapperGeneratorContext context, List<AnnotationWrapper> fields) {
@@ -118,7 +103,7 @@ public class FieldsWrapper {
                     customMapperWrappers.add(customMapperWrapper);
                 }
             } else if (fieldPair.size() == 2) {
-                // Fields should have 2 not empty values
+                // Field should have 2 not empty values
                 context.error(element, "Invalid @Field signature, empty string for fields are forbidden: " +
                         field.toString());
             } else {

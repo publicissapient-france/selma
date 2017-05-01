@@ -16,7 +16,6 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
-import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.Library;
 import fr.xebia.extras.selma.beans.LibraryDTO;
@@ -24,8 +23,7 @@ import fr.xebia.extras.selma.beans.LibraryDTO;
 /**
  * Created by slemesle on 21/06/2014.
  */
-@Mapper
-@IgnoreFields("Library.name")
+@Mapper(withIgnoreFields = "Library.name")
 public interface IgnoreSimpleNameClassField {
 
     LibraryDTO asLibraryDTO(Library in);

@@ -17,8 +17,6 @@
 package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.EnumMapper;
-import fr.xebia.extras.selma.Fields;
-import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -27,7 +25,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -228,10 +225,6 @@ public class MethodWrapper {
 
     }
 
-    public boolean hasIgnoreFields() {
-        return hasAnnotation(IgnoreFields.class.getCanonicalName());
-    }
-
     public boolean hasEnumMapper() {
         return hasAnnotation(EnumMapper.class.getCanonicalName());
     }
@@ -272,10 +265,6 @@ public class MethodWrapper {
 
     private boolean hasMoreThanParameters(int count) {
         return method.getParameters().size() >= count;
-    }
-
-    public boolean hasFields() {
-        return hasAnnotation(Fields.class.getCanonicalName());
     }
 
 

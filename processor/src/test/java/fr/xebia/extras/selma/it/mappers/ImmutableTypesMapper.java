@@ -16,7 +16,6 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
-import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.TicketIn;
 import fr.xebia.extras.selma.beans.TicketOut;
@@ -25,8 +24,8 @@ import fr.xebia.extras.selma.beans.TicketTocken;
 /**
  * Created by slemesle on 17/10/2014.
  */
-@Mapper(withImmutables = {TicketTocken.class, java.lang.Byte.class})
-@IgnoreFields("fr.xebia.extras.selma.beans.TicketIn.password")
+@Mapper(withImmutables = {TicketTocken.class, java.lang.Byte.class},
+        withIgnoreFields = "fr.xebia.extras.selma.beans.TicketIn.password")
 public interface ImmutableTypesMapper {
 
     TicketOut asTicketOut(TicketIn source);

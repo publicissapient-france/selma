@@ -16,7 +16,6 @@
  */
 package fr.xebia.extras.selma.codegen;
 
-import fr.xebia.extras.selma.IgnoreFields;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
@@ -29,7 +28,6 @@ import java.util.TreeSet;
  */
 public class IgnoreFieldsWrapper {
 
-    private final AnnotationWrapper annotationWrapper;
     private final List<String> fields;
     private final TreeSet<String> unusedFields;
     private final MapperGeneratorContext context;
@@ -39,12 +37,8 @@ public class IgnoreFieldsWrapper {
     public IgnoreFieldsWrapper(MapperGeneratorContext context, Element mapperMethod, List<String> ignoreFieldsParam) {
         this.context = context;
         this.mapperMethod = mapperMethod;
-        annotationWrapper = AnnotationWrapper.buildFor(context, mapperMethod, IgnoreFields.class);
 
-        // TODO : Remove IgnoreFields annotation support once deleted in 1.0 ?
-        if (annotationWrapper != null) {
-            fields = annotationWrapper.getAsStrings("value");
-        } else if (ignoreFieldsParam != null && ignoreFieldsParam.size() > 0) {
+        if (ignoreFieldsParam != null && ignoreFieldsParam.size() > 0) {
             fields = ignoreFieldsParam;
         } else {
             fields = Collections.EMPTY_LIST;

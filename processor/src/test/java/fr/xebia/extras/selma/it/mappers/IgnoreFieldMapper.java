@@ -16,23 +16,22 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
-import fr.xebia.extras.selma.IgnoreFields;
 import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.CityOut;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
 
 
-@Mapper
-@IgnoreFields({"name", "notUsedClassField"})
+@Mapper(withIgnoreFields = {"name", "notUsedClassField"})
 public interface IgnoreFieldMapper {
 
 
-    @IgnoreFields({"male", "biography", "extras", "notUsedMethodField"}) PersonOut asPersonOut(PersonIn in);
+    @Maps(withIgnoreFields = {"male", "biography", "extras", "notUsedMethodField"}) PersonOut asPersonOut(PersonIn in);
 
 
-    @IgnoreFields({"male", "biography", "extras", "notUsedMethodField"})
+    @Maps(withIgnoreFields = {"male", "biography", "extras", "notUsedMethodField"})
     PersonOut asPersonOut(PersonIn in, PersonOut dest);
 
 
