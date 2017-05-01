@@ -619,24 +619,11 @@ public abstract class MappingBuilder {
                 return root.body;
             }
 
-            @Override
-            public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
-               /* root = blank();
-                MappingSourceNode ptr = buildNodes(context, vars);
-                if (context.depth > 0 && !isNullSafe()) {
-                    // working inside a bean
-                    root = notNullInField(vars);
-                    root.body(ptr);
-                    return root;
-                } else {
-                    if (context.isIgnoreNullValue() && !vars.isOutPrimitive()) {
-                        root = notNullInField(vars);
-                        root.body(ptr);
-                        return root;
-                    } else {*/
-                        return buildNodes(context, vars);
-              /*      }
-                }*/
+            /**
+             * Override default build method for interceptors because we do not need null checks here
+             */
+            @Override public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+                return buildNodes(context, vars);
             }
 
         };
