@@ -54,7 +54,6 @@ public class MapsWrapper {
     private final IgnoreMissing ignoreMissing;
     private final CollectionMappingStrategy collectionMappingStrategy;
     private final AnnotationWrapper inheritMaps;
-    private boolean ignoreMissingProperties;
     private MapsWrapper _this = this;
 
 
@@ -78,9 +77,6 @@ public class MapsWrapper {
 
         customMapper = new CustomMapperWrapper(mapperWrapper.customMappers(), maps, context);
         registry.customMappers(customMapper);
-
-        //TODO remove this code in 0.11
-        ignoreMissingProperties = mapperWrapper.isIgnoreMissingProperties();
 
         collectionMappingStrategy = (maps == null ? CollectionMappingStrategy.DEFAULT : CollectionMappingStrategy.valueOf(maps.getAsString(WITH_COLLECTION_STRATEGY)));
 

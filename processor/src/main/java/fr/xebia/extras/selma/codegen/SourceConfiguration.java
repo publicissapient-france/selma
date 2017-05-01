@@ -39,17 +39,9 @@ public class SourceConfiguration {
     public static SourceConfiguration buildFrom(AnnotationWrapper mapper, IgnoreFieldsWrapper ignoreFields) {
         SourceConfiguration res = new SourceConfiguration(ignoreFields);
 
-        res.ignoreMissingProperties(mapper.getAsBoolean("ignoreMissingProperties"));
         res.ignoreNotSupported(mapper.getAsBoolean("ignoreNotSupported"));
         res.finalMappers(mapper.getAsBoolean("withFinalMappers"));
         res.sourceClass(mapper.getAsStrings("withSources"));
-/*
-        if(ignoreFields != null){
-            res.ignoredFields(ignoreFields.getAsStrings("value"));
-        } else {
-            res.ignoredFields(Collections.<String>emptyList());
-        }
-*/
 
         return res;
     }
@@ -84,11 +76,4 @@ public class SourceConfiguration {
         return ignoreNotSupported;
     }
 
-    public IgnoreFieldsWrapper ignoredFields() {
-        return ignoredFields;
-    }
-
-    public List<String> getSourceClass() {
-        return sourceClass != null ? sourceClass : Collections.<String>emptyList();
-    }
 }

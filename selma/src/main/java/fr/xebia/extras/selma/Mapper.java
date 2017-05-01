@@ -31,15 +31,6 @@ import static fr.xebia.extras.selma.IoC.NO;
 public @interface Mapper {
 
     /**
-     * Wether compilation should fail when one field from in bean is missing in out bean<br/>
-     * By default, compilation will fail and report error. Setting this to true will allow Selma to skip
-     * the missing field NO MAPPING CODE WILL BE GENERATED FOR THE MISSING FIELD.
-     *
-     * @deprecated since 0.10, please use withIgnoreMissing instead.
-     */
-    @Deprecated boolean ignoreMissingProperties() default false;
-
-    /**
      * How should selma processor handle properties not referenced in both bean.
      * Set this to :
      * IgnoreMissing.NONE if you want to selma to report compiler error for fields in source and destination

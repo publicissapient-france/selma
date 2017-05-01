@@ -107,7 +107,6 @@ public class AnnotationWrapper {
 
     public boolean getAsBoolean(String ignoreMissingProperties) {
         return (Boolean) map.get(ignoreMissingProperties).getValue();
-
     }
 
     public TypeMirror getAsTypeMirror(String parameter) {

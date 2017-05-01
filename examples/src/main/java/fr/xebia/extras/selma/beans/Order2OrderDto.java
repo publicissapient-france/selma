@@ -16,12 +16,13 @@
  */
 package fr.xebia.extras.selma.beans;
 
+import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Mapper;
 
 /**
  *
  */
-@Mapper(ignoreMissingProperties = true, withCustom = {CustomMappings.class, CustomMapper.class})
+@Mapper(withIgnoreMissing = IgnoreMissing.ALL, withCustom = {CustomMappings.class, CustomMapper.class})
 public interface Order2OrderDto {
 
     OrderDto asDto(Order in);

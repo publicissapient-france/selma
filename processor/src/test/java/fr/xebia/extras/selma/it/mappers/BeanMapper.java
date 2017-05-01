@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
+import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
@@ -25,7 +26,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
 /**
  *
  */
-@Mapper(ignoreMissingProperties = true)
+@Mapper(withIgnoreMissing = IgnoreMissing.ALL)
 public interface BeanMapper {
 
     PersonOut asPersonOut(PersonIn in);

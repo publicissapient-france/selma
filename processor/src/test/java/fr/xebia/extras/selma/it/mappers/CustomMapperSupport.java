@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
+import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
@@ -24,7 +25,7 @@ import fr.xebia.extras.selma.beans.PersonOut;
  *
  *
  */
-@Mapper(withCustom = CustomMapper.class, ignoreMissingProperties = true)
+@Mapper(withCustom = CustomMapper.class, withIgnoreMissing = IgnoreMissing.ALL)
 public interface CustomMapperSupport {
 
     PersonOut mapWithCustom(PersonIn in);

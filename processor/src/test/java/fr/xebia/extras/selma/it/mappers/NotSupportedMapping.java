@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.it.mappers;
 
+import fr.xebia.extras.selma.IgnoreMissing;
 import fr.xebia.extras.selma.Mapper;
 
 import java.io.File;
@@ -27,7 +28,7 @@ import java.io.File;
  * Time: 13:51
  * To change this template use File | Settings | File Templates.
  */
-@Mapper(ignoreNotSupported = false, ignoreMissingProperties = false)
+@Mapper(ignoreNotSupported = false, withIgnoreMissing = IgnoreMissing.ALL)
 public interface NotSupportedMapping {
 
     File map(File in);
