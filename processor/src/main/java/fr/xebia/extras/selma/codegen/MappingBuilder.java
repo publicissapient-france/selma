@@ -31,6 +31,15 @@ import static fr.xebia.extras.selma.codegen.CollectionsRegistry.findImplementati
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
 import static fr.xebia.extras.selma.codegen.ProcessorUtils.getInVar;
 
+enum WideningTypesWithoutChar {
+    BYTE, SHORT, INT, LONG, FLOAT, DOUBLE
+}
+
+
+enum WideningTypesWithChar {
+    CHAR, INT, LONG, FLOAT, DOUBLE
+}
+
 /**
  *
  */
@@ -50,18 +59,37 @@ public abstract class MappingBuilder {
     static {  // init specs here
 
         /**
-         * Mapping Primitives
+         * Mapping Same Primitives or Boxed types
          */
-        mappingSpecificationList.add(new MappingSpecification() {
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return inOutType.areSamePrimitive() || areMatchingBoxedToPrimitive(inOutType, context);
+            }
+        });
+
+        /**
+         * Mapping Widening Primitives and unboxing conversion
+         */
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return inOutType.arePrimitives() && isWideningConversion(inOutType, context) || isWideningUnBoxingConversion(inOutType, context);
+            }
+        });
+
+        /**
+         * Mapping Widening Primitives or Boxed To Boxed conversion
+         */
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
+
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
                     @Override
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
                         if (context.depth > 0) {
-                            root.body(set(vars.outSetterPath(), vars.inGetter()));
+                            root.body(set(vars.outSetterPath(), "new "+inOutType.out().toString() + "(" +vars.inGetter()+")"));
                         } else {
-                            root.body(assignOutPrime(vars.inField));
+                            root.body(assignOutPrime("new "+ inOutType.out().toString() + "(" + vars.inField + ")"));
                         }
                         return root.body;
                     }
@@ -69,7 +97,7 @@ public abstract class MappingBuilder {
             }
 
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                return inOutType.areSamePrimitive() || areMatchingBoxedToPrimitive(inOutType, context);
+                return isWideningBoxingConversion(inOutType, context) || isWideningBoxedToBoxedConversion(inOutType, context);
             }
         });
 
@@ -77,7 +105,7 @@ public abstract class MappingBuilder {
         /**
          * Mapping Primitives toString
          */
-        mappingSpecificationList.add(new MappingSpecification() {
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
                     @Override
@@ -168,7 +196,7 @@ public abstract class MappingBuilder {
         });
 
         // Map String or Boxed Primitive
-        mappingSpecificationList.add(new MappingSpecification() {
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
                 return new MappingBuilder(true) {
                     @Override
@@ -466,24 +494,6 @@ public abstract class MappingBuilder {
         this.root = blank();
     }
 
-    private static boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
-        boolean res = false;
-        if (inOutType.isDeclaredToPrimitive()) {
-            PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
-            res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
-        }
-        return res;
-    }
-
-    private static boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {
-        boolean res = false;
-
-        if (inOutType.isPrimitiveToDeclared()) {
-            PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
-            res = outAsPrimitive != null && outAsPrimitive.getKind() == inOutType.inKind();
-        }
-        return res;
-    }
 
     private static Map.Entry<TypeMirror, Integer> getArrayDimensionsAndType(final ArrayType arrayType) {
         int res = 1;
@@ -553,23 +563,6 @@ public abstract class MappingBuilder {
         return declaredType != null && context.type.isAssignable(declaredType, declaredType2);
     }
 
-    private static boolean isBoxedPrimitive(DeclaredType declaredType, MapperGeneratorContext context) {
-        return getUnboxedPrimitive(declaredType, context) != null;
-    }
-
-    private static PrimitiveType getUnboxedPrimitive(DeclaredType declaredType, MapperGeneratorContext context) {
-        PrimitiveType res = null;
-        final PackageElement typePackage = context.elements.getPackageOf(declaredType.asElement());
-        final PackageElement javaLang = context.elements.getPackageElement("java.lang");
-        if (typePackage.getSimpleName().equals(javaLang.getSimpleName())) {
-            try {
-                res = context.type.unboxedType(declaredType);
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return res;
-    }
-
     private static MappingSourceNode notNullInField(final SourceNodeVars vars) {
         return controlNotNull(vars.inGetter());
     }
@@ -622,7 +615,8 @@ public abstract class MappingBuilder {
             /**
              * Override default build method for interceptors because we do not need null checks here
              */
-            @Override public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+            @Override
+            public MappingSourceNode build(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
                 return buildNodes(context, vars);
             }
 
@@ -774,6 +768,128 @@ public abstract class MappingBuilder {
 
     }
 
+    static abstract class PrimitiveMappingSpecification extends MappingSpecification {
+
+        @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+            return new MappingBuilder(true) {
+                @Override
+                public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+
+                    if (context.depth > 0) {
+                        root.body(set(vars.outSetterPath(), vars.inGetter()));
+                    } else {
+                        root.body(assignOutPrime(vars.inField));
+                    }
+                    return root.body;
+                }
+            };
+        }
+
+        abstract boolean match(final MapperGeneratorContext context, final InOutType inOutType);
+
+
+        protected boolean isWideningUnBoxingConversion(InOutType inOutType, MapperGeneratorContext context) {
+            boolean res = false;
+
+            if (inOutType.inIsDeclared() && inOutType.outIsPrimitive()) {
+                PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
+                if (inAsPrimitive != null && isWideningConversion(new InOutType(inAsPrimitive, inOutType.out(), false), context)) {
+                    res = true;
+                }
+            }
+            return res;
+        }
+
+        protected boolean isWideningBoxingConversion(InOutType inOutType, MapperGeneratorContext context) {
+            boolean res = false;
+
+            if (inOutType.inIsPrimitive() && inOutType.outIsDeclared()) {
+                PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
+                if (outAsPrimitive != null && isWideningConversion(new InOutType(inOutType.in(), outAsPrimitive, false), context)) {
+                    res = true;
+                }
+            }
+            return res;
+        }
+
+        protected boolean isWideningBoxedToBoxedConversion(InOutType inOutType, MapperGeneratorContext context) {
+            boolean res = false;
+
+            if (inOutType.inIsDeclared() && inOutType.outIsDeclared()) {
+                PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
+                PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
+                if (inAsPrimitive != null && outAsPrimitive != null &&
+                        isWideningConversion(new InOutType(inAsPrimitive, outAsPrimitive, false), context)) {
+                    res = true;
+                }
+            }
+            return res;
+        }
+
+        protected boolean isWideningConversion(InOutType inOutType, MapperGeneratorContext context) {
+            boolean res = false;
+            TypeKind inKind = inOutType.inKind();
+            TypeKind outKind = inOutType.outKind();
+
+            if (inKind == TypeKind.CHAR) {
+                try {
+                    WideningTypesWithChar wideningOut = WideningTypesWithChar.valueOf(outKind.name());
+                    res = wideningOut.ordinal() > WideningTypesWithChar.CHAR.ordinal();
+                } catch (IllegalArgumentException e) {
+                    res = false;
+                }
+            } else {
+                try {
+                    WideningTypesWithoutChar wideningOut = WideningTypesWithoutChar.valueOf(outKind.name());
+                    res = wideningOut.ordinal() > WideningTypesWithoutChar.BYTE.ordinal();
+                } catch (IllegalArgumentException e) {
+                    res = false;
+                }
+
+            }
+            return res;
+        }
+
+        protected boolean areMatchingBoxedToPrimitive(InOutType inOutType, MapperGeneratorContext context) {
+            boolean res = false;
+            if (inOutType.isDeclaredToPrimitive()) {
+                PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
+                res = inAsPrimitive != null && inAsPrimitive.getKind() == inOutType.outKind();
+            }
+            return res;
+        }
+
+        protected boolean isMatchingPrimitiveToBoxed(InOutType inOutType, MapperGeneratorContext context) {
+            boolean res = false;
+
+            if (inOutType.isPrimitiveToDeclared()) {
+                PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
+                res = outAsPrimitive != null && outAsPrimitive.getKind() == inOutType.inKind();
+            }
+            return res;
+        }
+
+        protected boolean isBoxedPrimitive(DeclaredType declaredType, MapperGeneratorContext context) {
+            return getUnboxedPrimitive(declaredType, context) != null;
+        }
+
+        protected PrimitiveType getUnboxedPrimitive(DeclaredType declaredType, MapperGeneratorContext context) {
+            PrimitiveType res = null;
+            final PackageElement typePackage = context.elements.getPackageOf(declaredType.asElement());
+            final PackageElement javaLang = context.elements.getPackageElement("java.lang");
+            if (typePackage.getSimpleName().equals(javaLang.getSimpleName())) {
+                try {
+                    res = context.type.unboxedType(declaredType);
+                } catch (IllegalArgumentException ignored) {
+                    res = null;
+                }
+            }
+            return res;
+        }
+
+    }
+
+
     static abstract class SameDeclaredMappingSpecification extends MappingSpecification {
 
         @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
@@ -781,3 +897,4 @@ public abstract class MappingBuilder {
         }
     }
 }
+
