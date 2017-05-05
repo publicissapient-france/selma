@@ -208,4 +208,8 @@ public class InOutType {
     public InOutType invert() {
         return new InOutType(this.out, this.in, this.outPutAsParam);
     }
+
+    public boolean arePrimitives() {
+        return in.getKind().isPrimitive() && out.getKind().isPrimitive();
+    }
 }
