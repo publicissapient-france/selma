@@ -52,4 +52,6 @@ public interface WideningMapper {
 
     Integer convertBShortToBInteger(Short in);
 
+    Long[] convertBIntegerArrayToBLongArray(Integer[] in);
+
 }

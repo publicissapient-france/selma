@@ -77,7 +77,7 @@ public abstract class MappingBuilder {
         });
 
         /**
-         * Mapping Widening Primitives or Boxed To Boxed conversion
+         * Mapping Widening Primitives To Boxed conversion
          */
         mappingSpecificationList.add(new PrimitiveMappingSpecification() {
 
@@ -86,10 +86,30 @@ public abstract class MappingBuilder {
                     @Override
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
+                        root.body(vars.setOrAssign("new "+inOutType.out().toString() + "(" +vars.inGetter()+")"));
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return isWideningBoxingConversion(inOutType, context);
+            }
+        });
+
+        /**
+         * Mapping Widening Boxed To Boxed conversion
+         */
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
+
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(true) {
+                    @Override
+                    public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
                         if (context.depth > 0) {
-                            root.body(set(vars.outSetterPath(), "new "+inOutType.out().toString() + "(" +vars.inGetter()+")"));
-                        } else {
-                            root.body(assignOutPrime("new "+ inOutType.out().toString() + "(" + vars.inField + ")"));
+                            root.body(vars.setOrAssign(vars.inGetter() + " != null ? new " + inOutType.out().toString() + "(" + vars.inGetter() + ") : null"));
+                        }else {
+                            root.body(vars.setOrAssign( "new " + inOutType.out().toString() + "(" + vars.inGetter() +")"));
                         }
                         return root.body;
                     }
@@ -97,7 +117,7 @@ public abstract class MappingBuilder {
             }
 
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
-                return isWideningBoxingConversion(inOutType, context) || isWideningBoxedToBoxedConversion(inOutType, context);
+                return  isWideningBoxedToBoxedConversion(inOutType, context);
             }
         });
 
@@ -112,9 +132,9 @@ public abstract class MappingBuilder {
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
                         if (context.depth > 0) {
-                            root.body(set(vars.outSetterPath(), vars.inGetter() + " + \"\""));
+                            root.body(vars.setOrAssign(vars.inGetter() + " + \"\""));
                         } else {
-                            root.body(assignOutToString(vars.inField));
+                            root.body(vars.setOrAssign(vars.inField));
                         }
                         return root.body;
                     }
@@ -776,9 +796,9 @@ public abstract class MappingBuilder {
                 public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
                     if (context.depth > 0) {
-                        root.body(set(vars.outSetterPath(), vars.inGetter()));
+                        root.body(vars.setOrAssign(vars.inGetter()));
                     } else {
-                        root.body(assignOutPrime(vars.inField));
+                        root.body(vars.setOrAssign((vars.inField)));
                     }
                     return root.body;
                 }
@@ -815,7 +835,7 @@ public abstract class MappingBuilder {
         protected boolean isWideningBoxedToBoxedConversion(InOutType inOutType, MapperGeneratorContext context) {
             boolean res = false;
 
-            if (inOutType.inIsDeclared() && inOutType.outIsDeclared()) {
+            if (inOutType.inIsDeclared() && inOutType.outIsDeclared() && ! inOutType.areSameDeclared()) {
                 PrimitiveType inAsPrimitive = getUnboxedPrimitive(inOutType.inAsDeclaredType(), context);
                 PrimitiveType outAsPrimitive = getUnboxedPrimitive(inOutType.outAsDeclaredType(), context);
                 if (inAsPrimitive != null && outAsPrimitive != null &&

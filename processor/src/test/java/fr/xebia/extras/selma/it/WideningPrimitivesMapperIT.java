@@ -129,4 +129,15 @@ public class WideningPrimitivesMapperIT extends IntegrationTestBase {
         assertThat(res, is(0));
     }
 
+
+    @Test
+    public void mapper_should_convert_BIntegerArray_to_BLongArray() throws Exception {
+
+        WideningMapper mapper = Selma.getMapper(WideningMapper.class);
+
+
+        Long[] res = mapper.convertBIntegerArrayToBLongArray(new Integer[]{0,12, null, 34});
+        assertThat(res, is(new Long[]{0l, 12l, null, 34l}));
+    }
+
 }
