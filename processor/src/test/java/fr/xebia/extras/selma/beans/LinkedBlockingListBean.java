@@ -14,29 +14,18 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.mappers;
+package fr.xebia.extras.selma.beans;
 
-import fr.xebia.extras.selma.CollectionMappingStrategy;
-import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.Maps;
-import fr.xebia.extras.selma.beans.LinkedBlockingListBean;
-import fr.xebia.extras.selma.beans.LinkedListBean;
-
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by slemesle on 05/06/2014.
+ * Created by slemesle on 30/05/2017.
  */
-@Mapper
-public interface CollectionsMapper {
+public class LinkedBlockingListBean {
+    LinkedBlockingQueue<String> list = new LinkedBlockingQueue<String>();
 
-    Set<String> asSet(TreeSet<String> keys);
-
-    TreeSet<String> asTreeSet(TreeSet<String> in);
-
-
-    TreeSet<String> listAsSet(List<String> in);
+    public LinkedBlockingQueue<String> getList() {
+        return list;
+    }
 
 }

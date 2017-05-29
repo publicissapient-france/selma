@@ -330,7 +330,7 @@ public abstract class MappingBuilder {
                         }
                         MappingSourceNode node;
                         if (vars.useGetterForDestination) {
-                            node = root.body(assign(String.format("%s %s", inOutType.inAsTypeElement(), tmpVar), String.format("%s()", vars.outFieldGetter)))
+                            node = root.body(assign(String.format("%s %s", inOutType.outAsTypeElement(), tmpVar), String.format("%s()", vars.outFieldGetter)))
                                        .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
                         } else {
                             node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))

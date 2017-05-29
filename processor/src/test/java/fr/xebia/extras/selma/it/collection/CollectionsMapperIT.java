@@ -17,17 +17,19 @@
 package fr.xebia.extras.selma.it.collection;
 
 import fr.xebia.extras.selma.Selma;
-import fr.xebia.extras.selma.beans.CollectionBeanDefensiveDestination;
-import fr.xebia.extras.selma.beans.CollectionBeanDestination;
-import fr.xebia.extras.selma.beans.CollectionBeanSource;
+import fr.xebia.extras.selma.beans.*;
+import fr.xebia.extras.selma.it.mappers.CollectionsMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -63,6 +65,21 @@ public class CollectionsMapperIT extends IntegrationTestBase {
         // Then
         assertThat(destination, notNullValue());
         assertThat(destination.getStrings(), equalTo(source.getStrings()));
+
+    }
+
+    @Test
+    public void should_populate_collection_from_getter_with_dest_type(){
+        LinkedListBean in = new LinkedListBean();
+        in.setList(new LinkedList<String>());
+        in.getList().add("string");
+
+        CollectionMapper mapper = Selma.builder(CollectionMapper.class).build();
+
+        LinkedBlockingListBean res = mapper.asBlockingQueue(in);
+
+        assertNotNull(res.getList());
+        assertThat(res.getList().size(), is(1));
 
     }
 

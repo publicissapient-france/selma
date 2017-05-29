@@ -16,10 +16,13 @@
  */
 package fr.xebia.extras.selma.it.collection;
 
+import fr.xebia.extras.selma.CollectionMappingStrategy;
 import fr.xebia.extras.selma.Mapper;
-import fr.xebia.extras.selma.beans.CollectionBeanDefensiveDestination;
-import fr.xebia.extras.selma.beans.CollectionBeanDestination;
-import fr.xebia.extras.selma.beans.CollectionBeanSource;
+import fr.xebia.extras.selma.Maps;
+import fr.xebia.extras.selma.beans.*;
+
+import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static fr.xebia.extras.selma.CollectionMappingStrategy.ALLOW_GETTER;
 
@@ -32,5 +35,8 @@ public interface CollectionMapper {
     CollectionBeanDestination asCollectionBeanDestination(CollectionBeanSource source);
 
     CollectionBeanDefensiveDestination asCollectionBeanDefensiveDestination(CollectionBeanSource source);
+
+    @Maps(withCollectionStrategy = CollectionMappingStrategy.ALLOW_GETTER)
+    LinkedBlockingListBean asBlockingQueue(LinkedListBean llb);
 
 }
