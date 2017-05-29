@@ -157,7 +157,7 @@ public class MapperMethodGenerator {
             inId++;
         }
 
-        if (outputAsParam){
+        if (outputAsParam && !context.isIgnoreNullValue()){
             // Set out to null if all in types are null
             methodNode.lastChild().child(setOutNullAllBlocks(inOutTypes));
         }

@@ -761,7 +761,7 @@ public abstract class MappingBuilder {
             root.body(ptr);
 
             // Do not set null to primitive type
-            if (!vars.isOutPrimitive() && !vars.useGetterForDestination) {
+            if (!vars.isOutPrimitive() && !vars.useGetterForDestination && !context.isIgnoreNullValue()) {
                 root.child(controlNullElse()).body(vars.setOrAssign("null"));
             }
             return root;

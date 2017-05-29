@@ -1,12 +1,13 @@
 package fr.xebia.extras.selma.it;
 
-import fr.xebia.extras.selma.beans.CityIn;
-import fr.xebia.extras.selma.beans.CityOut;
+import fr.xebia.extras.selma.beans.*;
 import fr.xebia.extras.selma.it.mappers.NotNullMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static fr.xebia.extras.selma.Selma.builder;
 
@@ -34,4 +35,18 @@ public class NotNullValueMapperIT extends IntegrationTestBase {
         cityOut = mapper.mapCity(cityIn, cityOut);
         Assert.assertEquals(cityOut.getName(), "City");
     }
+
+    @Test
+    public void should_not_map_null_collections(){
+        NotNullMapper mapper = builder(NotNullMapper.class).build();
+        Library library = new Library();
+        library.setBooks(null);
+        library.setName("toto");
+        LibraryDTO res = new LibraryDTO();
+        res.setBooks(new ArrayList<BookDTO>());
+        res = mapper.mapLibrary(library, res);
+
+        Assert.assertNotNull(res.getBooks());
+    }
+
 }
