@@ -34,6 +34,8 @@ public interface CollectionMapper {
 
     CollectionBeanDestination asCollectionBeanDestination(CollectionBeanSource source);
 
+    CollectionBeanDestination asCollectionBeanDestination(CollectionBeanSource source, CollectionBeanDestination dest);
+
     CollectionBeanDefensiveDestination asCollectionBeanDefensiveDestination(CollectionBeanSource source);
 
     @Maps(withCollectionStrategy = CollectionMappingStrategy.ALLOW_GETTER)

@@ -134,6 +134,14 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode clear(final String field) {
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+                writer.emitStatement("%s.clear()", field);
+            }
+        };
+    }
+
     public static MappingSourceNode pushInCache() {
         return new MappingSourceNode() {
             @Override void writeNode(JavaWriter writer) throws IOException {
