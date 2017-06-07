@@ -74,7 +74,6 @@ public abstract class MappingSourceNode {
 
                 if (context.getWrapper().isUseCyclicMapping()) {
                     // Method without instance cache : call the other method with a new InstanceCache as parameter
-                    writer.emitJavadoc("Mapping method overridden by Selma");
                     writer.beginMethod(outTypeString, name, isFinal ? EnumSet.of(PUBLIC, FINAL) : EnumSet.of(PUBLIC), parameters, null);
                     if (outputAsParam) {
                         writer.emitStatement("return %s(%s out, new %s())", name, sbIns, SimpleInstanceCache.class.getName());
@@ -89,6 +88,7 @@ public abstract class MappingSourceNode {
                     parameters.add(SelmaConstants.INSTANCE_CACHE);
                 }
 
+                writer.emitJavadoc("Mapping method overridden by Selma");
                 writer.beginMethod(outTypeString, name, isFinal ? EnumSet.of(PUBLIC, FINAL) : EnumSet.of(PUBLIC), parameters, null);
 
                 writeBody(writer);
