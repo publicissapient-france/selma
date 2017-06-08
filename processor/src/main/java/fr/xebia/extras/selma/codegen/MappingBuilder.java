@@ -103,11 +103,11 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new MappingSpecification() {
 
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder(true) {
+                return new MappingBuilder(false) {
                     @Override
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
-                        root.body(vars.setOrAssign(" ("+vars.inGetter()+" != null ? "+vars.inGetter()+".toString() : null)"));
+                        root.body(vars.setOrAssign(vars.inGetter()+".toString()"));
                         return root.body;
                     }
                 };
@@ -126,14 +126,10 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new PrimitiveMappingSpecification() {
 
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
-                return new MappingBuilder(true) {
+                return new MappingBuilder(false) {
                     @Override
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
-                        if (context.depth > 0) {
-                            root.body(vars.setOrAssign(vars.inGetter() + " != null ? new " + inOutType.out().toString() + "(" + vars.inGetter() + ") : null"));
-                        }else {
-                            root.body(vars.setOrAssign( "new " + inOutType.out().toString() + "(" + vars.inGetter() +")"));
-                        }
+                        root.body(vars.setOrAssign( "new " + inOutType.out().toString() + "(" + vars.inGetter() +")"));
                         return root.body;
                     }
                 };
@@ -146,7 +142,7 @@ public abstract class MappingBuilder {
 
 
         /**
-         * Mapping Primitives toString
+         * Mapping Primitive toString
          */
         mappingSpecificationList.add(new PrimitiveMappingSpecification() {
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
@@ -155,9 +151,37 @@ public abstract class MappingBuilder {
                     public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
 
                         if (context.depth > 0) {
-                            root.body(vars.setOrAssign(vars.inGetter() + " + \"\""));
+                                root.body(vars.setOrAssign(vars.inGetter() + "+\"\""));
                         } else {
-                            root.body(vars.setOrAssign(vars.inField));
+                                root.body(vars.setOrAssign(vars.inField + "+\"\""));
+                        }
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                boolean res = false;
+                if (inOutType.outIsDeclared() && String.class.getName().equals(inOutType.outAsDeclaredType().toString())) {
+                    res = inOutType.inIsPrimitive();
+                }
+                return res;
+            }
+        });
+
+        /**
+         * Mapping Boxed toString
+         */
+        mappingSpecificationList.add(new PrimitiveMappingSpecification() {
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(false) {
+                    @Override
+                    public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+
+                        if (context.depth > 0) {
+                                root.body(vars.setOrAssign(vars.inGetter() + "+\"\""));
+                        } else {
+                                root.body(vars.setOrAssign(vars.inField + "+\"\""));
                         }
                         return root.body;
                     }
@@ -169,8 +193,6 @@ public abstract class MappingBuilder {
                 if (inOutType.outIsDeclared() && String.class.getName().equals(inOutType.outAsDeclaredType().toString())) {
                     if (inOutType.inIsDeclared()) {
                         res = isBoxedPrimitive(inOutType.inAsDeclaredType(), context);
-                    } else {
-                        res = inOutType.inIsPrimitive();
                     }
                 }
                 return res;
@@ -791,7 +813,7 @@ public abstract class MappingBuilder {
             }
             return root;
         } else {
-            if (context.isIgnoreNullValue() && !vars.isOutPrimitive()) {
+            if (context.isIgnoreNullValue() && !vars.isOutPrimitive() && !vars.isInPrimitive()) {
                 root = notNullInField(vars);
                 root.body(ptr);
                 return root;
