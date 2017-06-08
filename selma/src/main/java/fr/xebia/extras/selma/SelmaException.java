@@ -27,4 +27,8 @@ public class SelmaException extends RuntimeException {
     public SelmaException(Exception e, String messageFormat, Object... params) {
         super(String.format(messageFormat, params), e);
     }
+
+    public SelmaException(String messageFormat, Object... params) {
+        super(String.format(messageFormat, params));
+    }
 }

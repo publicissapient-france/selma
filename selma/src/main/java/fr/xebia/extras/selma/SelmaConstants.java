@@ -17,14 +17,14 @@
 
 package fr.xebia.extras.selma;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 /**
  *
- *
+ * Share Selma Constants for use in both processor and Selma jars.
+ * Also loads build properties to retrieve verions, build and git information.
+ * The loading of the property file may raise SelmaException, if not found or IO errors occurs while parsing the file.
  */
 public class SelmaConstants {
 
@@ -52,7 +52,6 @@ public class SelmaConstants {
         if (props.isEmpty()) {
             loadProperties();
         }
-
         return props.getProperty("selma.version", "V??.??");
     }
 
@@ -73,6 +72,10 @@ public class SelmaConstants {
     }
 
 
+    /**
+     * Loads the Selma build properties file to have release number and git description.
+     * Throws SelmaException on property file not found and on IO exception at parse time.
+     */
     private static final void loadProperties() {
 
         String propFileName = "selma.properties";
@@ -82,16 +85,12 @@ public class SelmaConstants {
             if (inputStream != null) {
                 props.load(inputStream);
             } else {
-                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+                throw new SelmaException("Selma build property file '%s' not found in classpath", propFileName);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            System.out.println("-- Running Selma with build --");
+            props.store(new PrintWriter(System.out), "Selma build properties");
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new SelmaException(e, "IO error occured while parsing Selma build property file '%s'", propFileName);
         }
-
-
     }
 }
