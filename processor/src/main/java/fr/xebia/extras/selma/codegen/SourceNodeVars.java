@@ -162,6 +162,10 @@ public class SourceNodeVars {
         return inOutType.outIsPrimitive();
     }
 
+    public boolean isInPrimitive() {
+        return inOutType.inIsPrimitive();
+    }
+
     public char nextPtr() {
         return (char) (ptr + 1);
     }

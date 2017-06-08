@@ -4,6 +4,7 @@ import fr.xebia.extras.selma.beans.*;
 import fr.xebia.extras.selma.it.mappers.NotNullMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,6 +48,17 @@ public class NotNullValueMapperIT extends IntegrationTestBase {
         res = mapper.mapLibrary(library, res);
 
         Assert.assertNotNull(res.getBooks());
+    }
+
+    @Test
+    public void should_not_map_null_string(){
+        NotNullMapper mapper = builder(NotNullMapper.class).build();
+        NotNullMapper.StringContainer in = new NotNullMapper.StringContainer();
+        in.setText(null);
+        NotNullMapper.StringContainer out = new NotNullMapper.StringContainer();
+        out.setText("OutText");
+        out = mapper.mapStringContainer(in, out);
+        Assert.assertThat(out.getText(), CoreMatchers.is("OutText"));
     }
 
 }

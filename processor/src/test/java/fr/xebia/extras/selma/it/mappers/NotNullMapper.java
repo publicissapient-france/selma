@@ -14,4 +14,18 @@ public interface NotNullMapper {
 
     @Maps(withIgnoreMissing = IgnoreMissing.DESTINATION)
     LibraryDTO mapLibrary(Library in, LibraryDTO out);
+
+    StringContainer mapStringContainer(StringContainer in, StringContainer out);
+
+    class StringContainer {
+        private String text;
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+    }
 }

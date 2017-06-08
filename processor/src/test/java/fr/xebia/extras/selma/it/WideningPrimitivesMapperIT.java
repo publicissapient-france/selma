@@ -31,6 +31,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -129,6 +130,22 @@ public class WideningPrimitivesMapperIT extends IntegrationTestBase {
         assertThat(res, is(0));
     }
 
+    @Test
+    public void mapper_should_convert_null_Short_to_Integer() throws Exception {
+
+        WideningMapper mapper = Selma.getMapper(WideningMapper.class);
+        Integer res = mapper.convertBShortToBInteger(null);
+        assertThat(res, nullValue());
+    }
+
+    @Test
+    public void mapper_should_convert_embedded_Short_to_Integer() throws Exception {
+
+        WideningMapper mapper = Selma.getMapper(WideningMapper.class);
+        WideningMapper.Container<Integer> res = mapper.convertCBShortToCBInteger(new WideningMapper.Container<Short>(new Short((short)32)));
+        assertThat(res.getValue(), is(new Integer(32)));
+    }
+
 
     @Test
     public void mapper_should_convert_BIntegerArray_to_BLongArray() throws Exception {
@@ -139,5 +156,7 @@ public class WideningPrimitivesMapperIT extends IntegrationTestBase {
         Long[] res = mapper.convertBIntegerArrayToBLongArray(new Integer[]{0,12, null, 34});
         assertThat(res, is(new Long[]{0l, 12l, null, 34l}));
     }
+
+
 
 }

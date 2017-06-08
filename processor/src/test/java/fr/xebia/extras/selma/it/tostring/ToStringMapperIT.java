@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@Compile(withClasses = EnumToStringMapper.class)
+@Compile(withClasses = {EnumToStringMapper.class, PrimitivesOrBoxedToStringMapper.class})
 public class ToStringMapperIT extends IntegrationTestBase {
 
     @Test
@@ -62,6 +62,50 @@ public class ToStringMapperIT extends IntegrationTestBase {
         EnumToStringMapper.StringContainer res = mapper.embeddedEnumToString(enumContainer);
 
         assertThat(res.getCode(), CoreMatchers.nullValue());
+    }
+
+
+    @Test
+    public void given_embedded_null_Boolean_to_embedded_string_method_selma_should_return_null(){
+        PrimitivesOrBoxedToStringMapper mapper = Selma.builder(PrimitivesOrBoxedToStringMapper.class).build();
+        PrimitivesOrBoxedToStringMapper.BoxedContainer boxedContainer = new PrimitivesOrBoxedToStringMapper.BoxedContainer();
+
+        PrimitivesOrBoxedToStringMapper.StringContainer res = mapper.embeddedBoxedToString(boxedContainer);
+
+        assertThat(res.getFlag(), CoreMatchers.nullValue());
+    }
+
+
+    @Test
+    public void given_embedded_Boolean_to_embedded_string_method_selma_should_return_null(){
+        PrimitivesOrBoxedToStringMapper mapper = Selma.builder(PrimitivesOrBoxedToStringMapper.class).build();
+        PrimitivesOrBoxedToStringMapper.BoxedContainer boxedContainer = new PrimitivesOrBoxedToStringMapper.BoxedContainer();
+        boxedContainer.setFlag(Boolean.TRUE);
+        PrimitivesOrBoxedToStringMapper.StringContainer res = mapper.embeddedBoxedToString(boxedContainer);
+
+        assertThat(res.getFlag(), CoreMatchers.is(Boolean.TRUE.toString()));
+    }
+
+
+    @Test
+    public void given_embedded_int_to_embedded_string_method_selma_should_return_intString(){
+        PrimitivesOrBoxedToStringMapper mapper = Selma.builder(PrimitivesOrBoxedToStringMapper.class).build();
+        PrimitivesOrBoxedToStringMapper.IntContainer intContainer = new PrimitivesOrBoxedToStringMapper.IntContainer();
+        intContainer.setFlag(42);
+
+        PrimitivesOrBoxedToStringMapper.StringContainer res = mapper.embeddedPrimitiveToString(intContainer);
+
+        assertThat(res.getFlag(), CoreMatchers.is("42"));
+    }
+
+    @Test
+    public void given_embedded_undef_int_to_embedded_string_method_selma_should_return_default_int(){
+        PrimitivesOrBoxedToStringMapper mapper = Selma.builder(PrimitivesOrBoxedToStringMapper.class).build();
+        PrimitivesOrBoxedToStringMapper.IntContainer intContainer = new PrimitivesOrBoxedToStringMapper.IntContainer();
+
+        PrimitivesOrBoxedToStringMapper.StringContainer res = mapper.embeddedPrimitiveToString(intContainer);
+
+        assertThat(res.getFlag(), CoreMatchers.is("0"));
     }
 
 

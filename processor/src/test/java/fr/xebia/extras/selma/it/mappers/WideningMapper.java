@@ -52,6 +52,28 @@ public interface WideningMapper {
 
     Integer convertBShortToBInteger(Short in);
 
+    Container<Integer> convertCBShortToCBInteger(Container<Short> in);
+
     Long[] convertBIntegerArrayToBLongArray(Integer[] in);
+
+
+
+    class Container<T> {
+        private T value;
+
+        public Container(){}
+
+        public Container(T value) {
+            this.value = value;
+        }
+
+        public T getValue() {
+            return value;
+        }
+
+        public void setValue(T value) {
+            this.value = value;
+        }
+    }
 
 }

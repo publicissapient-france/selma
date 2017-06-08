@@ -22,6 +22,7 @@ import fr.xebia.extras.selma.beans.EnumOut;
 import fr.xebia.extras.selma.it.mappers.SimpleMapper;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -464,5 +465,23 @@ public class PrimitivesMapperIT extends IntegrationTestBase {
 
         assertArrayEquals(in, res);
     }
+
+
+    @Test
+    public void mapper_should_convert_boxed_null_to_null() throws Exception {
+
+        SimpleMapper mapper = Selma.getMapper(SimpleMapper.class);
+
+
+        String res = mapper.convertBooleanToString(Boolean.FALSE);
+
+        assertThat(res, CoreMatchers.is(Boolean.FALSE.toString()));
+
+        res = mapper.convertBooleanToString(null);
+        assertThat(res, CoreMatchers.nullValue());
+    }
+
+
+
 
 }

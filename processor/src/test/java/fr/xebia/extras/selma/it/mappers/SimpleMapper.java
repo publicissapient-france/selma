@@ -36,6 +36,8 @@ public interface SimpleMapper {
 
     boolean convert(boolean in);
 
+    String convertBooleanToString(Boolean in);
+
     byte convert(byte in);
 
     char convert(char in);
