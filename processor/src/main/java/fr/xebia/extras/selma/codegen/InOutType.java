@@ -212,4 +212,8 @@ public class InOutType {
     public boolean arePrimitives() {
         return in.getKind().isPrimitive() && out.getKind().isPrimitive();
     }
+
+    public boolean inIsEnum() {
+        return inAsTypeElement().getKind() == ElementKind.ENUM;
+    }
 }

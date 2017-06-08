@@ -98,6 +98,29 @@ public abstract class MappingBuilder {
         });
 
         /**
+         * Mapping Enum To String
+         */
+        mappingSpecificationList.add(new MappingSpecification() {
+
+            @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
+                return new MappingBuilder(true) {
+                    @Override
+                    public MappingSourceNode buildNodes(final MapperGeneratorContext context, final SourceNodeVars vars) throws IOException {
+
+                        root.body(vars.setOrAssign(" ("+vars.inGetter()+" != null ? "+vars.inGetter()+".toString() : null)"));
+                        return root.body;
+                    }
+                };
+            }
+
+            @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
+                return inOutType.areDeclared() &&
+                        inOutType.inIsEnum() &&
+                        String.class.getName().equals(inOutType.outAsDeclaredType().toString());
+            }
+        });
+
+        /**
          * Mapping Widening Boxed To Boxed conversion
          */
         mappingSpecificationList.add(new PrimitiveMappingSpecification() {
@@ -502,6 +525,7 @@ public abstract class MappingBuilder {
         });
 
     }
+
 
     MappingSourceNode root;
     private boolean nullSafe = false;

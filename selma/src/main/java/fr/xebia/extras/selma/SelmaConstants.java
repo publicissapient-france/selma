@@ -17,11 +17,12 @@
 
 package fr.xebia.extras.selma;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Properties;
 
 /**
- *
  * Share Selma Constants for use in both processor and Selma jars.
  * Also loads build properties to retrieve verions, build and git information.
  * The loading of the property file may raise SelmaException, if not found or IO errors occurs while parsing the file.
@@ -43,7 +44,6 @@ public class SelmaConstants {
     public static final double DEFAULT_DOUBLE = 0;
 
     private static final Properties props = new Properties();
-
     public static final String SELMA_GIT_HASH = loadGitHash();
     public static final String SELMA_GIT_DESC = loadGitDesc();
     public static final String SELMA_VERSION = loadProjectVersion();
@@ -93,4 +93,5 @@ public class SelmaConstants {
             throw new SelmaException(e, "IO error occured while parsing Selma build property file '%s'", propFileName);
         }
     }
+
 }
