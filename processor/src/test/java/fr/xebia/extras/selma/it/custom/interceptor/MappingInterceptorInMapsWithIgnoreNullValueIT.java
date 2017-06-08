@@ -21,8 +21,13 @@ import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.PersonIn;
 import fr.xebia.extras.selma.beans.PersonOut;
+import fr.xebia.extras.selma.it.custom.interceptor.beans.Validation;
+import fr.xebia.extras.selma.it.custom.interceptor.beans.ValidationJson;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
+import org.assertj.core.api.Assertions;
+import org.hamcrest.CoreMatchers;
+import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,8 +38,10 @@ import org.junit.Test;
         withClasses = {
                 MappingInterceptorForImmutable.class, MappingInterceptorForMutable.class,
                 NeverUsedMappingInterceptorInMapper.class, MappingInterceptorInMapsWithIgnoreNullValue.class,
-                NeverUsedMappingInterceptorInMaps.class
-        }
+                NeverUsedMappingInterceptorInMaps.class, MappingInterceptorInUpdateWithIgnore.class
+        },
+
+        withPackage = "fr.xebia.extras.selma.it.custom.interceptor.beans"
 )
 public class MappingInterceptorInMapsWithIgnoreNullValueIT extends IntegrationTestBase {
 
@@ -118,4 +125,18 @@ public class MappingInterceptorInMapsWithIgnoreNullValueIT extends IntegrationTe
         Assert.assertEquals(2, compilationWarningCount());
     }
 
+    @Test
+    public void given_interceptor_in_update_withIgnoreNullValue_should_apply_it() throws Exception {
+        MappingInterceptorInUpdateWithIgnore mapper = Selma.builder(MappingInterceptorInUpdateWithIgnore.class).build();
+
+        ValidationJson subject = new ValidationJson();
+        subject.setEventDateStamp((int)LocalDate.now().toDate().getTime()/1000);
+        subject.setEventTimeStamp((int)LocalDate.now().toDate().getTime()/100000);
+
+        Validation validation = mapper.asValidation(subject, new Validation());
+        Assertions.assertThat(validation).isNotNull();
+        Assert.assertThat("ValidationDate should be intercepted",validation.getValidationDate(), CoreMatchers.notNullValue());
+
+
+    }
 }
