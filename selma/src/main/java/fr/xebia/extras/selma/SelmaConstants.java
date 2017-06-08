@@ -17,7 +17,10 @@
 
 package fr.xebia.extras.selma;
 
-import javax.lang.model.type.TypeMirror;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  *
@@ -39,4 +42,56 @@ public class SelmaConstants {
     public static final float DEFAULT_FLOAT = 0;
     public static final double DEFAULT_DOUBLE = 0;
 
+    private static final Properties props = new Properties();
+
+    public static final String SELMA_GIT_HASH = loadGitHash();
+    public static final String SELMA_GIT_DESC = loadGitDesc();
+    public static final String SELMA_VERSION = loadProjectVersion();
+
+    private static String loadProjectVersion() {
+        if (props.isEmpty()) {
+            loadProperties();
+        }
+
+        return props.getProperty("selma.version", "V??.??");
+    }
+
+    private static String loadGitDesc() {
+        if (props.isEmpty()) {
+            loadProperties();
+        }
+
+        return props.getProperty("selma.git.desc", "UNKOWN GIT HASH");
+    }
+
+    private static String loadGitHash() {
+        if (props.isEmpty()) {
+            loadProperties();
+        }
+
+        return props.getProperty("selma.git.commit-full", "UNKOWN GIT HASH");
+    }
+
+
+    private static final void loadProperties() {
+
+        String propFileName = "selma.properties";
+
+        try {
+            InputStream inputStream = SelmaConstants.class.getClassLoader().getResourceAsStream(propFileName);
+            if (inputStream != null) {
+                props.load(inputStream);
+            } else {
+                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+
+    }
 }

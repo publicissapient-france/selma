@@ -187,7 +187,11 @@ public class MapperMethodGenerator {
         // Call the interceptor if it exist
         MappingBuilder interceptor = maps.mappingInterceptor(inOutTypes);
         if (interceptor != null) {
-            methodNode = methodNode.lastChild().child(interceptor.build(context, new SourceNodeVars().withInField(getInVar(firstIOType.in()))));
+            methodNode = methodNode.lastChild().child(
+                                                    interceptor.build(context,
+                    new SourceNodeVars().withInOutType(firstIOType).withInField(getInVar(firstIOType.in()))
+                                                                     )
+                                                     );
         }
 
         if (mapperWrapper.isUseCyclicMapping()) {

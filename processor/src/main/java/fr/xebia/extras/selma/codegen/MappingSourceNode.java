@@ -88,7 +88,7 @@ public abstract class MappingSourceNode {
                     parameters.add(SelmaConstants.INSTANCE_CACHE);
                 }
 
-                writer.emitJavadoc("Mapping method overridden by Selma");
+                writer.emitJavadoc("Mapping method overridden by Selma "+SelmaConstants.SELMA_VERSION+" Git: "+SelmaConstants.SELMA_GIT_DESC);
                 writer.beginMethod(outTypeString, name, isFinal ? EnumSet.of(PUBLIC, FINAL) : EnumSet.of(PUBLIC), parameters, null);
 
                 writeBody(writer);

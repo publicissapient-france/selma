@@ -41,5 +41,6 @@ public class MailMapperIT extends IntegrationTestBase {
         MailDto res = mapper.asMailDto(source);
         assertThat(res.getId()).isEqualTo(source.getId());
         assertThat(res.getEmail()).isEqualTo(source.getAdresse());
+
     }
 }
