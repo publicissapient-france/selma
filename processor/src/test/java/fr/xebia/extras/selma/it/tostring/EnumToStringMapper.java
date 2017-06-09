@@ -27,6 +27,8 @@ public interface EnumToStringMapper {
 
     StringContainer embeddedEnumToString(EnumContainer in);
 
+    StringContainer embeddedUpdateEnumToString(EnumContainer in, StringContainer out);
+
     enum EnumToString {
         CODE1, CODE2, CODE3
     }

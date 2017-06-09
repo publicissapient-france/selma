@@ -24,9 +24,16 @@ import fr.xebia.extras.selma.Mapper;
 @Mapper(withIgnoreNullValue = true)
 public interface PrimitivesOrBoxedToStringMapper {
 
+    // Boxed To String
     StringContainer embeddedBoxedToString(BoxedContainer in);
 
+    StringContainer embeddedBoxedToString(BoxedContainer in, StringContainer out);
+
+    // Primitive To String
     StringContainer embeddedPrimitiveToString(IntContainer in);
+
+    StringContainer embeddedPrimitiveToString(IntContainer in, StringContainer out);
+
 
     class IntContainer {
         private int flag;
