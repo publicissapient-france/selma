@@ -327,8 +327,8 @@ public abstract class MappingBuilder {
         mappingSpecificationList.add(new MappingSpecification() {
             @Override boolean match(final MapperGeneratorContext context, final InOutType inOutType) {
                 return inOutType.areDeclared() &&
-                        isCollection(inOutType.inAsDeclaredType(), context) &&
-                        isCollection(inOutType.outAsDeclaredType(), context);
+                        isIterable(inOutType.inAsDeclaredType(), context) &&
+                        isIterable(inOutType.outAsDeclaredType(), context);
             }
 
             @Override MappingBuilder getBuilder(final MapperGeneratorContext context, final InOutType inOutType) {
@@ -361,6 +361,7 @@ public abstract class MappingBuilder {
                     }
                 }
                 final boolean hasSizeConstructor = hasSizeCtr;
+                final boolean inIsCollection = isCollection(inOutType.inAsDeclaredType(), context);
                 return new MappingBuilder() {
                     @Override
                     MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
@@ -368,16 +369,19 @@ public abstract class MappingBuilder {
                         final String itemVar = vars.itemVar();
                         final String tmpVar = vars.tmpVar("Collection");
                         final String arg;
-                        if (hasSizeConstructor) {
+                        if (hasSizeConstructor && inIsCollection) {
                             arg = String.format("%s.size()", vars.inGetter());
                         } else {
                             arg = "";
                         }
                         MappingSourceNode node;
                         if (vars.useGetterForDestination) {
-                            node = root.body(assign(String.format("%s %s", inOutType.outAsTypeElement(), tmpVar), String.format("%s()", vars.outFieldGetter)))
-                                       .child(clear(tmpVar))
-                                       .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
+                            node = root.body(assign(String.format("%s %s", inOutType.outAsTypeElement(), tmpVar), String.format("%s()", vars.outFieldGetter)));
+
+                            if (inIsCollection) {
+                                node = node.child(clear(tmpVar));
+                            }
+                            node = node.child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
                         } else {
                             node = root.body(assign(String.format("%s %s", implementation, tmpVar), String.format("new %s(%s)", implementation, arg)))
                                        .child(mapCollection(itemVar, genericIn.toString(), vars.inGetter()));
@@ -619,6 +623,15 @@ public abstract class MappingBuilder {
         DeclaredType declaredType2 = context.type.getDeclaredType(typeElement1, context.type.getWildcardType(null, null), context.type.getWildcardType(null, null));
 
         return context.type.isAssignable(declaredType, declaredType2);
+    }
+
+    public static boolean isIterable(DeclaredType declaredType, MapperGeneratorContext context) {
+
+        TypeElement typeElement1 = context.elements.getTypeElement("java.lang.Iterable");
+
+        DeclaredType declaredType2 = context.type.getDeclaredType(typeElement1, context.type.getWildcardType(null, null));
+
+        return declaredType != null && context.type.isAssignable(declaredType, declaredType2);
     }
 
     public static boolean isCollection(DeclaredType declaredType, MapperGeneratorContext context) {

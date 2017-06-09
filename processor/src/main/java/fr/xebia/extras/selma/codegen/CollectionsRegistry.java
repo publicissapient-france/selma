@@ -47,6 +47,7 @@ public class CollectionsRegistry {
         registry.put(NavigableMap.class.getName(), TreeMap.class.getName());
         registry.put(SortedMap.class.getName(), TreeMap.class.getName());
         registry.put(Collection.class.getName(), ArrayList.class.getName());
+        registry.put(Iterable.class.getName(), ArrayList.class.getName());
     }
 
     public static String findImplementationForType(TypeElement typeElement) {
