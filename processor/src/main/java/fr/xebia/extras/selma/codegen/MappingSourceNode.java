@@ -123,6 +123,18 @@ public abstract class MappingSourceNode {
         };
     }
 
+    public static MappingSourceNode setOutNull() {
+
+        return new MappingSourceNode() {
+            @Override void writeNode(JavaWriter writer) throws IOException {
+
+                writer.beginControlFlow("else");
+                writer.emitStatement("out = null");
+                writer.endControlFlow();
+            }
+        };
+    }
+
     public static MappingSourceNode controlInCache(final String field, final String outType) {
         return new MappingSourceNode() {
             @Override void writeNode(JavaWriter writer) throws IOException {

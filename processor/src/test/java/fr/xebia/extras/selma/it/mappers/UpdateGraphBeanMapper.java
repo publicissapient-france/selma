@@ -28,4 +28,6 @@ public interface UpdateGraphBeanMapper {
 
     AddressOut asAddressOut(AddressIn in, AddressOut out);
 
+    AddressOut updateOrDuplicate(AddressOut in, AddressOut out);
+
 }

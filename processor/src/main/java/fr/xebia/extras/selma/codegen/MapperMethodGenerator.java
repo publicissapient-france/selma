@@ -32,8 +32,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static fr.xebia.extras.selma.codegen.ProcessorUtils.getInVar;
 import static fr.xebia.extras.selma.codegen.MappingSourceNode.*;
+import static fr.xebia.extras.selma.codegen.ProcessorUtils.getInVar;
 
 /**
  *
@@ -159,7 +159,11 @@ public class MapperMethodGenerator {
 
         if (outputAsParam && !context.isIgnoreNullValue()){
             // Set out to null if all in types are null
-            methodNode.lastChild().child(setOutNullAllBlocks(inOutTypes));
+            if (inId == 1) {
+                methodNode.lastChild().child(setOutNull());
+            } else {
+                methodNode.lastChild().child(setOutNullAllBlocks(inOutTypes));
+            }
         }
 
         tryBlockPtr = null;
