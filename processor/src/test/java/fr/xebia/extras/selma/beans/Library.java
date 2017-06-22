@@ -16,6 +16,7 @@
  */
 package fr.xebia.extras.selma.beans;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +27,8 @@ public class Library {
     private String name;
 
     private List<Book> books;
+
+    private Date dateField;
 
     public String getName() {
         return name;
@@ -41,5 +44,13 @@ public class Library {
 
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    public Date getDateField() {
+        return dateField;
+    }
+
+    public void setDateField(Date dateField) {
+        this.dateField = dateField;
     }
 }
