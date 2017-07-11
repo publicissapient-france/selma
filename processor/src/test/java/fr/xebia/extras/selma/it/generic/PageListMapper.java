@@ -14,19 +14,20 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.codegen;
+package fr.xebia.extras.selma.it.generic;
 
-import fr.xebia.extras.selma.SelmaConstants;
+import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.IoC;
+import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.it.generic.beans.EntityPageList;
+import fr.xebia.extras.selma.it.generic.beans.MongoEntity;
+import fr.xebia.extras.selma.it.generic.beans.PageList;
 
-import javax.lang.model.type.TypeMirror;
+@Mapper(withIoC = IoC.SPRING, withIgnoreMissing = IgnoreMissing.ALL)
+public interface PageListMapper<T extends MongoEntity, S> {
 
-/**
- * Created by slemesle on 17/04/2017.
- */
-public class ProcessorUtils {
+    EntityPageList<T> asEntityPageList(PageList<S> source);
 
-    public static final String getInVar(TypeMirror inTypeMirror) {
-        String[] type = inTypeMirror.toString().split("\\.");
-        return SelmaConstants.IN_VAR + type[type.length - 1].replace("[]", "").replace(">", "").replace("<", "");
-    }
+    PageList<S> asPageList(EntityPageList<T> source);
+
 }

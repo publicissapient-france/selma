@@ -26,7 +26,6 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -108,7 +107,7 @@ public final class MapperProcessor extends AbstractProcessor {
                         continue;
                     }
                     if (isValidMapperMethod(executableElement)) {
-                        putMapper(element, executableElement);
+                        putMapper(typeElement, executableElement);
                     }
                 }
 
@@ -168,8 +167,8 @@ public final class MapperProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(templateMessage, args), element);
     }
 
-    private void putMapper(Element element, ExecutableElement executableElement) {
-        String type = element.asType().toString();
+    private void putMapper(TypeElement element, ExecutableElement executableElement) {
+        String type = element.getQualifiedName().toString();
         List<ExecutableElement> elementList;
         if (remainingMapperTypes.containsKey(type)) {
             elementList = remainingMapperTypes.get(type);
@@ -186,6 +185,12 @@ public final class MapperProcessor extends AbstractProcessor {
             error(element, "@Mapper can only be used on interface or public abstract class");
             res = false;
         }
+
+        if (((TypeElement) element).getTypeParameters().size() > 0) {
+            error(element, "Generic type parameters are not supported on mapper class or interface");
+            res = false;
+        }
+
 
         return res;
     }

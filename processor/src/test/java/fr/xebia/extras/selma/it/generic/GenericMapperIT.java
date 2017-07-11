@@ -29,7 +29,7 @@ import org.junit.Test;
 /**
  *
  */
-@Compile(withClasses = {SpecificMapper.class, GenericMapper.class})
+@Compile(withClasses = {SpecificMapper.class, GenericMapper.class}, withPackage = "fr.xebia.extras.selma.it.generic.beans")
 public class GenericMapperIT extends IntegrationTestBase {
 
     @Test

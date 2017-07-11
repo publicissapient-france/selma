@@ -14,19 +14,10 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.codegen;
-
-import fr.xebia.extras.selma.SelmaConstants;
-
-import javax.lang.model.type.TypeMirror;
+package fr.xebia.extras.selma.it.generic.beans;
 
 /**
- * Created by slemesle on 17/04/2017.
+ * Created by slemesle on 29/06/2017.
  */
-public class ProcessorUtils {
-
-    public static final String getInVar(TypeMirror inTypeMirror) {
-        String[] type = inTypeMirror.toString().split("\\.");
-        return SelmaConstants.IN_VAR + type[type.length - 1].replace("[]", "").replace(">", "").replace("<", "");
-    }
+public class PageList<S> {
 }
