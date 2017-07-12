@@ -21,15 +21,19 @@ import fr.xebia.extras.selma.beans.AddressIn;
 import fr.xebia.extras.selma.beans.AddressOut;
 import fr.xebia.extras.selma.beans.CityIn;
 import fr.xebia.extras.selma.beans.CityOut;
+import fr.xebia.extras.selma.it.generic.beans.Bar;
+import fr.xebia.extras.selma.it.generic.beans.Foo;
 import fr.xebia.extras.selma.it.utils.Compile;
 import fr.xebia.extras.selma.it.utils.IntegrationTestBase;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  *
  */
-@Compile(withClasses = {SpecificMapper.class, GenericMapper.class}, withPackage = "fr.xebia.extras.selma.it.generic.beans")
+@Compile(withClasses = {SpecificMapper.class, GenericMapper.class, FooMapper.class}, withPackage = "fr.xebia.extras.selma.it.generic.beans")
 public class GenericMapperIT extends IntegrationTestBase {
 
     @Test
@@ -75,6 +79,18 @@ public class GenericMapperIT extends IntegrationTestBase {
         verifyAddress(addressIn, res);
     }
 
+    @Test
+    public void fooMapper_should_map_generic_foo_to_bar_with_embedded_custom_field() throws Exception {
+        FooMapper mapper = Selma.builder(FooMapper.class).build();
+        Foo<Bar> in = new Foo<Bar>();
+        in.setItem(new Bar());
+        in.getItem().setDescription("description");
+        in.getItem().setId(1l);
+
+        Bar res = mapper.asBar(in);
+        assertThat(res.getId()).isEqualTo(in.getItem().getId());
+        assertThat(res.getDescription()).isEqualTo(in.getItem().getDescription());
+    }
 
     private void verifyAddress(AddressIn address, AddressOut address1) {
         if (address == null) {

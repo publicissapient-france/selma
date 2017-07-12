@@ -455,7 +455,7 @@ public class MapperMethodGenerator {
             return root;
         }
         String[] fields = sourceEmbedded ? customField.fromFields() : customField.toFields();
-        String previousFieldPath = sourceEmbedded ? getInVar(inBean.typeElement.asType()) : SelmaConstants.OUT_VAR;
+        String previousFieldPath = sourceEmbedded ? getInVar(inBean.typeMirror) : SelmaConstants.OUT_VAR;
         StringBuilder field = new StringBuilder(previousFieldPath);
         for (int id = 0; id < fields.length - 1; id++) {
             lastVisitedField = fields[id];

@@ -18,7 +18,11 @@ package fr.xebia.extras.selma.codegen;
 
 import fr.xebia.extras.selma.SelmaConstants;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import java.util.List;
 
 /**
  * Created by slemesle on 17/04/2017.
@@ -26,7 +30,22 @@ import javax.lang.model.type.TypeMirror;
 public class ProcessorUtils {
 
     public static final String getInVar(TypeMirror inTypeMirror) {
-        String[] type = inTypeMirror.toString().split("\\.");
-        return SelmaConstants.IN_VAR + type[type.length - 1].replace("[]", "").replace(">", "").replace("<", "");
+
+        StringBuilder builder = new StringBuilder(SelmaConstants.IN_VAR);
+        if (inTypeMirror.getKind() == TypeKind.DECLARED) {
+            List<? extends TypeMirror> typeArguments = ((DeclaredType) inTypeMirror).getTypeArguments();
+            Element element = ((DeclaredType) inTypeMirror).asElement();
+            String[] types = inTypeMirror.toString().replaceAll("<.*>", "").split("\\.");
+            builder.append(types[types.length - 1]);
+            for (TypeMirror type : typeArguments) {
+                types = type.toString().split("\\.");
+                builder.append(types[types.length - 1].replace(">", ""));
+            }
+        } else {
+            String[] types = inTypeMirror.toString().split("\\.");
+            builder.append(types[types.length - 1].replace("[]", "").replace(">", ""));
+        }
+
+        return builder.toString();
     }
 }
