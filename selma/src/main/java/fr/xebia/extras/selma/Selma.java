@@ -178,7 +178,7 @@ public class Selma {
             classLoader = Selma.class.getClassLoader();
         }
 
-        String generatedClassName = mapperClass.getCanonicalName() + SelmaConstants.MAPPER_CLASS_SUFFIX;
+        String generatedClassName = mapperClass.getName().replace('$', '_') + SelmaConstants.MAPPER_CLASS_SUFFIX;
         try {
             Class<T> mapperImpl = (Class<T>) classLoader.loadClass(generatedClassName);
             if (!mapperClass.isAssignableFrom(mapperImpl)) {

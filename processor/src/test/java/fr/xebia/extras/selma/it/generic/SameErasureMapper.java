@@ -14,28 +14,17 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.custom.interceptor;
+package fr.xebia.extras.selma.it.generic;
 
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
+import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.it.generic.beans.Records;
+import fr.xebia.extras.selma.it.generic.beans.RecordsDAO;
 
 /**
- * Created by slemesle on 26/03/2014.
+ * Created by slemesle on 06/03/2018.
  */
-public class NeverUsedMappingInterceptorInMapper {
+@Mapper
+public interface SameErasureMapper {
 
-
-    public static final String SALT = " Never used";
-
-    /**
-     * Simply intercept in and out person after mapping process
-     *
-     * @param in
-     * @param out
-     */
-    public void intercept(final PersonIn in, final PersonOut out) {
-
-        out.setBiography(in.getFirstName() + SALT);
-    }
-
+    RecordsDAO asRecordsDAO(Records records);
 }

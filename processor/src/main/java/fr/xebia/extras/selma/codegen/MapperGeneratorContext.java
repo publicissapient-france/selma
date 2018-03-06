@@ -42,14 +42,13 @@ public class MapperGeneratorContext {
 
 
     public final List<TypeElement> sources;
+    final Elements elements;
+    final Types type;
     private final ProcessingEnvironment processingEnv;
     private final CompilerMessageRegistry messageRegistry;
+    private final DeclaredType objectType;
+    private final TypeVisitor<Boolean, MapperGeneratorContext> isValueTypeVisitor;
     int depth = 0;
-
-    final Elements elements;
-
-    final Types type;
-
     // Handle nesting on source node
     LinkedList<StackElem> stack;
     // Handle method stack to build all mapping method not already built
@@ -59,9 +58,6 @@ public class MapperGeneratorContext {
     private HashMap<String, MappingMethod> mappingRegistry;
     private String newParams;
     private MapperWrapper wrapper;
-
-    private final DeclaredType objectType;
-    private final TypeVisitor<Boolean, MapperGeneratorContext> isValueTypeVisitor;
 
     public MapperGeneratorContext(ProcessingEnvironment processingEnvironment) {
         this.elements = processingEnvironment.getElementUtils();
@@ -291,7 +287,13 @@ public class MapperGeneratorContext {
         public MappingMethod(InOutType inOutType) {
             this.inOutType = inOutType;
 
-            this.name = String.format("as%s", inOutType.outAsTypeElement().getSimpleName());
+            String _name = String.format("as%s", inOutType.outAsTypeElement().getSimpleName());
+            if (!inOutType.outAsDeclaredType().getTypeArguments().isEmpty()) {
+                for (TypeMirror type : inOutType.outAsDeclaredType().getTypeArguments()) {
+                    _name += ((DeclaredType) type).asElement().getSimpleName();
+                }
+            }
+            this.name = _name;
             this.built = false;
         }
 

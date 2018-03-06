@@ -16,7 +16,7 @@
  */
 package fr.xebia.extras.selma.it.custom.interceptor;
 
-import fr.xebia.extras.selma.IgnoreMissing;
+import fr.xebia.extras.selma.IoC;
 import fr.xebia.extras.selma.Mapper;
 import fr.xebia.extras.selma.Maps;
 import fr.xebia.extras.selma.beans.PersonIn;
@@ -26,13 +26,18 @@ import fr.xebia.extras.selma.beans.PersonOut;
  *
  *
  */
-@Mapper(withCustom = NeverUsedMappingInterceptorInMapper.class,
-        withIgnoreMissing = IgnoreMissing.ALL, withIgnoreNullValue = true)
+@Mapper(withCustom = {NeverUsedMappingInterceptorInMapper.class, AddressMappingInterceptor.class},
+        withIgnoreNullValue = true,
+        withCyclicMapping = true, withIoC = IoC.SPRING
+)
 public interface MappingInterceptorInMapsWithIgnoreNullValue {
 
-    @Maps(withCustom = {MappingInterceptorForImmutable.class, NeverUsedMappingInterceptorInMaps.class})
+    @Maps(withCustom = {MappingInterceptorForImmutable.class, NeverUsedMappingInterceptorInMaps.class},
+            withIgnoreFields = {"male", "biography", "extras"})
     PersonOut mapWithInterceptor(PersonIn in);
 
-    @Maps(withCustom = MappingInterceptorForMutable.class) PersonOut mapWithInterceptor(PersonIn in, PersonOut out);
+    @Maps(withCustom = MappingInterceptorForMutable.class,
+            withIgnoreFields = {"male", "biography", "extras"})
+    PersonOut mapWithInterceptor(PersonIn in, PersonOut out);
 
 }

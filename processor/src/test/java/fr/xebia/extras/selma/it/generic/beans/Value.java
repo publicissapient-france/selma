@@ -14,28 +14,28 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.it.custom.interceptor;
-
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
+package fr.xebia.extras.selma.it.generic.beans;
 
 /**
- * Created by slemesle on 26/03/2014.
+ * Created by slemesle on 06/03/2018.
  */
-public class NeverUsedMappingInterceptorInMapper {
+public class Value<T> {
+    private T value;
+    private String unit;
 
-
-    public static final String SALT = " Never used";
-
-    /**
-     * Simply intercept in and out person after mapping process
-     *
-     * @param in
-     * @param out
-     */
-    public void intercept(final PersonIn in, final PersonOut out) {
-
-        out.setBiography(in.getFirstName() + SALT);
+    public T getValue() {
+        return value;
     }
 
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 }

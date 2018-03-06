@@ -38,7 +38,8 @@ import org.junit.Test;
         withClasses = {
                 MappingInterceptorForImmutable.class, MappingInterceptorForMutable.class,
                 NeverUsedMappingInterceptorInMapper.class, MappingInterceptorInMapsWithIgnoreNullValue.class,
-                NeverUsedMappingInterceptorInMaps.class, MappingInterceptorInUpdateWithIgnore.class
+                NeverUsedMappingInterceptorInMaps.class, MappingInterceptorInUpdateWithIgnore.class,
+                AddressMappingInterceptor.class
         },
 
         withPackage = "fr.xebia.extras.selma.it.custom.interceptor.beans"

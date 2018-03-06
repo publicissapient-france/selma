@@ -16,26 +16,23 @@
  */
 package fr.xebia.extras.selma.it.custom.interceptor;
 
-import fr.xebia.extras.selma.beans.PersonIn;
-import fr.xebia.extras.selma.beans.PersonOut;
+import fr.xebia.extras.selma.beans.AddressIn;
+import fr.xebia.extras.selma.beans.AddressOut;
 
 /**
  * Created by slemesle on 26/03/2014.
  */
-public class NeverUsedMappingInterceptorInMapper {
+public class AddressMappingInterceptor {
 
-
-    public static final String SALT = " Never used";
 
     /**
-     * Simply intercept in and out person after mapping process
+     * Simply intercept in and out address after mapping process
      *
      * @param in
      * @param out
      */
-    public void intercept(final PersonIn in, final PersonOut out) {
+    public void intercept(AddressIn in, AddressOut out) {
 
-        out.setBiography(in.getFirstName() + SALT);
+        out.setNumber(in.getNumber());
     }
-
 }

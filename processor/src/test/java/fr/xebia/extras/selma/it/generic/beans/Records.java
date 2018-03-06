@@ -14,12 +14,28 @@
  * limitations under the License.
  * 
  */
-package fr.xebia.extras.selma.codegen;
+package fr.xebia.extras.selma.it.generic.beans;
 
 /**
- * Created by slemesle on 12/03/2016.
+ * Created by slemesle on 06/03/2018.
  */
-public class FactoryGenerator {
+public class Records {
+    private Value<String> type;
+    private Value<Double> speed;
 
+    public Value<String> getType() {
+        return type;
+    }
 
+    public void setType(Value<String> type) {
+        this.type = type;
+    }
+
+    public Value<Double> getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Value<Double> speed) {
+        this.speed = speed;
+    }
 }
