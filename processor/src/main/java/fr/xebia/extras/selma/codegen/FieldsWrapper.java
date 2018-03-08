@@ -83,7 +83,7 @@ public class FieldsWrapper {
                                                  .from(fieldPair.get(0).toLowerCase())
                                                  .to(fieldPair.get(0).toLowerCase());
 
-                CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context);
+                CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context, true);
                 fieldBuilder.withCustom(customMapperWrapper);
                 customMapperWrappers.add(customMapperWrapper);
 
@@ -98,7 +98,7 @@ public class FieldsWrapper {
 
                 if (!"java.lang.Object".equals(withCustom)) {
                     // The custom mapper is only defined if it is not a Object.class
-                    CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context);
+                    CustomMapperWrapper customMapperWrapper = new CustomMapperWrapper(field, context, true);
                     fieldBuilder.withCustom(customMapperWrapper);
                     customMapperWrappers.add(customMapperWrapper);
                 }

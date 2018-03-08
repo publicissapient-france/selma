@@ -647,22 +647,26 @@ public abstract class MappingBuilder {
         return controlNotNull(vars.inGetter());
     }
 
-    public static MappingBuilder newCustomMapperImmutableForUpdateGraph(final InOutType inOutType, final String name) {
+    public static MappingBuilder newCustomMapperImmutableForUpdateGraph(final InOutType inOutType, final String name, final boolean isolate) {
         return new MappingBuilder(true) {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
-                context.mappingMethod(inOutType, name);
+                if (!isolate) {
+                    context.mappingMethod(inOutType, name);
+                }
                 root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 return root.body;
             }
         };
     }
 
-    public static MappingBuilder newCustomMapper(final InOutType inOutType, final String name) {
+    public static MappingBuilder newCustomMapper(final InOutType inOutType, final String name, final boolean isolate) {
         return new MappingBuilder(true) {
             @Override
             MappingSourceNode buildNodes(MapperGeneratorContext context, SourceNodeVars vars) throws IOException {
-                context.mappingMethod(inOutType, name);
+                if (!isolate) {
+                    context.mappingMethod(inOutType, name);
+                }
                 if (inOutType.isOutPutAsParam()) {
                     root.body(vars.setOrAssignWithOutPut(String.format("%s(%%s, %%s)", name)));
                 } else {

@@ -98,7 +98,7 @@ public class MapperWrapper {
         ignoreNullValue = mapper.getAsBoolean(WITH_IGNORE_NULL_VALUE);
         context.setIgnoreNullValue(ignoreNullValue);
         // Here we collect custom mappers
-        customMappers = new CustomMapperWrapper(mapper, context);
+        customMappers = new CustomMapperWrapper(mapper, context, false);
         mappingRegistry.customMappers(customMappers);
         if (mapperInterface.getModifiers().contains(Modifier.ABSTRACT)) {
             customMappers.addMappersElementMethods(mapperInterface);

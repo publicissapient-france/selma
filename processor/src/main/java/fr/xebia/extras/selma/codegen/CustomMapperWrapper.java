@@ -44,9 +44,11 @@ public class CustomMapperWrapper {
     private final HashMap<List<InOutType>, String> unusedInterceptor;
     private final Element annotatedElement;
     private final IoC ioC;
+    private final boolean isolate;
     private CustomMapperWrapper parent;
 
-    public CustomMapperWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context) {
+    public CustomMapperWrapper(AnnotationWrapper mapperAnnotation, MapperGeneratorContext context, boolean isolate) {
+        this.isolate = isolate;
         this.annotatedElement = mapperAnnotation.getAnnotatedElement();
 
         this.annotationWrapper = mapperAnnotation;
@@ -64,6 +66,7 @@ public class CustomMapperWrapper {
     public CustomMapperWrapper(CustomMapperWrapper parent, AnnotationWrapper annotationWrapper,
                                MapperGeneratorContext context) {
         this.parent = parent;
+        this.isolate = false;
         this.annotationWrapper = annotationWrapper;
         this.customMapperFields = new LinkedList<TypeElement>();
         this.unusedCustomMappers = new HashMap();
@@ -136,14 +139,14 @@ public class CustomMapperWrapper {
         String methodCall = String.format("%s.%s", customMapperFieldName, method.getSimpleName());
 
         if (immutable == null) {
-            res = MappingBuilder.newCustomMapper(inOutType, methodCall);
+            res = MappingBuilder.newCustomMapper(inOutType, methodCall, isolate);
             unusedCustomMappers.put(inOutType,
                     String.format("%s.%s", element.getQualifiedName(), method.getSimpleName()));
         } else if (immutable) {
-            res = MappingBuilder.newCustomMapper(inOutType, methodCall);
+            res = MappingBuilder.newCustomMapper(inOutType, methodCall, isolate);
             inOutType = new InOutType(inOutType, true);
         } else if (!immutable) {
-            res = MappingBuilder.newCustomMapperImmutableForUpdateGraph(inOutType, methodCall);
+            res = MappingBuilder.newCustomMapperImmutableForUpdateGraph(inOutType, methodCall, isolate);
             inOutType = new InOutType(inOutType, false);
         }
 
