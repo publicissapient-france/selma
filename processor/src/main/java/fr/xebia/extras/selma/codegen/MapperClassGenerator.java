@@ -106,8 +106,9 @@ public class MapperClassGenerator {
         final TypeElement type = processingEnv.getElementUtils().getTypeElement(origClasse);
         final String packageName = getPackage(type).getQualifiedName().toString();
         final String strippedTypeName = strippedTypeName(type.getQualifiedName().toString(), packageName);
-        
-        final String adapterName = new StringBuilder(packageName).append('.').append(strippedTypeName.replace('.', '_'))
+
+        final StringBuilder adapterNameBuilder = packageName.isEmpty() ? new StringBuilder() : new StringBuilder(packageName).append('.');
+        final String adapterName = adapterNameBuilder.append(strippedTypeName.replace('.', '_'))
                 .append(SelmaConstants.MAPPER_CLASS_SUFFIX).toString();
         
         final List<MapperMethodGenerator> methodGenerators = new ArrayList<MapperMethodGenerator>();
